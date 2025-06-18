@@ -1,0 +1,16 @@
+{
+    "inventory": [
+        {
+            "name": "Health Potion",
+            "description": "",
+            "quantity": 2,
+            "questItem": false
+        },
+        {
+            "name": "Rusty Sword",
+            "description": "",
+            "quantity": 1,
+            "questItem": false
+        }
+    ]
+}
