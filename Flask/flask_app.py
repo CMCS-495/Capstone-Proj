@@ -191,11 +191,15 @@ def explore():
                 if room_id in sr:
                     session['last_msg']="You already searched here."
                 else:
-                    sr.append(room_id); session['searched_rooms']=sr
+                    sr.append(room_id)
+                    session['searched_rooms']=sr
                     if random.random()<SEARCH_SUCCESS_CHANCE and len(session['bag'])<3:
-                        avail = [g for g in GEAR_POOL
-                                 if g['type'] not in [i['type'] for i in session['bag']]]
-                        if avail:
+                        if avail := [
+                            g
+                            for g in GEAR_POOL
+                            if g['type']
+                            not in [i['type'] for i in session['bag']]
+                        ]:
                             item = random.choice(avail)
                             session['bag'].append(item)
                             session['last_msg']=f"Found gear: {item['name']}"
@@ -258,8 +262,6 @@ def fight():
 
     if request.method=='POST':
         action = request.form['action']
-        defend = (action=='defend')
-
         # POTION
         if action=='potion' and potions>0:
             heal = 20
@@ -268,13 +270,12 @@ def fight():
             messages.append(f"You drink a potion and recover {heal} HP.")
 
         # ATTACK
-        if action=='attack':
+        if action == 'attack':
             dmg = max(10, player.attack - enemy.defense)
             enemy.take_damage(dmg)
             messages.append(f"You strike {enemy.name} for {dmg} damage.")
 
-        # RUN
-        if action=='run':
+        elif action == 'run':
             session.pop('encounter', None)
             session.pop('enemy', None)
             session['hp']      = player.hp
@@ -285,6 +286,8 @@ def fight():
         # ENEMY COUNTER
         if enemy.hp > 0:
             dmg2 = max(1, enemy.attack - player.defense)
+            defend = (action=='defend')
+
             if defend:
                 dmg2 //= 10
                 messages.append("Your guard holds, halving the hit!")
@@ -357,13 +360,11 @@ def artifact():
                     question=puzzle['question'],
                     options=puzzle['options']
                 )
-            return redirect(url_for('explore'))
         else:
             session.pop('encounter', None)
             session.pop('enemy',     None)
             session['last_msg']="Wrong! The artifact vanishes."
-            return redirect(url_for('explore'))
-
+        return redirect(url_for('explore'))
     return render_template('artifact.html',
         final=False,
         question=puzzle['question'],
