@@ -1,27 +1,188 @@
 {
   "weapons": [
-    {"name": "Rusty Sword", "attack": 3, "defense": 0, "speed": 0},
-    {"name": "Iron Dagger", "attack": 2, "defense": 0, "speed": 2},
-    {"name": "Magic Staff", "attack": 4, "defense": 0, "speed": 1}
+    {
+      "name": "Rusty Sword",
+      "attack": 3,
+      "defense": 2,
+      "speed": 1,
+      "UUID": "a3f1d27e-94b0-4f5d-a26e-b6d1c7d8e9f0",
+      "llm_prompt": "A dull, corroded blade with pitted steel",
+      "llm_description": "",
+      "drop_rate": 30
+    },
+    {
+      "name": "Iron Dagger",
+      "attack": 1,
+      "defense": 1,
+      "speed": 3,
+      "UUID": "b4e2f38f-a2c1-4d6e-b37f-c2e4f6a7b8d9",
+      "llm_prompt": "A balanced dagger forged from sturdy iron",
+      "llm_description": "",
+      "drop_rate": 90
+    },
+    {
+      "name": "Magic Staff",
+      "attack": 4,
+      "defense": 0,
+      "speed": 1,
+      "UUID": "c5f3e49a-b3d2-4f7f-c48a-d3f5e7b8c9a0",
+      "llm_prompt": "A slender staff imbued with arcane runes",
+      "llm_description": "",
+      "drop_rate": 10
+    }
   ],
   "armor": [
-    {"name": "Leather Armor", "attack": 0, "defense": 2, "speed": 1},
-    {"name": "Iron Armor", "attack": 0, "defense": 4, "speed": -1},
-    {"name": "Robes of Light", "attack": 1, "defense": 2, "speed": 1}
+    {
+      "name": "Leather Armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 1,
+      "UUID": "d6a4f5b1-c4e3-4f8f-d59b-e4f6a8c9d0b1",
+      "llm_prompt": "A patchwork armor made from hardened leather",
+      "llm_description": "",
+      "drop_rate": 75
+    },
+    {
+      "name": "Iron Armor",
+      "attack": 0,
+      "defense": 4,
+      "speed": -1,
+      "UUID": "e7b5f6c2-d5f4-4f90-e6ac-f597b9da1c2b",
+      "llm_prompt": "A bulky iron chestplate bearing dents from past battles",
+      "llm_description": "",
+      "drop_rate": 40
+    },
+    {
+      "name": "Robes of Light",
+      "attack": 1,
+      "defense": 2,
+      "speed": 1,
+      "UUID": "f8c6f7d3-e6f5-4fa1-f7bd-a6a8b9cb2d3c",
+      "llm_prompt": "Gossamer robes shimmering with faint magic",
+      "llm_description": "",
+      "drop_rate": 20
+    }
   ],
   "boots": [
-    {"name": "Traveler's Boots", "attack": 0, "defense": 1, "speed": 2},
-    {"name": "Heavy Boots", "attack": 0, "defense": 2, "speed": -1},
-    {"name": "Silent Slippers", "attack": 1, "defense": 0, "speed": 3}
+    {
+      "name": "Traveler's Boots",
+      "attack": 0,
+      "defense": 1,
+      "speed": 2,
+      "UUID": "01234567-89ab-4cde-f012-3456789abcdef",
+      "llm_prompt": "Worn leather boots designed for long journeys",
+      "llm_description": "",
+      "drop_rate": 90
+    },
+    {
+      "name": "Heavy Boots",
+      "attack": 0,
+      "defense": 2,
+      "speed": -1,
+      "UUID": "12345678-9abc-4def-0123-456789abcdef",
+      "llm_prompt": "Reinforced boots with metal plating that weigh the wearer down",
+      "llm_description": "",
+      "drop_rate": 45
+    },
+    {
+      "name": "Silent Slippers",
+      "attack": 1,
+      "defense": 0,
+      "speed": 3,
+      "UUID": "23456789-abcd-4efa-1234-56789abcdef0",
+      "llm_prompt": "Soft slippers that muffle every footstep",
+      "llm_description": "",
+      "drop_rate": 25
+    }
   ],
   "helmets": [
-    {"name": "Iron Helmet", "attack": 0, "defense": 3, "speed": 0},
-    {"name": "Hood of Insight", "attack": 1, "defense": 1, "speed": 1},
-    {"name": "Bone Crown", "attack": 2, "defense": 0, "speed": 0}
+    {
+      "name": "Iron Helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0,
+      "UUID": "3456789a-bcde-4fab-2345-6789abcdef01",
+      "llm_prompt": "A convex iron helmet with riveted plates",
+      "llm_description": "",
+      "drop_rate": 60
+    },
+    {
+      "name": "Hood of Insight",
+      "attack": 1,
+      "defense": 1,
+      "speed": 1,
+      "UUID": "456789ab-cdef-4abc-3456-789abcdef012",
+      "llm_prompt": "A fabric hood lined with mystical sigils",
+      "llm_description": "",
+      "drop_rate": 35
+    },
+    {
+      "name": "Bone Crown",
+      "attack": 5,
+      "defense": 5,
+      "speed": 5,
+      "UUID": "56789abc-def0-4bcd-4567-89abcdef0123",
+      "llm_prompt": "A crown woven from animal bones and marrow",
+      "llm_description": "",
+      "drop_rate": 5
+    }
   ],
   "rings": [
-    {"name": "Ring of Strength", "attack": 2, "defense": 0, "speed": 0},
-    {"name": "Ring of Defense", "attack": 0, "defense": 2, "speed": 0},
-    {"name": "Ring of Swiftness", "attack": 0, "defense": 0, "speed": 2}
+    {
+      "name": "Ring of Strength",
+      "attack": 2,
+      "defense": 0,
+      "speed": 0,
+      "UUID": "6789abcd-ef01-4cde-5678-9abcdef01234",
+      "llm_prompt": "A heavy ring that pulses with raw power",
+      "llm_description": "",
+      "drop_rate": 30
+    },
+    {
+      "name": "Ring of Defense",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0,
+      "UUID": "789abcde-f012-4def-6789-abcdef012345",
+      "llm_prompt": "A stout ring engraved with protective wards",
+      "llm_description": "",
+      "drop_rate": 30
+    },
+    {
+      "name": "Ring of Swiftness",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2,
+      "UUID": "89abcdef-0123-4ef0-789a-bcdef0123456",
+      "llm_prompt": "A slender ring that quickens the wearer's movements",
+      "llm_description": "",
+      "drop_rate": 25
+    }
+  ],
+  "aid": [
+    {
+      "name": "Health Potion",
+      "health": 5,
+      "UUID": "9abcdef0-1234-4f01-89ab-cdef01234567",
+      "llm_prompt": "A swirling red potion in a small glass vial",
+      "llm_description": "",
+      "drop_rate": 90
+    },
+    {
+      "name": "Big Potion",
+      "health": 20,
+      "UUID": "abcdef01-2345-4f12-90ab-cdef01234567",
+      "llm_prompt": "A luminous blue potion crackling with arcane energy",
+      "llm_description": "",
+      "drop_rate": 50
+    },
+    {
+      "name": "Mountain Dew",
+      "health": 50,
+      "UUID": "bcdef012-3456-4f23-01ab-cdef01234567",
+      "llm_prompt": "A vibrant green elixir that invigorates the body",
+      "llm_description": "",
+      "drop_rate": 1
+    }
   ]
 }

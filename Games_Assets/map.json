@@ -1,8 +1,107 @@
 [
-  {"id":"R1_1","region":"Region1","neighbors":["R1_2","R1_5"]},
-  {"id":"R1_2","region":"Region1","neighbors":["R1_1","R1_3"]},
-  {"id":"R1_3","region":"Region1","neighbors":["R1_2","R1_4"]},
-  {"id":"R1_4","region":"Region1","neighbors":["R1_3","R1_5"]},
-  {"id":"R1_5","region":"Region1","neighbors":["R1_4","R1_1"]}
+  {
+    "id": "R1_1",
+    "region": "Region1",
+    "neighbors": ["R1_2", "R1_3"],
+    "llm_prompt": "Moonlit clearing under twisted oak trees",
+    "llm_description": ""
+  },
+  {
+    "id": "R1_2",
+    "region": "Region1",
+    "neighbors": ["R1_1", "R1_4"],
+    "llm_prompt": "Fog-choked path between skeletal birches",
+    "llm_description": ""
+  },
+  {
+    "id": "R1_3",
+    "region": "Region1",
+    "neighbors": ["R1_1", "R1_5"],
+    "llm_prompt": "Shadowy grove with unseen whispering voices",
+    "llm_description": ""
+  },
+  {
+    "id": "R1_4",
+    "region": "Region1",
+    "neighbors": ["R1_2", "R1_5"],
+    "llm_prompt": "Mossy glade illuminated by flickering fireflies",
+    "llm_description": ""
+  },
+  {
+    "id": "R1_5",
+    "region": "Region1",
+    "neighbors": ["R1_3", "R1_4", "R2_1"],
+    "llm_prompt": "Ancient stone circle overgrown with vines",
+    "llm_description": ""
+  },
+  {
+    "id": "R2_1",
+    "region": "Region2",
+    "neighbors": ["R2_2", "R2_3", "R1_5"],
+    "llm_prompt": "Weather-beaten cabin porch creaking in the wind",
+    "llm_description": ""
+  },
+  {
+    "id": "R2_2",
+    "region": "Region2",
+    "neighbors": ["R2_1", "R2_4"],
+    "llm_prompt": "Dusty living room with a broken rocking chair",
+    "llm_description": ""
+  },
+  {
+    "id": "R2_3",
+    "region": "Region2",
+    "neighbors": ["R2_1", "R2_5"],
+    "llm_prompt": "Old kitchen strewn with rusted utensils and cobwebs",
+    "llm_description": ""
+  },
+  {
+    "id": "R2_4",
+    "region": "Region2",
+    "neighbors": ["R2_2", "R2_5"],
+    "llm_prompt": "Damp cellar lined with decaying wooden barrels",
+    "llm_description": ""
+  },
+  {
+    "id": "R2_5",
+    "region": "Region2",
+    "neighbors": ["R2_3", "R2_4", "R3_1"],
+    "llm_prompt": "Lofty attic filled with tattered curtains and secrets",
+    "llm_description": ""
+  },
+  {
+    "id": "R3_1",
+    "region": "Region3",
+    "neighbors": ["R3_2", "R3_3", "R2_5"],
+    "llm_prompt": "Thunderous waterfall crashing into a misty pool",
+    "llm_description": ""
+  },
+  {
+    "id": "R3_2",
+    "region": "Region3",
+    "neighbors": ["R3_1", "R3_4"],
+    "llm_prompt": "Slippery ledge overlooking the churning river below",
+    "llm_description": ""
+  },
+  {
+    "id": "R3_3",
+    "region": "Region3",
+    "neighbors": ["R3_1", "R3_5"],
+    "llm_prompt": "Hidden cave entrance carved into wet stone",
+    "llm_description": ""
+  },
+  {
+    "id": "R3_4",
+    "region": "Region3",
+    "neighbors": ["R3_2", "R3_5"],
+    "llm_prompt": "Sunlit alcove where the river slows to a calm stretch",
+    "llm_description": ""
+  },
+  {
+    "id": "R3_5",
+    "region": "Region3",
+    "neighbors": ["R3_3", "R3_4"],
+    "llm_prompt": "Echoing chamber deep inside the river cave",
+    "llm_description": ""
+  }
 ]
-
