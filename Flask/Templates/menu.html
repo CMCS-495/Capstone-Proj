@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Dungeon Crawler</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Dungeon Crawler</h1>
+    <p>Welcome, brave adventurer! Your goal is to:</p>
+    <ol style="text-align:left;">
+      <li>Explore the dungeon’s rooms</li>
+      <li>Defeat 5 enemies, solve their riddles</li>
+      <li>Collect 5 artifacts to win</li>
+      <li>Search rooms for 3 gear items</li>
+    </ol>
+    <form method="post" action="{{ url_for('start_game') }}">
+      <label>
+        Enter your name:
+        <input type="text" name="name" required style="font-family:inherit;">
+      </label>
+      <button type="submit">Begin Adventure</button>
+    </form>
+  </div>
+</body>
+</html>

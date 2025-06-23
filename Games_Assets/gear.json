@@ -1,0 +1,27 @@
+{
+  "weapons": [
+    {"name": "Rusty Sword", "attack": 3, "defense": 0, "speed": 0},
+    {"name": "Iron Dagger", "attack": 2, "defense": 0, "speed": 2},
+    {"name": "Magic Staff", "attack": 4, "defense": 0, "speed": 1}
+  ],
+  "armor": [
+    {"name": "Leather Armor", "attack": 0, "defense": 2, "speed": 1},
+    {"name": "Iron Armor", "attack": 0, "defense": 4, "speed": -1},
+    {"name": "Robes of Light", "attack": 1, "defense": 2, "speed": 1}
+  ],
+  "boots": [
+    {"name": "Traveler's Boots", "attack": 0, "defense": 1, "speed": 2},
+    {"name": "Heavy Boots", "attack": 0, "defense": 2, "speed": -1},
+    {"name": "Silent Slippers", "attack": 1, "defense": 0, "speed": 3}
+  ],
+  "helmets": [
+    {"name": "Iron Helmet", "attack": 0, "defense": 3, "speed": 0},
+    {"name": "Hood of Insight", "attack": 1, "defense": 1, "speed": 1},
+    {"name": "Bone Crown", "attack": 2, "defense": 0, "speed": 0}
+  ],
+  "rings": [
+    {"name": "Ring of Strength", "attack": 2, "defense": 0, "speed": 0},
+    {"name": "Ring of Defense", "attack": 0, "defense": 2, "speed": 0},
+    {"name": "Ring of Swiftness", "attack": 0, "defense": 0, "speed": 2}
+  ]
+}

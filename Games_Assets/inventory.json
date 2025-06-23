@@ -1,16 +1,249 @@
 {
-    "inventory": [
-        {
-            "name": "Health Potion",
-            "description": "",
-            "quantity": 2,
-            "questItem": false
-        },
-        {
-            "name": "Rusty Sword",
-            "description": "",
-            "quantity": 1,
-            "questItem": false
-        }
-    ]
+  "items": [
+    {
+      "name": "Leather Armor",
+      "type": "armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0
+    },
+    {
+      "name": "Leather Armor",
+      "type": "armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Ring of Fury",
+      "type": "ring",
+      "attack": 2,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "name": "Leather Armor",
+      "type": "armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0
+    },
+    {
+      "name": "Leather Armor",
+      "type": "armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Ring of Fury",
+      "type": "ring",
+      "attack": 2,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "name": "Ring of Fury",
+      "type": "ring",
+      "attack": 2,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Steel Helmet",
+      "type": "helmet",
+      "attack": 0,
+      "defense": 3,
+      "speed": 0
+    },
+    {
+      "name": "Leather Armor",
+      "type": "armor",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Ring of Fury",
+      "type": "ring",
+      "attack": 2,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Ring of Fury",
+      "type": "ring",
+      "attack": 2,
+      "defense": 1,
+      "speed": 1
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Iron Sword",
+      "type": "weapon",
+      "attack": 3,
+      "defense": 0,
+      "speed": 0
+    },
+    {
+      "name": "Swift Boots",
+      "type": "boots",
+      "attack": 0,
+      "defense": 0,
+      "speed": 2
+    }
+  ]
 }

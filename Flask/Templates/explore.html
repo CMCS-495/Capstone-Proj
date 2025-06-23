@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ room_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>{{ room_name }}</h1>
+
+    <div class="stats">
+      <div>{{ player.name }} (Lvl {{ player.level }})</div>
+      <div>HP: {{ player.hp }}</div>
+      <div>ATK: {{ player.attack }}</div>
+      <div>DEF: {{ player.defense }}</div>
+      <div>SPD: {{ player.speed }}</div>
+      <div>Potions: {{ session.potions }}</div>
+    </div>
+
+    <p><strong>Gear:</strong>
+      {% for slot, itm in gear.items() %}
+        {{ slot|capitalize }}: {{ itm.name if itm else 'None' }}&nbsp;&nbsp;
+      {% endfor %}
+    </p>
+    <p><strong>Artifacts:</strong>
+      {{ artifacts|join(', ') if artifacts else 'None' }}
+    </p>
+
+    <hr>
+    <p>{{ response|safe }}</p>
+
+    <form method="post">
+      {% if enemy %}
+        <button name="command" value="fight">Fight {{ enemy.name }}</button>
+        <button name="command" value="run">Run Away</button>
+      {% else %}
+        {% for nbr in neighbors %}
+          <button name="command" value="go {{ nbr }}">
+            Go to {{ ROOM_NAMES[nbr] }}
+          </button>
+        {% endfor %}
+        <button name="command" value="search">Search Room</button>
+        <button name="command" value="inventory">Inventory</button>
+      {% endif %}
+    </form>
+
+    <p><a href="{{ url_for('menu') }}">Back to Menu</a></p>
+  </div>
+</body>
+</html>

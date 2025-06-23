@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Battle vs {{ enemy.name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Battle: {{ player.name }} vs {{ enemy.name }}</h1>
+    <div class="stats">
+      <div>Your HP: {{ player.hp }}</div>
+      <div>Enemy HP: {{ enemy.current_hp }} / {{ enemy.max_hp }}</div>
+      <div>Potions: {{ potions }}</div>
+    </div>
+    <hr>
+    {% for msg in messages %}
+      <p>{{ msg|safe }}</p>
+    {% endfor %}
+
+    {% if outcome == 'ongoing' %}
+      <form method="post">
+        <button name="action" value="attack">Attack</button>
+        <button name="action" value="defend">Defend</button>
+        {% if potions > 0 %}
+          <button name="action" value="potion">Use Potion</button>
+        {% endif %}
+        <button name="action" value="run">Run</button>
+      </form>
+    {% elif outcome == 'defeat' %}
+      <h2>Game Over</h2>
+      <a href="{{ url_for('menu') }}">Restart</a>
+    {% elif outcome == 'victory' %}
+      <h2>You conquered the dungeon!</h2>
+      <a href="{{ url_for('menu') }}">Play Again</a>
+    {% endif %}
+  </div>
+</body>
+</html>
