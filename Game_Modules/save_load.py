@@ -1,23 +1,42 @@
-import json
 import os
+import json
+import export_assets
 
-def load_map_from_file():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = os.path.join(base_dir, "Games_Assets", "map.json")
-    with open(path, "r") as f:
-        return json.load(f)
+BASE_DIR = os.path.dirname(__file__)
+SAVE_ROOT = os.path.join(BASE_DIR, 'Player_Saves')
 
-def load_inventory():
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = os.path.join(base_dir, "Games_Assets", "inventory.json")
-    if not os.path.exists(path):
-        with open(path, "w") as f:
-            json.dump({"items": []}, f)
-    with open(path, "r") as f:
-        return json.load(f)
+def save_game():
+    export_assets.export_assets()
 
-def save_inventory(inventory):
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = os.path.join(base_dir, "Games_Assets", "inventory.json")
-    with open(path, "w") as f:
-        json.dump(inventory, f, indent=2)
+def load_game():
+    save_paths = []
+    for player_dir in sorted(os.listdir(SAVE_ROOT)):
+        dir_path = os.path.join(SAVE_ROOT, player_dir)
+        if os.path.isdir(dir_path):
+            save_paths.extend(
+                os.path.join(dir_path, fname)
+                for fname in sorted(os.listdir(dir_path))
+                if fname.endswith('.json')
+            )
+    if not save_paths:
+        print("No saves found.")
+        return None
+    for idx, path in enumerate(save_paths, 1):
+        print(f"{idx}. {path}")
+    choice = int(input("Select save to load: "))
+    filepath = save_paths[choice - 1]
+    with open(filepath) as f:
+        data = json.load(f)
+    print(f"Loaded save: {filepath}")
+    return data
+
+if __name__ == '__main__':
+    print("1) Save Game")
+    print("2) Load Game")
+    choice = input("Choose an option: ")
+    if choice == '1':
+        save_game()
+    elif choice == '2':
+        loaded_data = load_game()
+    else:
+        print("Invalid option")
