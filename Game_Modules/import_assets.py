@@ -2,7 +2,7 @@ import os
 import json
 
 BASE_DIR = os.path.dirname(__file__)
-NEW_ASSETS_DIR = os.path.join(BASE_DIR, 'game_assets')
+NEW_ASSETS_DIR = os.path.join(BASE_DIR, 'Game_Assets')
 SAVED_ASSETS_DIR = os.path.join(BASE_DIR, 'saved_game_assets')
 TEMPLATES_SUBFOLDER = 'templates'
 

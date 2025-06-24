@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-import import_assets
+from . import import_assets
 
 BASE_DIR = os.path.dirname(__file__)
 SAVE_ROOT = os.path.join(BASE_DIR, 'Player_Saves')

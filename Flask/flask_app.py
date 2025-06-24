@@ -6,7 +6,7 @@ from flask import (
 )
 import random, os
 
-from Game_Modules.llm_client import get_llm_response
+# from Game_Modules.llm_client import get_llm_response
 from Game_Modules.entities  import Player, Enemy
 from Game_Modules.save_load import load_map_from_file
 from Game_Modules.map       import DungeonMap
@@ -218,7 +218,7 @@ def explore():
         return redirect(url_for('explore'))
 
     # GET or post-redirect
-    response  = last_msg or get_llm_response(f"{name} explores {ROOM_NAMES[room_id]}")
+    response  = last_msg # or get_llm_response(f"{name} explores {ROOM_NAMES[room_id]}")
     neighbors = dungeon_map.get_neighbors(room_id)
 
     return render_template('explore.html',
