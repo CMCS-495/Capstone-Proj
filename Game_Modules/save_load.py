@@ -1,6 +1,6 @@
 import os
 import json
-import export_assets
+from . import export_assets
 
 BASE_DIR = os.path.dirname(__file__)
 SAVE_ROOT = os.path.join(BASE_DIR, 'Player_Saves')
@@ -30,6 +30,17 @@ def load_game():
     print(f"Loaded save: {filepath}")
     return data
 
+def load_map_from_file(path=None):
+    """
+    Loads the map from a JSON file.
+    If no path is given, loads from the default location in Game_Assets.
+    """
+    if path is None:
+        base_dir = os.path.dirname(__file__)
+        path = os.path.join(base_dir, 'Game_Assets', 'map.json')
+    with open(path, 'r') as f:
+        return json.load(f)
+
 if __name__ == '__main__':
     print("1) Save Game")
     print("2) Load Game")
@@ -39,4 +50,4 @@ if __name__ == '__main__':
     elif choice == '2':
         loaded_data = load_game()
     else:
-        print("Invalid option")
+        print("Invalid option.")
