@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Save Game As…</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Save Game As…</h1>
+      <form method="post">
+        <label>
+          Filename:<br>
+          <input
+            type="text"
+            name="filename"
+            value="{{ default_name }}"
+            required
+          >
+        </label>
+        <p><small>Your save will download as this name.</small></p>
+
+        <div class="button-row">
+          <button type="submit">💾 Download Save</button>
+          <!-- Use a link styled as a button to go back -->
+          <a class="button" href="{{ url_for('explore') }}">← Back</a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

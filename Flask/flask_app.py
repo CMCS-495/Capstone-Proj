@@ -1,10 +1,15 @@
-from flask import Flask, render_template, request, redirect, session, url_for
-import os, sys, io
+from flask import (
+    Flask, render_template, request,
+    redirect, session, url_for, send_file
+)
+import os, sys, io, glob, time, zipfile, json
 
 # ensure Game_Modules package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Game_Modules.import_assets import player_template, enemies
+from Game_Modules.import_assets import inventory, gear, game_map, enemies, player_template
+from Game_Modules.save_load   import save_game
+from Game_Modules.export_assets import SAVE_ROOT
 from Game_Modules.entities import Player, Enemy
 from Game_Modules.combat import player_attack, enemy_attack
 from Game_Modules.game_utils import (
@@ -35,12 +40,9 @@ def start_game():
         'level':          player_template.get('level', 1),
         'xp':             player_template.get('xp', 0),
         'hp':             player_template.get('hp', 10),
-        'potions':        player_template.get('potions', 0),
         'artifacts':      [],
         'equipped':       {'weapon': None, 'shield': None, 'armor': None},
         'bag':            [],
-        'searched_rooms': [],
-        'remaining':      [e['name'] for e in enemies]
     })
     return redirect(url_for('explore'))
 
@@ -61,11 +63,78 @@ def rng_route():
         sys.argv = _argv_orig
     return buf.getvalue().strip(), 200, {'Content-Type': 'text/plain'}
 
-# ----- SAVE & LOAD -----
-@app.route('/save', methods=['POST'])
-def save_route():
-    save_load.save_game()
-    return 'Game saved.', 200, {'Content-Type': 'text/plain'}
+# ----- SAVE & LOAD -----@app.route('/save_as', methods=['POST'])
+
+@app.route('/save-as', methods=['GET', 'POST'])
+def save_as():
+    if 'player_name' not in session:
+        return redirect(url_for('menu'))
+
+    player_name = session['player_name']
+    timestamp = time.strftime("%Y%m%d%H%M%S")
+    default_name = f"{player_name}-{timestamp}.zip"
+
+    if request.method == 'POST':
+        # what the user typed as zip filename
+        desired = request.form['filename'].strip()
+        if not desired.lower().endswith('.zip'):
+            desired += '.zip'
+
+        # safe-equipped extraction
+        eq = session.get('equipped', {})
+        def item_name(slot):
+            it = eq.get(slot)
+            return it['name'] if isinstance(it, dict) and 'name' in it else ''
+
+        player_data = {
+            "name": session['player_name'],
+            "stats": {
+                "attack":         player_template['stats'].get('attack',1)
+                                    + sum(i.get('attack',0) for i in eq.values() if i),
+                "defense":        player_template['stats'].get('defense',1)
+                                    + sum(i.get('defense',0) for i in eq.values() if i),
+                "speed":          player_template['stats'].get('speed',1)
+                                    + sum(i.get('speed',0) for i in eq.values() if i),
+                "current_health": session.get('hp', 0),
+                "max_health":     player_template['stats'].get('max_health', session.get('hp',0))
+            },
+            "level":                session.get('level',1),
+            "xp":                   session.get('xp',0),
+            "current_map_location": session.get('room_id',''),
+            "Equipped": {
+                "weapon": item_name('weapon'),
+                "armor":  item_name('armor'),
+                "boots":  item_name('boots'),
+                "ring":   item_name('ring'),
+                "helmet": item_name('helmet')
+            }
+        }
+
+        # Create ZIP in memory
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as z:
+            z.writestr('player.json',    json.dumps(player_data, indent=2))
+            z.writestr('enemies.json',   json.dumps(enemies,      indent=2))
+            z.writestr('gear.json',      json.dumps(gear,         indent=2))
+            z.writestr('inventory.json', json.dumps(inventory,    indent=2))
+            raw_map = list(game_map.values()) if isinstance(game_map, dict) else game_map
+            z.writestr('map.json',       json.dumps(raw_map,     indent=2))
+        buf.seek(0)
+
+        return send_file(
+            buf,
+            as_attachment=True,
+            download_name=desired,
+            mimetype='application/zip'
+        )
+
+    # GET → show the form
+    return render_template(
+        'save_as.html',
+        player_name=player_name,
+        timestamp=timestamp,
+        default_name=default_name
+    )
 
 @app.route('/load', methods=['POST'])
 def load_route():
@@ -112,14 +181,15 @@ def fight():
     if 'player_name' not in session or 'encounter' not in session:
         return redirect(url_for('explore'))
 
+    # Rebuild the enemy
     e_data = session['encounter']
-    enemy  = Enemy(e_data['name'], e_data['stats'], e_data['level'])
+    enemy = Enemy(e_data['name'], e_data['stats'], e_data['level'])
     enemy.hp     = e_data['current_hp']
     enemy.max_hp = e_data['max_hp']
 
-    base  = player_template.get('stats', {'attack':10, 'defense':5, 'speed':5})
-    bonus = {k: sum(item.get(k,0) for item in session['equipped'].values() if item)
-             for k in base}
+    # Rebuild the player
+    base = player_template.get('stats', {'attack':10,'defense':5,'speed':5})
+    bonus = {k: sum(item.get(k,0) for item in session['equipped'].values() if item) for k in base}
     player = Player(
         session['player_name'],
         base['attack']  + bonus['attack'],
@@ -129,33 +199,49 @@ def fight():
         session['xp']
     )
     player.hp = session['hp']
-    potions  = session['potions']
+
+    # Count aid items in inventory as "potions"
+    inv = session.setdefault('inventory', [])
+    aid_items = [i for i in inv if i.get('type') == 'aid']
+    potions = len(aid_items)
+
     messages = []
 
     if request.method == 'POST':
         action = request.form['action']
+
+        # Drink an aid item if available
         if action == 'potion' and potions > 0:
-            heal = 20
-            player.hp = min(player.hp + heal, player_template.get('hp',100))
+            heal_amount = 20
+            # consume one aid item
+            for idx, itm in enumerate(inv):
+                if itm.get('type') == 'aid':
+                    inv.pop(idx)
+                    break
             potions -= 1
-            messages.append(f"You drink a potion and recover {heal} HP.")
+
+            player.hp = min(player.hp + heal_amount, player_template.get('stats',{}).get('max_health',100))
+            messages.append(f"You use an aid item and recover {heal_amount} HP.")
 
         if action == 'attack':
             messages.append(player_attack(player, enemy))
         elif action == 'run':
             session.pop('encounter', None)
             session.pop('enemy', None)
-            session.update(hp=player.hp, potions=potions)
+            session['hp'] = player.hp
+            session['inventory'] = inv
             session['last_msg'] = "You fled!"
             return redirect(url_for('explore'))
 
         if enemy.is_alive():
             messages.append(enemy_attack(player, enemy))
 
-        session['hp']                      = max(player.hp, 0)
+        # Update session state
+        session['hp']                  = max(player.hp, 0)
         session['encounter']['current_hp'] = max(enemy.hp, 0)
-        session['potions']                 = potions
+        session['inventory']           = inv
 
+        # Check for defeat
         if player.hp <= 0:
             return render_template('fight.html',
                                    outcome='defeat',
@@ -163,6 +249,8 @@ def fight():
                                    enemy=e_data,
                                    messages=messages,
                                    potions=potions)
+
+        # Check for victory
         if not enemy.is_alive():
             return redirect(url_for('artifact'))
 
@@ -173,12 +261,14 @@ def fight():
                                messages=messages,
                                potions=potions)
 
+    # GET request: show fight screen
     return render_template('fight.html',
                            outcome='ongoing',
                            player=player,
                            enemy=e_data,
                            messages=messages,
                            potions=potions)
+
 
 # ----- ARTIFACT -----
 @app.route('/artifact', methods=['GET', 'POST'])
@@ -222,20 +312,29 @@ def inventory_route():
         return redirect(url_for('menu'))
 
     if request.method == 'POST':
-        idx    = int(request.form['item_index'])
-        action = request.form['action']
-        if action == 'equip' and 0 <= idx < len(session['bag']): 
-            it = session['bag'][idx]
-            session['equipped'][it['type']] = it
+        action = request.form.get('action')
+        if action == 'equip':
+            # only then pull item_index
+            idx = int(request.form.get('item_index', -1))
+            if 0 <= idx < len(session.get('inventory', [])):
+                it = session['inventory'][idx]
+                session['equipped'][it['type']] = it
+
         elif action == 'unequip':
-            slot = request.form['slot']
-            session['equipped'][slot] = None
+            # only then pull slot
+            slot = request.form.get('slot')
+            if slot in session.get('equipped', {}):
+                session['equipped'][slot] = None
+
         session.modified = True
         return redirect(url_for('inventory_route'))
 
-    return render_template('inventory.html',
-                           items=session['bag'],
-                           equipped=session['equipped'])
+    return render_template(
+        'inventory.html',
+        items=session.get('inventory', []),
+        equipped=session.get('equipped', {})
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True)

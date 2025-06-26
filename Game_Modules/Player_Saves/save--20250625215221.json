@@ -1,0 +1,559 @@
+{
+  "player": {
+    "name": "",
+    "stats": {
+      "attack": 1,
+      "defense": 1,
+      "speed": 1,
+      "current_health": 10,
+      "max_health": 10
+    },
+    "level": 1,
+    "xp": 0,
+    "current_map_location": ""
+  },
+  "inventory": {
+    "UUIDs": []
+  },
+  "gear": {
+    "weapons": [
+      {
+        "name": "Rusty Sword",
+        "attack": 3,
+        "defense": 2,
+        "speed": 1,
+        "UUID": "a3f1d27e-94b0-4f5d-a26e-b6d1c7d8e9f0",
+        "llm_prompt": "A dull, corroded blade with pitted steel",
+        "llm_description": "",
+        "drop_rate": 30
+      },
+      {
+        "name": "Iron Dagger",
+        "attack": 1,
+        "defense": 1,
+        "speed": 3,
+        "UUID": "b4e2f38f-a2c1-4d6e-b37f-c2e4f6a7b8d9",
+        "llm_prompt": "A balanced dagger forged from sturdy iron",
+        "llm_description": "",
+        "drop_rate": 90
+      },
+      {
+        "name": "Magic Staff",
+        "attack": 4,
+        "defense": 0,
+        "speed": 1,
+        "UUID": "c5f3e49a-b3d2-4f7f-c48a-d3f5e7b8c9a0",
+        "llm_prompt": "A slender staff imbued with arcane runes",
+        "llm_description": "",
+        "drop_rate": 10
+      }
+    ],
+    "armor": [
+      {
+        "name": "Leather Armor",
+        "attack": 0,
+        "defense": 2,
+        "speed": 1,
+        "UUID": "d6a4f5b1-c4e3-4f8f-d59b-e4f6a8c9d0b1",
+        "llm_prompt": "A patchwork armor made from hardened leather",
+        "llm_description": "",
+        "drop_rate": 75
+      },
+      {
+        "name": "Iron Armor",
+        "attack": 0,
+        "defense": 4,
+        "speed": -1,
+        "UUID": "e7b5f6c2-d5f4-4f90-e6ac-f597b9da1c2b",
+        "llm_prompt": "A bulky iron chestplate bearing dents from past battles",
+        "llm_description": "",
+        "drop_rate": 40
+      },
+      {
+        "name": "Robes of Light",
+        "attack": 1,
+        "defense": 2,
+        "speed": 1,
+        "UUID": "f8c6f7d3-e6f5-4fa1-f7bd-a6a8b9cb2d3c",
+        "llm_prompt": "Gossamer robes shimmering with faint magic",
+        "llm_description": "",
+        "drop_rate": 20
+      }
+    ],
+    "boots": [
+      {
+        "name": "Traveler's Boots",
+        "attack": 0,
+        "defense": 1,
+        "speed": 2,
+        "UUID": "01234567-89ab-4cde-f012-3456789abcdef",
+        "llm_prompt": "Worn leather boots designed for long journeys",
+        "llm_description": "",
+        "drop_rate": 90
+      },
+      {
+        "name": "Heavy Boots",
+        "attack": 0,
+        "defense": 2,
+        "speed": -1,
+        "UUID": "12345678-9abc-4def-0123-456789abcdef",
+        "llm_prompt": "Reinforced boots with metal plating that weigh the wearer down",
+        "llm_description": "",
+        "drop_rate": 45
+      },
+      {
+        "name": "Silent Slippers",
+        "attack": 1,
+        "defense": 0,
+        "speed": 3,
+        "UUID": "23456789-abcd-4efa-1234-56789abcdef0",
+        "llm_prompt": "Soft slippers that muffle every footstep",
+        "llm_description": "",
+        "drop_rate": 25
+      }
+    ],
+    "helmets": [
+      {
+        "name": "Iron Helmet",
+        "attack": 0,
+        "defense": 3,
+        "speed": 0,
+        "UUID": "3456789a-bcde-4fab-2345-6789abcdef01",
+        "llm_prompt": "A convex iron helmet with riveted plates",
+        "llm_description": "",
+        "drop_rate": 60
+      },
+      {
+        "name": "Hood of Insight",
+        "attack": 1,
+        "defense": 1,
+        "speed": 1,
+        "UUID": "456789ab-cdef-4abc-3456-789abcdef012",
+        "llm_prompt": "A fabric hood lined with mystical sigils",
+        "llm_description": "",
+        "drop_rate": 35
+      },
+      {
+        "name": "Bone Crown",
+        "attack": 5,
+        "defense": 5,
+        "speed": 5,
+        "UUID": "56789abc-def0-4bcd-4567-89abcdef0123",
+        "llm_prompt": "A crown woven from animal bones and marrow",
+        "llm_description": "",
+        "drop_rate": 5
+      }
+    ],
+    "rings": [
+      {
+        "name": "Ring of Strength",
+        "attack": 2,
+        "defense": 0,
+        "speed": 0,
+        "UUID": "6789abcd-ef01-4cde-5678-9abcdef01234",
+        "llm_prompt": "A heavy ring that pulses with raw power",
+        "llm_description": "",
+        "drop_rate": 30
+      },
+      {
+        "name": "Ring of Defense",
+        "attack": 0,
+        "defense": 2,
+        "speed": 0,
+        "UUID": "789abcde-f012-4def-6789-abcdef012345",
+        "llm_prompt": "A stout ring engraved with protective wards",
+        "llm_description": "",
+        "drop_rate": 30
+      },
+      {
+        "name": "Ring of Swiftness",
+        "attack": 0,
+        "defense": 0,
+        "speed": 2,
+        "UUID": "89abcdef-0123-4ef0-789a-bcdef0123456",
+        "llm_prompt": "A slender ring that quickens the wearer's movements",
+        "llm_description": "",
+        "drop_rate": 25
+      }
+    ],
+    "aid": [
+      {
+        "name": "Health Potion",
+        "health": 5,
+        "UUID": "9abcdef0-1234-4f01-89ab-cdef01234567",
+        "llm_prompt": "A swirling red potion in a small glass vial",
+        "llm_description": "",
+        "drop_rate": 90
+      },
+      {
+        "name": "Big Potion",
+        "health": 20,
+        "UUID": "abcdef01-2345-4f12-90ab-cdef01234567",
+        "llm_prompt": "A luminous blue potion crackling with arcane energy",
+        "llm_description": "",
+        "drop_rate": 50
+      },
+      {
+        "name": "Mountain Dew",
+        "health": 50,
+        "UUID": "bcdef012-3456-4f23-01ab-cdef01234567",
+        "llm_prompt": "A vibrant green elixir that invigorates the body",
+        "llm_description": "",
+        "drop_rate": 1
+      }
+    ]
+  },
+  "map": {
+    "R1_1": {
+      "room_id": "R1_1",
+      "region": "Region1",
+      "neighbors": [
+        "R1_2",
+        "R1_3"
+      ],
+      "llm_prompt": "Moonlit clearing under twisted oak trees",
+      "llm_description": "",
+      "name": "Twisted Oak Clearing"
+    },
+    "R1_2": {
+      "room_id": "R1_2",
+      "region": "Region1",
+      "neighbors": [
+        "R1_1",
+        "R1_4"
+      ],
+      "llm_prompt": "Fog-choked path between skeletal birches",
+      "llm_description": "",
+      "name": "Skeletal Birch Path"
+    },
+    "R1_3": {
+      "room_id": "R1_3",
+      "region": "Region1",
+      "neighbors": [
+        "R1_1",
+        "R1_5"
+      ],
+      "llm_prompt": "Shadowy grove with unseen whispering voices",
+      "llm_description": "",
+      "name": "Whispering Shadow Grove"
+    },
+    "R1_4": {
+      "room_id": "R1_4",
+      "region": "Region1",
+      "neighbors": [
+        "R1_2",
+        "R1_5"
+      ],
+      "llm_prompt": "Mossy glade illuminated by flickering fireflies",
+      "llm_description": "",
+      "name": "Firefly Moss Glade"
+    },
+    "R1_5": {
+      "room_id": "R1_5",
+      "region": "Region1",
+      "neighbors": [
+        "R1_3",
+        "R1_4",
+        "R2_1"
+      ],
+      "llm_prompt": "Ancient stone circle overgrown with vines",
+      "llm_description": "",
+      "name": "Vine-Overgrown Stone Circle"
+    },
+    "R2_1": {
+      "room_id": "R2_1",
+      "region": "Region2",
+      "neighbors": [
+        "R2_2",
+        "R2_3",
+        "R1_5"
+      ],
+      "llm_prompt": "Weather-beaten cabin porch creaking in the wind",
+      "llm_description": "",
+      "name": "Creaking Cabin Porch"
+    },
+    "R2_2": {
+      "room_id": "R2_2",
+      "region": "Region2",
+      "neighbors": [
+        "R2_1",
+        "R2_4"
+      ],
+      "llm_prompt": "Dusty living room with a broken rocking chair",
+      "llm_description": "",
+      "name": "Broken Rocking Chair Room"
+    },
+    "R2_3": {
+      "room_id": "R2_3",
+      "region": "Region2",
+      "neighbors": [
+        "R2_1",
+        "R2_5"
+      ],
+      "llm_prompt": "Old kitchen strewn with rusted utensils and cobwebs",
+      "llm_description": "",
+      "name": "Rusty Cobweb Kitchen"
+    },
+    "R2_4": {
+      "room_id": "R2_4",
+      "region": "Region2",
+      "neighbors": [
+        "R2_2",
+        "R2_5"
+      ],
+      "llm_prompt": "Damp cellar lined with decaying wooden barrels",
+      "llm_description": "",
+      "name": "Decaying Barrel Cellar"
+    },
+    "R2_5": {
+      "room_id": "R2_5",
+      "region": "Region2",
+      "neighbors": [
+        "R2_3",
+        "R2_4",
+        "R3_1"
+      ],
+      "llm_prompt": "Lofty attic filled with tattered curtains and secrets",
+      "llm_description": "",
+      "name": "Tattered Curtains Attic"
+    },
+    "R3_1": {
+      "room_id": "R3_1",
+      "region": "Region3",
+      "neighbors": [
+        "R3_2",
+        "R3_3",
+        "R2_5"
+      ],
+      "llm_prompt": "Thunderous waterfall crashing into a misty pool",
+      "llm_description": "",
+      "name": "Misty Pool Waterfall"
+    },
+    "R3_2": {
+      "room_id": "R3_2",
+      "region": "Region3",
+      "neighbors": [
+        "R3_1",
+        "R3_4"
+      ],
+      "llm_prompt": "Slippery ledge overlooking the churning river below",
+      "llm_description": "",
+      "name": "Slippery River Ledge"
+    },
+    "R3_3": {
+      "room_id": "R3_3",
+      "region": "Region3",
+      "neighbors": [
+        "R3_1",
+        "R3_5"
+      ],
+      "llm_prompt": "Hidden cave entrance carved into wet stone",
+      "llm_description": "",
+      "name": "Wet Stone Cave Entrance"
+    },
+    "R3_4": {
+      "room_id": "R3_4",
+      "region": "Region3",
+      "neighbors": [
+        "R3_2",
+        "R3_5"
+      ],
+      "llm_prompt": "Sunlit alcove where the river slows to a calm stretch",
+      "llm_description": "",
+      "name": "Calm River Alcove"
+    },
+    "R3_5": {
+      "room_id": "R3_5",
+      "region": "Region3",
+      "neighbors": [
+        "R3_3",
+        "R3_4"
+      ],
+      "llm_prompt": "Echoing chamber deep inside the river cave",
+      "llm_description": "",
+      "name": "River Cave Echo Chamber"
+    }
+  },
+  "enemies": [
+    {
+      "name": "Goblin Grunt",
+      "stats": {
+        "attack": 3,
+        "defense": 2,
+        "speed": 5
+      },
+      "UUID": "e4a1f6b2-7c3d-4fa1-a9b8-1234567890ab",
+      "llm_prompt": "A snarling goblin foot soldier clutching a crude wooden club",
+      "llm_description": "",
+      "encounter_rate": 85
+    },
+    {
+      "name": "Dark Mage",
+      "stats": {
+        "attack": 6,
+        "defense": 1,
+        "speed": 4
+      },
+      "UUID": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+      "llm_prompt": "A hooded sorcerer crackling with forbidden arcane power",
+      "llm_description": "",
+      "encounter_rate": 10
+    },
+    {
+      "name": "Zombie",
+      "stats": {
+        "attack": 2,
+        "defense": 5,
+        "speed": 1
+      },
+      "UUID": "b7c6d5e4-f3a2-1b0c-9d8e-7f6a5b4c3d2e",
+      "llm_prompt": "A decaying corpse shambling forward with empty eyes",
+      "llm_description": "",
+      "encounter_rate": 70
+    },
+    {
+      "name": "Skeleton Archer",
+      "stats": {
+        "attack": 4,
+        "defense": 2,
+        "speed": 6
+      },
+      "UUID": "c3d2e1f0-a9b8-7c6d-5e4f-3a2b1c0d9e8f",
+      "llm_prompt": "A bony archer aiming an ancient, cracked bow",
+      "llm_description": "",
+      "encounter_rate": 60
+    },
+    {
+      "name": "Orc Warrior",
+      "stats": {
+        "attack": 7,
+        "defense": 4,
+        "speed": 2
+      },
+      "UUID": "d9e8f7a6-b5c4-3d2e-1f0a-9b8c7d6e5f4a",
+      "llm_prompt": "A hulking orc swinging a heavy spiked axe",
+      "llm_description": "",
+      "encounter_rate": 50
+    },
+    {
+      "name": "Shadow Assassin",
+      "stats": {
+        "attack": 5,
+        "defense": 1,
+        "speed": 7
+      },
+      "UUID": "e0f1a2b3-c4d5-6e7f-8a9b-0c1d2e3f4a5b",
+      "llm_prompt": "A lithe figure cloaked in darkness, blades glinting",
+      "llm_description": "",
+      "encounter_rate": 15
+    },
+    {
+      "name": "Fire Imp",
+      "stats": {
+        "attack": 4,
+        "defense": 1,
+        "speed": 5
+      },
+      "UUID": "f1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+      "llm_prompt": "A mischievous imp wreathed in flickering flames",
+      "llm_description": "",
+      "encounter_rate": 40
+    },
+    {
+      "name": "Ice Golem",
+      "stats": {
+        "attack": 3,
+        "defense": 7,
+        "speed": 1
+      },
+      "UUID": "a2b3c4d5-e6f7-8a9b-0c1d-2e3f4a5b6c7d",
+      "llm_prompt": "A towering golem carved from solid ice",
+      "llm_description": "",
+      "encounter_rate": 20
+    },
+    {
+      "name": "Vampire",
+      "stats": {
+        "attack": 6,
+        "defense": 3,
+        "speed": 4
+      },
+      "UUID": "b3c4d5e6-f7a8-9b0c-1d2e-3f4a5b6c7d8e",
+      "llm_prompt": "A pale noble with fanged grin and crimson eyes",
+      "llm_description": "",
+      "encounter_rate": 25
+    },
+    {
+      "name": "Werewolf",
+      "stats": {
+        "attack": 7,
+        "defense": 5,
+        "speed": 3
+      },
+      "UUID": "c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f",
+      "llm_prompt": "A feral beast howling under the full moon",
+      "llm_description": "",
+      "encounter_rate": 30
+    },
+    {
+      "name": "Troll Brute",
+      "stats": {
+        "attack": 5,
+        "defense": 6,
+        "speed": 2
+      },
+      "UUID": "d5e6f7a8-b9c0-1d2e-3f4a-5b6c7d8e9f0a",
+      "llm_prompt": "A massive troll wielding a jagged club",
+      "llm_description": "",
+      "encounter_rate": 35
+    },
+    {
+      "name": "Banshee",
+      "stats": {
+        "attack": 4,
+        "defense": 1,
+        "speed": 7
+      },
+      "UUID": "e6f7a8b9-c0d1-2e3f-4a5b-6c7d8e9f0a1b",
+      "llm_prompt": "An ethereal spirit shrieking with otherworldly grief",
+      "llm_description": "",
+      "encounter_rate": 18
+    },
+    {
+      "name": "Dark Knight",
+      "stats": {
+        "attack": 6,
+        "defense": 6,
+        "speed": 2
+      },
+      "UUID": "f7a8b9c0-d1e2-3f4a-5b6c-7d8e9f0a1b2c",
+      "llm_prompt": "An armored warrior radiating malevolent power",
+      "llm_description": "",
+      "encounter_rate": 5
+    },
+    {
+      "name": "Poisonous Spider",
+      "stats": {
+        "attack": 3,
+        "defense": 2,
+        "speed": 6
+      },
+      "UUID": "a8b9c0d1-e2f3-4a5b-6c7d-8e9f0a1b2c3d",
+      "llm_prompt": "A large arachnid with dripping venom sacs",
+      "llm_description": "",
+      "encounter_rate": 55
+    },
+    {
+      "name": "Bone Golem",
+      "stats": {
+        "attack": 5,
+        "defense": 7,
+        "speed": 1
+      },
+      "UUID": "b9c0d1e2-f3a4-5b6c-7d8e-9f0a1b2c3d4e",
+      "llm_prompt": "A hulking construct bound by necrotic energy",
+      "llm_description": "",
+      "encounter_rate": 12
+    }
+  ]
+}

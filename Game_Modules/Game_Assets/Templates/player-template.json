@@ -9,5 +9,12 @@
     },
     "level": 1,
     "xp": 0,
-    "current_map_location": ""
+    "current_map_location": "",
+    "Equipped": {
+        "weapon": "",
+        "armor": "",
+        "boots": "",
+        "ring": "",
+        "helmet": ""
+    }
 }

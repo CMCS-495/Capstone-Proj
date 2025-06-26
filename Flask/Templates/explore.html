@@ -18,10 +18,12 @@
       <div>Potions: {{ session.potions }}</div>
     </div>
 
-    <p><strong>Gear:</strong>
-      {% for slot, itm in gear.items() %}
-        {{ slot|capitalize }}: {{ itm.name if itm else 'None' }}&nbsp;&nbsp;
-      {% endfor %}
+    <p><strong>Inventory:</strong>
+      {% if inventory %}
+        {{ inventory|map(attribute='name')|join(', ') }}
+      {% else %}
+        None
+      {% endif %}
     </p>
     <p><strong>Artifacts:</strong>
       {{ artifacts|join(', ') if artifacts else 'None' }}
@@ -31,6 +33,7 @@
     <p>{{ response|safe }}</p>
 
     <form method="post">
+      <!-- Combat or exploration buttons -->
       {% if enemy %}
         <button name="command" value="fight">Fight {{ enemy.name }}</button>
         <button name="command" value="run">Run Away</button>
@@ -43,6 +46,9 @@
         <button name="command" value="search">Search Room</button>
         <button name="command" value="inventory">Inventory</button>
       {% endif %}
+
+      <!-- Launch Save-As dialog -->
+      <a class="button" href="{{ url_for('save_as') }}">💾 Save As…</a>
     </form>
 
     <p><a href="{{ url_for('menu') }}">Back to Menu</a></p>
