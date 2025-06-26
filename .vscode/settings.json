@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Game_Modules"
+    ]
+}
