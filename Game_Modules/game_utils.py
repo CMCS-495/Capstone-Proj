@@ -1,12 +1,34 @@
 from Game_Modules.import_assets import gear, enemies, game_map
+from Game_Modules.import_assets import inventory as INVENTORY_POOL
+from Game_Modules.import_assets import gear as GEAR_POOL
+from Game_Modules.import_assets import gear as RAW_GEAR
 from Game_Modules.map           import DungeonMap
 from Game_Modules.entities      import Player
 import random
 
 # initialize shared assets once
 dungeon_map = DungeonMap(game_map)
-GEAR_POOL   = gear.get('weapons', []) + gear.get('armor', []) + gear.get('boots', []) + gear.get('helmets', []) + gear.get('rings', []) + gear.get('aid', [])
-ENEMIES     = enemies
+
+# map each gear-category to the slot name your equip logic expects
+SLOT_MAP = {
+    'weapons': 'weapon',
+    'armor':   'armor',
+    'boots':   'boots',
+    'helmets': 'helmet',
+    'rings':   'ring',
+    'aid':     'aid',
+}
+
+# flatten RAW_GEAR into a list, injecting a 'type' field
+GEAR_POOL = []
+for category, items in RAW_GEAR.items():
+    slot = SLOT_MAP.get(category, category)
+    for item in items:
+        itm = item.copy()
+        itm['type'] = slot
+        GEAR_POOL.append(itm)
+
+ENEMIES = enemies
 
 def rebuild_player(session, player_template):
     """Reconstruct a Player object from session state + equipped gear."""
@@ -31,13 +53,16 @@ def get_room_name(room_id):
     return info.get('name', room_id)
 
 def move_player(session, tgt_room, spawn_chance=0.6):
-    """Attempt to move. Updates session and returns a message."""
-    current = session['room_id']
+    """
+    Attempt to move. Updates session and returns a message.
+    Also resets the per-visit search flag so you can search again in the new room.
+    """
+    # Ensure we have a 'remaining' list
+    session.setdefault('remaining', [e['name'] for e in ENEMIES])
 
-    # same-room?
+    current = session.get('room_id')
     if tgt_room == current:
         return "You're already here."
-    # invalid exit?
     if not dungeon_map.is_valid_move(current, tgt_room):
         return "Can't go that way."
 
@@ -45,48 +70,64 @@ def move_player(session, tgt_room, spawn_chance=0.6):
     session['room_id'] = tgt_room
     session.pop('encounter', None)
     session.pop('enemy', None)
+    session['searched'] = False
 
     # maybe spawn an enemy
-    if session['remaining'] and random.random() < spawn_chance:
-        return _extracted_from_move_player_19(session)
-    # no enemy
+    if session.get('remaining') and random.random() < spawn_chance:
+        choice = random.choice(session['remaining'])
+        e = next(x for x in ENEMIES if x.get('name') == choice).copy()
+        lvl = e.get('level', 1)
+        e['level']       = lvl
+        e['max_hp']      = 15 + (lvl - 1) * 5
+        e['current_hp']  = e['max_hp']
+        session['enemy']     = e['name']
+        session['encounter'] = e
+
+        desc = e.get('description', '')
+        return f"<b>Enemy:</b> {e['name']} — {desc}"
+
     return f"You enter {get_room_name(tgt_room)}. It's quiet."
 
 
-# TODO Rename this here and in `move_player`
-def _extracted_from_move_player_19(session):
-    choice = random.choice(session['remaining'])
-    e = next(x for x in ENEMIES if x.get('name') == choice).copy()
-    lvl = e.get('level', 1)
-    e['level'] = lvl
-    e['max_hp']     = 15 + (lvl - 1) * 5
-    e['current_hp'] = e['max_hp']
-    session['enemy']     = e['name']
-    session['encounter'] = e
-
-    desc = e.get('description', '')  # default to empty if missing
-    return f"<b>Enemy:</b> {e['name']} — {desc}"
-
-
 def search_room(session, search_chance=0.5):
-    """Attempt a search. Updates session['bag'] and session['searched_rooms'], returns message."""
-    room = session['room_id']
+    """
+    Attempt a search. You can only search once per visit (resets on move).
+    If search succeeds, pick one gear item weighted by its drop_rate.
+    """
+    # can’t search in combat
     if 'encounter' in session:
         return "An enemy blocks your search!"
-    if room in session['searched_rooms']:
-        return "You already searched here."
-    session['searched_rooms'].append(room)
 
-    # success?
-    if random.random() < search_chance and len(session['bag']) < 3:
-        available = [g for g in GEAR_POOL
-                     if g['type'] not in {i['type'] for i in session['bag']}]
-        if not available:
-            return "No more gear left."
-        item = random.choice(available)
-        session['bag'].append(item)
-        return f"Found gear: {item['name']}"
-    return "Nothing found."
+    # only once per visit
+    if session.get('searched', False):
+        return "You already searched here."
+
+    # mark as searched for this visit
+    session['searched'] = True
+
+    # overall chance to find anything
+    if random.random() >= search_chance:
+        return "Nothing found."
+
+    # build weights from drop_rate (0–100)
+    items = GEAR_POOL
+    weights = [item.get('drop_rate', 0) for item in items]
+    # if all weights zero, bail
+    if sum(weights) == 0:
+        return "Nothing found."
+    # pick one
+    found = random.choices(items, weights=weights, k=1)[0].copy()
+
+    # compute how many the player already has
+    inv = session.setdefault('inventory', [])
+    name = found.get('name', 'Unknown')
+    count = sum(1 for i in inv if i.get('name') == name)
+
+    # annotate and store
+    found['player_has'] = count + 1
+    inv.append(found)
+
+    return f"Found gear: {name} (you now have {found['player_has']})"
 
 def process_explore_command(cmd, session,
                             player_template,

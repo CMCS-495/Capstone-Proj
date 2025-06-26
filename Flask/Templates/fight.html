@@ -26,6 +26,9 @@
           <button name="action" value="potion">Use Potion</button>
         {% endif %}
         <button name="action" value="run">Run</button>
+        
+        <!-- Launch Save-As dialog -->
+        <a class="button" href="{{ url_for('save_as') }}">💾 Save As…</a>
       </form>
     {% elif outcome == 'defeat' %}
       <h2>Game Over</h2>
