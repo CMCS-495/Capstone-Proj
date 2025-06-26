@@ -1,49 +1,53 @@
 import os
 import json
 
-BASE_DIR = os.path.dirname(__file__)
-NEW_ASSETS_DIR = os.path.join(BASE_DIR, 'Game_Assets')
-SAVED_ASSETS_DIR = os.path.join(BASE_DIR, 'saved_game_assets')
-TEMPLATES_SUBFOLDER = 'templates'
+# Base directories
+MODULE_DIR   = os.path.dirname(__file__)
+ASSETS_DIR   = os.path.join(MODULE_DIR, 'Game_Assets')
+PROJECT_ROOT = os.path.abspath(os.path.join(MODULE_DIR, '..'))
 
-def load_json_file(path):
-    with open(path, 'r') as f:
-        return json.load(f)
+def load_json_file(filename):
+    """Search recursively under ASSETS_DIR, then fallback to MODULE_DIR and PROJECT_ROOT."""
+    # 1) Recursive search in Game_Assets
+    if os.path.isdir(ASSETS_DIR):
+        for root, dirs, files in os.walk(ASSETS_DIR):
+            if filename in files:
+                path = os.path.join(root, filename)
+                with open(path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+    # 2) Top-level fallback
+    for base in (MODULE_DIR, PROJECT_ROOT):
+        path = os.path.join(base, filename)
+        if os.path.isfile(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    raise FileNotFoundError(f"Asset file '{filename}' not found under {ASSETS_DIR} or fallback dirs")
 
-def import_assets(source='new'):
-    """
-    Load assets from either the new game assets or saved game assets.
-    source: 'new' for fresh assets, 'saved' for loaded game assets.
-    """
-    if source == 'new':
-        assets_dir = NEW_ASSETS_DIR
-    elif source == 'saved':
-        assets_dir = SAVED_ASSETS_DIR
-    else:
-        raise ValueError("source must be 'new' or 'saved'")
+# Load raw JSON data
+_raw_inventory       = load_json_file('inventory.json')
+_raw_gear            = load_json_file('gear.json')
+_raw_game_map        = load_json_file('map.json')
+_raw_enemies         = load_json_file('enemies.json')
+_raw_player_template = load_json_file('player-template.json')
 
-    templates_dir = os.path.join(assets_dir, TEMPLATES_SUBFOLDER)
+# Process assets
+inventory       = _raw_inventory
+gear            = _raw_gear
 
-    inventory = load_json_file(os.path.join(assets_dir, 'inventory.json'))
-    gear = load_json_file(os.path.join(assets_dir, 'gear.json'))
-    game_map = load_json_file(os.path.join(assets_dir, 'map.json'))
-    enemies = load_json_file(os.path.join(assets_dir, 'enemies.json'))
-    player_template = load_json_file(os.path.join(templates_dir, 'player-template.json'))
+# Convert game_map list into dict by room id for easier lookup
+try:
+    game_map = { room['room_id']: room for room in _raw_game_map }
+except (TypeError, KeyError):
+    # If already a dict or malformed, leave as is
+    game_map = _raw_game_map
 
-    return {
-        'inventory': inventory,
-        'gear': gear,
-        'game_map': game_map,
-        'enemies': enemies,
-        'player_template': player_template,
-    }
+enemies         = _raw_enemies
+player_template = _raw_player_template
 
-# Default: load new game assets
-assets = import_assets('new')
-inventory = assets['inventory']
-gear = assets['gear']
-game_map = assets['game_map']
-enemies = assets['enemies']
-player_template = assets['player_template']
-
-__all__ = ['import_assets', 'inventory', 'gear', 'game_map', 'enemies', 'player_template']
+__all__ = [
+    'inventory',
+    'gear',
+    'game_map',
+    'enemies',
+    'player_template'
+]
