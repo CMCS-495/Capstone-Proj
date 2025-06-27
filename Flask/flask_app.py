@@ -2,8 +2,7 @@ from flask import (
     Flask, render_template, request,
     redirect, session, url_for, send_file
 )
-import os, sys, io, glob, time, zipfile, json
-from Game_Modules.import_assets import player_template
+import os, sys, io, time, zipfile, json
 
 # ensure Game_Modules package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -35,16 +34,25 @@ def menu():
 
 @app.route('/start', methods=['POST'])
 def start_game():
+    # Clear any old session
     session.clear()
+
+    # Grab the name the user entered; if they submitted nothing, fall back to the template default
+    player_name = request.form.get('name', '').strip()
+    if not player_name:
+        player_name = player_template.get('name', 'Adventurer')
+
     session.update({
-        'player_name':    player_template.get('name', request.form['name']),
-        'room_id':        player_template.get('start_room', 'R1_1'),
-        'level':          player_template.get('level', 1),
-        'xp':             player_template.get('xp', 0),
-        'hp':             player_template.get('hp', 10),
-        'artifacts':      [],
-        'equipped':       {'weapon': None, 'shield': None, 'armor': None},
-        'bag':            [],
+        'player_name': player_name,
+        'room_id':      player_template.get('start_room', 'R1_1'),
+        'level':        player_template.get('level', 1),
+        'xp':           player_template.get('xp', 0),
+        'hp':           player_template.get('hp', 10),
+        'equipped':     {
+            'weapon': None, 'shield': None, 'armor': None,
+            'boots':  None, 'ring':   None, 'helmet': None
+        },
+        'inventory':    []
     })
     return redirect(url_for('explore'))
 
@@ -146,46 +154,73 @@ def load_route():
     return redirect(url_for('explore'))
 
 # ----- EXPLORE -----
-@app.route('/explore', methods=['GET', 'POST'])
+@app.route('/explore', methods=['GET','POST'])
 def explore():
+    # 1) Ensure in-game
     if 'player_name' not in session:
         return redirect(url_for('menu'))
 
-    # Rebuild the Player object
-    player = rebuild_player(session, player_template)
-
+    # 2) Handle any POSTed command
     if request.method == 'POST':
-        cmd = request.form['command'].strip().lower()
+        cmd = request.form.get('command','').strip().lower()
         action, endpoint, msg = process_explore_command(cmd, session, player_template)
         if msg:
             session['last_msg'] = msg
-        if action in ('fight', 'redirect'):
+        if action == 'redirect' and endpoint:
             return redirect(url_for(endpoint))
+        if action == 'fight':
+            return redirect(url_for('fight'))
+        return redirect(url_for('explore'))
 
-    last_msg  = session.pop('last_msg', None)
-    room_id   = session['room_id']
+    # 3) Rebuild Player stats
+    base   = player_template['stats']
+    eq     = session.get('equipped', {})
+    bonus  = {
+        'attack':  sum(i.get('attack',0)  for i in eq.values() if i),
+        'defense': sum(i.get('defense',0) for i in eq.values() if i),
+        'speed':   sum(i.get('speed',0)   for i in eq.values() if i),
+    }
+    from Game_Modules.entities import Player
+    player = Player(
+        session['player_name'],
+        base.get('attack',1)  + bonus['attack'],
+        base.get('defense',1) + bonus['defense'],
+        base.get('speed',1)   + bonus['speed'],
+        session.get('level',1),
+        session.get('xp',0)
+    )
+    player.hp = session.get('hp', player.hp)
+
+    # 4) Lazy-generate room description
+    room_id = session['room_id']
     room    = game_map[room_id]
-    neighbors = dungeon_map.get_neighbors(room_id)
-
-    # lazy-generate room description
     if not room.get('llm_description'):
-        ctx = {
-            'prompt':    room.get('llm_prompt',''),
-            'neighbors': room.get('neighbors',[])
-        }
+        ctx = {'prompt':room.get('llm_prompt',''),
+               'neighbors':room.get('neighbors',[])}
         room['llm_description'] = llm_client.generate_description('room', ctx)
 
-    return render_template(
-        'explore.html',
-        room_name = get_room_name(room_id),
+    # 5) Build neighbor list & names map
+    neighbors = dungeon_map.get_neighbors(room_id)
+    ROOM_NAMES = {rid: r.get('name',rid) for rid,r in game_map.items()}
+
+    # 6) Pull a one-time message and potion count
+    response = session.pop('last_msg','')
+    potions  = len([i for i in session.get('inventory',[]) if i.get('type')=='aid'])
+
+    # 7) Render with **xp** and **player.name** guaranteed in context
+    return render_template('explore.html',
+        player_name      = session['player_name'],
+        player           = player,
+        xp               = session.get('xp', 0),
+        room_name        = room.get('name', room_id),
         room_description = room['llm_description'],
-        player    = player,
-        enemy     = session.get('encounter'),
-        response  = last_msg,
-        neighbors = neighbors,
-        gear      = session['equipped'],
-        artifacts = session['artifacts'],
-        ROOM_NAMES=ROOM_NAMES
+        gear             = eq,
+        artifacts        = session.get('artifacts', []),
+        neighbors        = neighbors,
+        enemy            = session.get('encounter'),
+        response         = response,
+        potions          = potions,
+        ROOM_NAMES       = ROOM_NAMES
     )
 
 # ----- FIGHT -----
@@ -380,6 +415,9 @@ def inventory_route():
         equipped = eq
     )
 
+@app.route('/loading')
+def loading():
+    return render_template('loading.html'), 202
 
 if __name__ == '__main__':
     app.run(debug=True)
