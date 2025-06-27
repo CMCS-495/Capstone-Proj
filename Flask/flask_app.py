@@ -8,6 +8,7 @@ import os, sys, io, glob, time, zipfile, json
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Game_Modules.import_assets import inventory, gear, game_map, enemies, player_template
+from Game_Modules import llm_client
 from Game_Modules.save_load   import save_game
 from Game_Modules.export_assets import SAVE_ROOT
 from Game_Modules.entities import Player, Enemy
@@ -161,11 +162,21 @@ def explore():
 
     last_msg  = session.pop('last_msg', None)
     room_id   = session['room_id']
+    room    = game_map[room_id]
     neighbors = dungeon_map.get_neighbors(room_id)
+
+    # lazy-generate room description
+    if not room.get('llm_description'):
+        ctx = {
+            'prompt':    room.get('llm_prompt',''),
+            'neighbors': room.get('neighbors',[])
+        }
+        room['llm_description'] = llm_client.generate_description('room', ctx)
 
     return render_template(
         'explore.html',
         room_name = get_room_name(room_id),
+        room_description = room['llm_description'],
         player    = player,
         enemy     = session.get('encounter'),
         response  = last_msg,

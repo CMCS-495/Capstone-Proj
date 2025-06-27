@@ -3,6 +3,7 @@ from Game_Modules.import_assets import inventory as INVENTORY_POOL
 from Game_Modules.import_assets import gear as GEAR_POOL
 from Game_Modules.import_assets import gear as RAW_GEAR
 from Game_Modules.import_assets import enemies as RAW_ENEMIES
+from Game_Modules               import llm_client
 from Game_Modules.map           import DungeonMap
 from Game_Modules.entities      import Player
 import random
@@ -91,8 +92,12 @@ def move_player(session, tgt_room, spawn_chance=0.6):
         session['enemy']     = e['name']
         session['encounter'] = e
 
-        desc = e.get('description', '')
-        return f"<b>Enemy:</b> {e['name']} — {desc}"
+        # lazy-generate
+        if not e.get('llm_description'):
+            ctx = {'name': e['name'], 'level': e.get('level',1)}
+            e['llm_description'] = llm_client.generate_description('enemy', ctx)
+
+        return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
 
     # No spawn
     return f"You enter {get_room_name(tgt_room)}. It's quiet."
@@ -125,6 +130,15 @@ def search_room(session, search_chance=0.5):
         return "Nothing found."
     # pick one
     found = random.choices(items, weights=weights, k=1)[0].copy()
+
+    # lazy-generate
+    if not found.get('llm_description'):
+        ctx = {
+            'name':  found.get('name',''),
+            'stats': {k:v for k,v in found.items()
+                      if k not in ('name','type','drop_rate')}
+        }
+        found['llm_description'] = llm_client.generate_description('gear', ctx)
 
     # compute how many the player already has
     inv = session.setdefault('inventory', [])
