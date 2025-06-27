@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading… please wait.</p>
+  </div>
   <div class="container">
     <h1>{{ room_name }}</h1>
 
@@ -15,11 +19,12 @@
     {% endif %}
 
     <div class="stats">
-      <div>{{ player.name }} (Lvl {{ player.level }})</div>
+      <div>{{ player.name }} - Lvl {{ player.level }}</div>
       <div>HP: {{ player.hp }}</div>
       <div>ATK: {{ player.attack }}</div>
       <div>DEF: {{ player.defense }}</div>
       <div>SPD: {{ player.speed }}</div>
+      <div>XP: {{ xp }}</div>
     </div>
 
     <hr>
@@ -48,5 +53,24 @@
 
     <p><a href="{{ url_for('menu') }}">Back to Main Menu</a></p>
   </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('loading-overlay');
+  // Show overlay
+  const show = () => overlay.style.display = 'flex';
+
+  // Any form submit…
+  document.querySelectorAll('form').forEach(f => {
+    f.addEventListener('submit', show);
+  });
+  // Any internal link click…
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if(href.startsWith('/') && !href.startsWith('//')) {
+      a.addEventListener('click', show);
+    }
+  });
+});
+</script>
 </body>
 </html>

@@ -112,5 +112,24 @@
       <a class="button" href="{{ url_for('explore') }}">← Back to Game</a>
     </p>
   </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('loading-overlay');
+    // Show overlay
+    const show = () => overlay.style.display = 'flex';
+
+    // Any form submit…
+    document.querySelectorAll('form').forEach(f => {
+      f.addEventListener('submit', show);
+    });
+    // Any internal link click…
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      if(href.startsWith('/') && !href.startsWith('//')) {
+        a.addEventListener('click', show);
+      }
+    });
+  });
+  </script>
 </body>
 </html>

@@ -1,26 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Dungeon Crawler</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Dungeon Crawler</h1>
-    <p>Welcome, brave adventurer!</p>
-    <ol style="text-align:left;">
-      <li>Collect gear!</li>
-      <li>Fight!</li>
-      <li>Can you find the end of the dungeon?</li>
-    </ol>
-    <form method="post" action="{{ url_for('start_game') }}">
-      <label>
-        Enter your name:
-        <input type="text" name="name" required style="font-family:inherit;">
-      </label>
-      <button type="submit">Begin Adventure</button>
-    </form>
-  </div>
-</body>
-</html>
+{# templates/menu.html #}
+{% extends 'base.html' %}
+
+{% block title %}Main Menu{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Dungeon Crawler</h1>
+  <p>Welcome, brave adventurer!</p>
+  <ol style="text-align:left;">
+    <li>Collect gear!</li>
+    <li>Fight!</li>
+    <li>Can you find the end of the dungeon?</li>
+  </ol>
+  <form method="post" action="{{ url_for('start_game') }}">
+    <label>
+      Enter your name:
+      <input type="text" name="name" required style="font-family:inherit;">
+    </label>
+    <button type="submit">Begin Adventure</button>
+  </form>
+</div>
+{% endblock %}
