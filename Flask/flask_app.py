@@ -148,24 +148,19 @@ def save_as():
         default_name=default_name
     )
 
-@app.route('/load_save', methods=['GET', 'POST'])
+@app.route('/load_save', methods=['POST'])
 def load_save():
-    # Display form on GET, process upload on POST
-    if request.method == 'POST':
-        file = request.files.get('save_file')
-        if file and file.filename.endswith('.zip'):
-            # Clear out any existing session state
-            session.clear()
-            # load_game_from_zip should unpack into session
-            try:
-                save_load.load_game_from_zip(file.stream, session)
-                flash("Save loaded successfully.", "success")
-                return redirect(url_for('explore'))
-            except Exception as e:
-                flash(f"Failed to load save: {e}", "error")
-        else:
-            flash("Please upload a valid .zip save file.", "error")
-    return render_template('load_save.html')
+    file = request.files.get('save_file')
+    if not (file and file.filename.endswith('.zip')):
+        flash("Please upload a .zip save file.", "error")
+        return redirect(url_for('load_save'))
+    try:
+        save_load.load_game_from_zip(file.stream, session)
+        flash("Save loaded successfully.", "success")
+        return redirect(url_for('explore'))
+    except Exception as e:
+        flash(f"Failed to load save: {e}", "error")
+        return redirect(url_for('load_save'))
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
