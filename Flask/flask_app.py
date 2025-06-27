@@ -1,6 +1,6 @@
 from flask import (
     Flask, render_template, request,
-    redirect, session, url_for, send_file
+    redirect, session, url_for, send_file, flash
 )
 import os, sys, io, time, zipfile, json
 
@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from Game_Modules.import_assets import inventory, gear, game_map, enemies, player_template
 from Game_Modules import llm_client
 from Game_Modules.save_load   import save_game
+from Game_Modules import save_load
 from Game_Modules.export_assets import SAVE_ROOT
 from Game_Modules.entities import Player, Enemy
 from Game_Modules.combat import player_attack, enemy_attack
@@ -147,11 +148,37 @@ def save_as():
         default_name=default_name
     )
 
-@app.route('/load', methods=['POST'])
-def load_route():
-    if data := save_load.load_game():
-        session.update(data)
-    return redirect(url_for('explore'))
+@app.route('/load_save', methods=['GET', 'POST'])
+def load_save():
+    # Display form on GET, process upload on POST
+    if request.method == 'POST':
+        file = request.files.get('save_file')
+        if file and file.filename.endswith('.zip'):
+            # Clear out any existing session state
+            session.clear()
+            # load_game_from_zip should unpack into session
+            try:
+                save_load.load_game_from_zip(file.stream, session)
+                flash("Save loaded successfully.", "success")
+                return redirect(url_for('explore'))
+            except Exception as e:
+                flash(f"Failed to load save: {e}", "error")
+        else:
+            flash("Please upload a valid .zip save file.", "error")
+    return render_template('load_save.html')
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    # Simple stub: store e.g. "difficulty" in session
+    if request.method == 'POST':
+        diff = request.form.get('difficulty')
+        session['settings'] = session.get('settings', {})
+        session['settings']['difficulty'] = diff
+        flash(f"Difficulty set to {diff}", "success")
+        return redirect(url_for('menu'))
+    # On GET, show the form
+    current = session.get('settings', {}).get('difficulty', 'Normal')
+    return render_template('settings.html', current=current)
 
 # ----- EXPLORE -----
 @app.route('/explore', methods=['GET','POST'])

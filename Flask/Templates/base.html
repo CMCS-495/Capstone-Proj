@@ -40,28 +40,25 @@
 
   <!-- global script to show overlay on any action -->
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('loading-overlay');
-    const show = () => overlay.style.display = 'flex';
+    document.addEventListener('DOMContentLoaded', () => {
+      const overlay = document.getElementById('loading-overlay');
+      const show = () => overlay.style.display = 'flex';
 
-    // forms
-    document.querySelectorAll('form').forEach(f => {
-      f.addEventListener('submit', show);
-    });
+      document.querySelectorAll('form').forEach(f => {
+        // skip the save-as form
+        if (f.getAttribute('action') === "{{ url_for('save_as') }}") return;
+        f.addEventListener('submit', show);
+      });
 
-    // all buttons (in case menu uses <button> not inside a form)
-    document.querySelectorAll('button').forEach(b => {
-      b.addEventListener('click', show);
+      document.querySelectorAll('a[href]').forEach(a => {
+        const href = a.getAttribute('href');
+        // skip direct save-as links (if any)
+        if (href === "{{ url_for('save_as') }}") return;
+        if (href.startsWith('/') && !href.startsWith('//')) {
+          a.addEventListener('click', show);
+        }
+      });
     });
-
-    // internal links
-    document.querySelectorAll('a[href]').forEach(a => {
-      const href = a.getAttribute('href');
-      if (href.startsWith('/') && !href.startsWith('//')) {
-        a.addEventListener('click', show);
-      }
-    });
-  });
   </script>
 </body>
 </html>
