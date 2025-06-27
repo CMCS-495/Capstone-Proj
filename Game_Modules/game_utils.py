@@ -84,6 +84,18 @@ def move_player(session, tgt_room, spawn_chance=0.6):
 
         # Prepare the encounter copy
         e = chosen.copy()
+
+        # lazy-generate description and write it back to the master list
+        if not e.get('llm_description'):
+            ctx = {'name': e['name'], 'level': e.get('level',1)}
+            desc = llm_client.generate_description('enemy', ctx)
+            e['llm_description'] = desc
+            # persist into RAW_ENEMIES so your save will include it
+            for master in RAW_ENEMIES:
+                if master['name'] == e['name']:
+                    master['llm_description'] = desc
+                    break
+
         lvl = e.get('level', 1)
         e['level']       = lvl
         e['max_hp']      = 15 + (lvl - 1) * 5
@@ -91,11 +103,6 @@ def move_player(session, tgt_room, spawn_chance=0.6):
 
         session['enemy']     = e['name']
         session['encounter'] = e
-
-        # lazy-generate
-        if not e.get('llm_description'):
-            ctx = {'name': e['name'], 'level': e.get('level',1)}
-            e['llm_description'] = llm_client.generate_description('enemy', ctx)
 
         return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
 
@@ -118,38 +125,28 @@ def search_room(session, search_chance=0.5):
     # mark as searched for this visit
     session['searched'] = True
 
-    # overall chance to find anything
-    if random.random() >= search_chance:
-        return "Nothing found."
+    # Roll for a drop
+    if random.random() < search_chance:
+        # Pick and copy a gear item
+        found = random.choice(GEAR_POOL).copy()
 
-    # build weights from drop_rate (0–100)
-    items = GEAR_POOL
-    weights = [item.get('drop_rate', 0) for item in items]
-    # if all weights zero, bail
-    if sum(weights) == 0:
-        return "Nothing found."
-    # pick one
-    found = random.choices(items, weights=weights, k=1)[0].copy()
+        # Lazy‐generate a description
+        if not found.get('llm_description'):
+            ctx = {
+                'name':  found.get('name',''),
+                'stats': {k:v for k,v in found.items()
+                          if k not in ('name','type','drop_rate')}
+            }
+            found['llm_description'] = llm_client.generate_description('gear', ctx)
 
-    # lazy-generate
-    if not found.get('llm_description'):
-        ctx = {
-            'name':  found.get('name',''),
-            'stats': {k:v for k,v in found.items()
-                      if k not in ('name','type','drop_rate')}
-        }
-        found['llm_description'] = llm_client.generate_description('gear', ctx)
+        # Append to the player's inventory
+        inv = session.setdefault('inventory', [])
+        inv.append(found)
 
-    # compute how many the player already has
-    inv = session.setdefault('inventory', [])
-    name = found.get('name', 'Unknown')
-    count = sum(1 for i in inv if i.get('name') == name)
+        # Show name + description
+        return f"Found gear: <strong>{found['name']}</strong><br>{found['llm_description']}"
 
-    # annotate and store
-    found['player_has'] = count + 1
-    inv.append(found)
-
-    return f"Found gear: {name} (you now have {found['player_has']})"
+    return "Nothing found."
 
 def process_explore_command(cmd, session,
                             player_template,

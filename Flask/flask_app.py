@@ -3,6 +3,7 @@ from flask import (
     redirect, session, url_for, send_file
 )
 import os, sys, io, glob, time, zipfile, json
+from Game_Modules.import_assets import player_template
 
 # ensure Game_Modules package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -117,7 +118,8 @@ def save_as():
             z.writestr('player.json',    json.dumps(player_data, indent=2))
             z.writestr('enemies.json',   json.dumps(enemies,      indent=2))
             z.writestr('gear.json',      json.dumps(gear,         indent=2))
-            z.writestr('inventory.json', json.dumps(inventory,    indent=2))
+            player_inv = session.get('inventory', [])
+            z.writestr('inventory.json', json.dumps(player_inv,   indent=2))
             raw_map = list(game_map.values()) if isinstance(game_map, dict) else game_map
             z.writestr('map.json',       json.dumps(raw_map,     indent=2))
         buf.seek(0)
@@ -282,68 +284,100 @@ def fight():
 
 
 # ----- ARTIFACT -----
-@app.route('/artifact', methods=['GET', 'POST'])
+@app.route('/artifact')
 def artifact():
+    # Only called after win
     if 'encounter' not in session:
         return redirect(url_for('explore'))
 
-    e_name = session['encounter']['name']
-    puzzle = next(e['riddle'] for e in enemies if e['name'] == e_name)
+    # Pull and clear the encounter
+    e_data = session.pop('encounter')
+    session.pop('enemy', None)
 
-    if request.method == 'POST':
-        choice = int(request.form['choice'])
-        if choice == puzzle['answer']:
-            session['level'] += 1
-            art = f"Artifact of {e_name}"
-            session['artifacts'].append(art)
-            session['remaining'].remove(e_name)
-            session.pop('encounter', None)
-            session.pop('enemy', None)
-            session['last_msg'] = f"You collected {art}!"
-            if len(session['artifacts']) >= len(enemies):
-                return render_template('artifact.html',
-                                       final=True,
-                                       question=puzzle['question'],
-                                       options=puzzle['options'])
-        else:
-            session.pop('encounter', None)
-            session.pop('enemy', None)
-            session['last_msg'] = "Wrong! The artifact vanishes."
-        return redirect(url_for('explore'))
+    # Fetch the enemy’s encounter rate (0–100)
+    enc_rate = e_data.get('encounter_rate', 0)
+    if enc_rate > 0:
+        # Rarer enemies (low rate) give more XP
+        xp_gain = int(100 / enc_rate)
+    else:
+        # Fallback for malformed data
+        xp_gain = 1
 
-    return render_template('artifact.html',
-                           final=False,
-                           question=puzzle['question'],
-                           options=puzzle['options'])
+    # Award XP
+    session['xp'] = session.get('xp', 0) + xp_gain
+
+    # Let the player know
+    session['last_msg'] = f"You gained {xp_gain} XP!"
+
+    return redirect(url_for('explore'))
 
 # ----- INVENTORY -----
-@app.route('/inventory', methods=['GET', 'POST'])
+@app.route('/inventory', methods=['GET','POST'])
 def inventory_route():
     if 'player_name' not in session:
         return redirect(url_for('menu'))
 
+    # Handle POST actions first
     if request.method == 'POST':
-        action = request.form.get('action')
-        if action == 'equip':
-            # only then pull item_index
-            idx = int(request.form.get('item_index', -1))
-            if 0 <= idx < len(session.get('inventory', [])):
-                it = session['inventory'][idx]
-                session['equipped'][it['type']] = it
+        action     = request.form.get('action')
+        idx        = request.form.get('item_index', type=int)
+        slot       = request.form.get('slot')
 
-        elif action == 'unequip':
-            # only then pull slot
-            slot = request.form.get('slot')
-            if slot in session.get('equipped', {}):
-                session['equipped'][slot] = None
+        inv = session.setdefault('inventory', [])
+        eq  = session.setdefault('equipped', {
+            'weapon': None,
+            'armor':  None,
+            'boots':  None,
+            'ring':   None,
+            'helmet': None
+        })
 
-        session.modified = True
+        # Equip or Unequip share the same item_index
+        if action in ('equip', 'unequip') and 0 <= idx < len(inv):
+            item = inv[idx]
+            slot = item['type']
+            if action == 'equip':
+                eq[slot] = item
+            else:  # unequip
+                eq[slot] = None
+
+        # Use aid items
+        elif action == 'use' and 0 <= idx < len(inv):
+            if inv[idx].get('type') == 'aid':
+                inv.pop(idx)
+
+        # Drop gear
+        elif action == 'drop' and 0 <= idx < len(inv):
+            inv.pop(idx)
+
+        # write back
+        session['inventory'] = inv
+        session['equipped']  = eq
+        session.modified     = True
         return redirect(url_for('inventory_route'))
+
+    # Build a player dict with live stats
+    base_stats = player_template.get('stats', {})
+    eq         = session.get('equipped', {})
+    bonus_atk  = sum(i.get('attack',0)  for i in eq.values() if i)
+    bonus_def  = sum(i.get('defense',0) for i in eq.values() if i)
+    bonus_spd  = sum(i.get('speed',0)   for i in eq.values() if i)
+
+    player = {
+        'name':  session.get('player_name'),
+        'level': session.get('level'),
+        'xp':    session.get('xp'),
+        'hp':    session.get('hp'),
+        'attack':  base_stats.get('attack',1)  + bonus_atk,
+        'defense': base_stats.get('defense',1) + bonus_def,
+        'speed':   base_stats.get('speed',1)   + bonus_spd
+    }
 
     return render_template(
         'inventory.html',
-        items=session.get('inventory', []),
-        equipped=session.get('equipped', {})
+        player   = player,
+        items    = session.get('inventory', []),
+        equipped = eq
     )
 
 
