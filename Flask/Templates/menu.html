@@ -12,12 +12,27 @@
     <li>Fight!</li>
     <li>Can you find the end of the dungeon?</li>
   </ol>
+
   <form method="post" action="{{ url_for('start_game') }}">
     <label>
       Enter your name:
       <input type="text" name="name" required style="font-family:inherit;">
     </label>
-    <button type="submit">Begin Adventure</button>
+    <button type="submit" class="button">Begin Adventure</button>
+  </form>
+
+  <hr>
+
+  <!-- Load Save -->
+  <form method="post" action="{{ url_for('load_save') }}"
+        enctype="multipart/form-data" style="display:inline">
+    <input type="file" name="save_file" accept=".zip" required>
+    <button type="submit" class="button">📂 Load Save</button>
+  </form>
+
+  <!-- Settings as a GET‐form -->
+  <form method="get" action="{{ url_for('settings') }}" style="display:inline">
+    <button type="submit" class="button">⚙️ Settings</button>
   </form>
 </div>
 {% endblock %}

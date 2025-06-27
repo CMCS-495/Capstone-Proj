@@ -1,0 +1,24 @@
+{# templates/settings.html #}
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Game Settings</h1>
+  <form method="post" action="{{ url_for('settings') }}">
+    <label>
+      Difficulty:
+      <select name="difficulty">
+        <option value="Easy"   {% if current=='Easy'   %}selected{% endif %}>Easy</option>
+        <option value="Normal" {% if current=='Normal' %}selected{% endif %}>Normal</option>
+        <option value="Hard"   {% if current=='Hard'   %}selected{% endif %}>Hard</option>
+      </select>
+    </label>
+    <div class="button-row">
+      <button type="submit" class="button">Save Settings</button>
+      <a class="button" href="{{ url_for('menu') }}">← Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
