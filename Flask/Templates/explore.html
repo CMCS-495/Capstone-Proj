@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p>Loading… please wait.</p>
+  </div>
   <div class="container">
     <h1>{{ room_name }}</h1>
 
@@ -47,34 +51,24 @@
 
     <p><a href="{{ url_for('menu') }}">Back to Menu</a></p>
   </div>
-  <script>
-  // On any form submit or button click, immediately navigate to /loading
-  document.addEventListener('DOMContentLoaded', () => {
-    const goLoading = event => {
-      // let the click/submit still fire, but show loading screen
-      location.href = "/loading";
-    };
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('loading-overlay');
+  // Show overlay
+  const show = () => overlay.style.display = 'flex';
 
-    // intercept all submits
-    document.querySelectorAll('form').forEach(f => {
-      f.addEventListener('submit', goLoading);
-    });
-
-    // intercept all button clicks that would reload the page
-    document.querySelectorAll('button').forEach(b => {
-      b.addEventListener('click', goLoading);
-    });
-
-    // intercept all link clicks
-    document.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', e => {
-        // only internal game links
-        if (a.getAttribute('href').startsWith("/")) {
-          goLoading();
-        }
-      });
-    });
+  // Any form submit…
+  document.querySelectorAll('form').forEach(f => {
+    f.addEventListener('submit', show);
   });
+  // Any internal link click…
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if(href.startsWith('/') && !href.startsWith('//')) {
+      a.addEventListener('click', show);
+    }
+  });
+});
 </script>
 </body>
 </html>

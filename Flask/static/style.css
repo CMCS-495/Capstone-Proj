@@ -128,3 +128,30 @@ ul {
 li {
   margin: 0.5rem 0;
 }
+
+/* Full-screen semi-transparent overlay */
+#loading-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 9999;
+  color: #fff;
+  font-family: sans-serif;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+#loading-overlay .spinner {
+  border: 8px solid #333;
+  border-top: 8px solid #eee;
+  border-radius: 50%;
+  width: 60px; height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

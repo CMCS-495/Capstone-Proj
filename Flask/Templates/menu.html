@@ -1,55 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Dungeon Crawler</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-  <div class="container">
-    <h1>Dungeon Crawler</h1>
-    <p>Welcome, brave adventurer!</p>
-    <ol style="text-align:left;">
-      <li>Collect gear!</li>
-      <li>Fight!</li>
-      <li>Can you find the end of the dungeon?</li>
-    </ol>
-    <form method="post" action="{{ url_for('start_game') }}">
-      <label>
-        Enter your name:
-        <input type="text" name="name" required style="font-family:inherit;">
-      </label>
-      <button type="submit">Begin Adventure</button>
-    </form>
-  </div>
-  <script>
-  // On any form submit or button click, immediately navigate to /loading
-  document.addEventListener('DOMContentLoaded', () => {
-    const goLoading = event => {
-      // let the click/submit still fire, but show loading screen
-      location.href = "/loading";
-    };
+{# templates/menu.html #}
+{% extends 'base.html' %}
 
-    // intercept all submits
-    document.querySelectorAll('form').forEach(f => {
-      f.addEventListener('submit', goLoading);
-    });
+{% block title %}Main Menu{% endblock %}
 
-    // intercept all button clicks that would reload the page
-    document.querySelectorAll('button').forEach(b => {
-      b.addEventListener('click', goLoading);
-    });
-
-    // intercept all link clicks
-    document.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', e => {
-        // only internal game links
-        if (a.getAttribute('href').startsWith("/")) {
-          goLoading();
-        }
-      });
-    });
-  });
-</script>
-</body>
-</html>
+{% block content %}
+<div class="container">
+  <h1>Dungeon Crawler</h1>
+  <p>Welcome, brave adventurer!</p>
+  <ol style="text-align:left;">
+    <li>Collect gear!</li>
+    <li>Fight!</li>
+    <li>Can you find the end of the dungeon?</li>
+  </ol>
+  <form method="post" action="{{ url_for('start_game') }}">
+    <label>
+      Enter your name:
+      <input type="text" name="name" required style="font-family:inherit;">
+    </label>
+    <button type="submit">Begin Adventure</button>
+  </form>
+</div>
+{% endblock %}

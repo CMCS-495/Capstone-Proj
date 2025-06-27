@@ -113,33 +113,23 @@
     </p>
   </div>
   <script>
-  // On any form submit or button click, immediately navigate to /loading
   document.addEventListener('DOMContentLoaded', () => {
-    const goLoading = event => {
-      // let the click/submit still fire, but show loading screen
-      location.href = "/loading";
-    };
+    const overlay = document.getElementById('loading-overlay');
+    // Show overlay
+    const show = () => overlay.style.display = 'flex';
 
-    // intercept all submits
+    // Any form submit…
     document.querySelectorAll('form').forEach(f => {
-      f.addEventListener('submit', goLoading);
+      f.addEventListener('submit', show);
     });
-
-    // intercept all button clicks that would reload the page
-    document.querySelectorAll('button').forEach(b => {
-      b.addEventListener('click', goLoading);
-    });
-
-    // intercept all link clicks
-    document.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', e => {
-        // only internal game links
-        if (a.getAttribute('href').startsWith("/")) {
-          goLoading();
-        }
-      });
+    // Any internal link click…
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      if(href.startsWith('/') && !href.startsWith('//')) {
+        a.addEventListener('click', show);
+      }
     });
   });
-</script>
+  </script>
 </body>
 </html>
