@@ -9,25 +9,18 @@
   <div class="container">
     <h1>{{ room_name }}</h1>
 
+    {# Show the LLM description if present #}
+    {% if room_description %}
+      <p class="room-desc">{{ room_description }}</p>
+    {% endif %}
+
     <div class="stats">
       <div>{{ player.name }} (Lvl {{ player.level }})</div>
       <div>HP: {{ player.hp }}</div>
       <div>ATK: {{ player.attack }}</div>
       <div>DEF: {{ player.defense }}</div>
       <div>SPD: {{ player.speed }}</div>
-      <div>Potions: {{ session.potions }}</div>
     </div>
-
-    <p><strong>Inventory:</strong>
-      {% if inventory %}
-        {{ inventory|map(attribute='name')|join(', ') }}
-      {% else %}
-        None
-      {% endif %}
-    </p>
-    <p><strong>Artifacts:</strong>
-      {{ artifacts|join(', ') if artifacts else 'None' }}
-    </p>
 
     <hr>
     <p>{{ response|safe }}</p>

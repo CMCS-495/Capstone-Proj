@@ -1,43 +1,116 @@
-<!-- templates/inventory.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Inventory</title>
+  <title>{{ player.name }}'s Inventory</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Quick table styling */
+    table.inventory {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1em;
+    }
+    table.inventory th,
+    table.inventory td {
+      border: 1px solid #666;
+      padding: 0.5em;
+      text-align: left;
+    }
+    table.inventory th {
+      background: #333;
+      color: #fff;
+    }
+    .actions button {
+      margin-right: 0.3em;
+    }
+  </style>
 </head>
 <body>
-  <h2>Inventory</h2>
-  <ul>
-    {% for item in items %}
-      <li>
-        {{ item.name }}
-        <form method="post" style="display:inline">
-          <input type="hidden" name="item_index" value="{{ loop.index0 }}">
-          <button name="action" value="equip">Equip</button>
-        </form>
-      </li>
-    {% else %}
-      <li><em>No items in inventory.</em></li>
-    {% endfor %}
-  </ul>
+  <div class="container">
+    <h1>Inventory</h1>
 
-  <h2>Equipped</h2>
-  <ul>
-    {% for slot, itm in equipped.items() %}
-      <li>
-        {{ slot|capitalize }}: {{ itm.name if itm else 'None' }}
-        {% if itm %}
-          <form method="post" style="display:inline">
-            <input type="hidden" name="slot" value="{{ slot }}">
-            <button name="action" value="unequip">Unequip</button>
-          </form>
-        {% endif %}
-      </li>
-    {% else %}
-      <li><em>Nothing equipped.</em></li>
-    {% endfor %}
-  </ul>
+    <!-- Player stats -->
+    <div class="stats">
+      <div><strong>{{ player.name }}</strong> (Level {{ player.level }})</div>
+      <div>HP: {{ player.hp }} &nbsp; ATK: {{ player.attack }} &nbsp; DEF: {{ player.defense }} &nbsp; SPD: {{ player.speed }} &nbsp; XP: {{ player.xp }}</div>
+    </div>
 
-  <p><a href="{{ url_for('explore') }}">← Back to Game</a></p>
+    <hr>
+
+    <form method="post">
+      <table class="inventory">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Name</th>
+            <th>ATK</th>
+            <th>DEF</th>
+            <th>SPD</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+      <tbody>
+      {% for item in items %}
+        {% set idx = loop.index0 %}
+        <tr title="{{ item.llm_description }}">
+          <td>{{ item.type|capitalize }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.attack or '' }}</td>
+          <td>{{ item.defense or '' }}</td>
+          <td>{{ item.speed or '' }}</td>
+          <td class="actions">
+            {# Equip/Unequip or Use #}
+            <form method="post">
+              <input type="hidden" name="item_index" value="{{ idx }}">
+              {% if item.type != 'aid' %}
+                {% if equipped[item.type] and equipped[item.type].name == item.name %}
+                  <button name="action" value="unequip">Unequip</button>
+                {% else %}
+                  <button name="action" value="equip">Equip</button>
+                {% endif %}
+              {% else %}
+                <button name="action" value="use">Use</button>
+              {% endif %}
+            </form>
+
+            {# Drop #}
+            <form method="post">
+              <input type="hidden" name="item_index" value="{{ idx }}">
+              <button name="action" value="drop">Drop</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="6"><em>No items in inventory.</em></td></tr>
+      {% endfor %}
+      </tbody>
+      </table>
+    </form>
+
+    <hr>
+
+    <h2>Equipped Gear</h2>
+    <table class="inventory">
+      <thead>
+        <tr>
+          <th>Slot</th>
+          <th>Item</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for slot, itm in equipped.items() %}
+        <tr>
+          <td>{{ slot|capitalize }}</td>
+          <td>{{ itm.name if itm else 'None' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p>
+      <a class="button" href="{{ url_for('explore') }}">← Back to Game</a>
+    </p>
+  </div>
 </body>
 </html>
