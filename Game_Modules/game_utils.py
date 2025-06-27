@@ -2,6 +2,7 @@ from Game_Modules.import_assets import gear, enemies, game_map
 from Game_Modules.import_assets import inventory as INVENTORY_POOL
 from Game_Modules.import_assets import gear as GEAR_POOL
 from Game_Modules.import_assets import gear as RAW_GEAR
+from Game_Modules.import_assets import enemies as RAW_ENEMIES
 from Game_Modules.map           import DungeonMap
 from Game_Modules.entities      import Player
 import random
@@ -52,42 +53,49 @@ def get_room_name(room_id):
     info = dungeon_map.rooms.get(room_id, {})
     return info.get('name', room_id)
 
+
 def move_player(session, tgt_room, spawn_chance=0.6):
     """
-    Attempt to move. Updates session and returns a message.
-    Also resets the per-visit search flag so you can search again in the new room.
+    Attempt to move. Each time you enter a room, with probability spawn_chance
+    you'll face a random enemy drawn from RAW_ENEMIES weighted by encounter_rate.
     """
-    # Ensure we have a 'remaining' list
-    session.setdefault('remaining', [e['name'] for e in ENEMIES])
-
     current = session.get('room_id')
     if tgt_room == current:
         return "You're already here."
     if not dungeon_map.is_valid_move(current, tgt_room):
         return "Can't go that way."
 
-    # perform the move
+    # Update room and clear any old encounter
     session['room_id'] = tgt_room
     session.pop('encounter', None)
     session.pop('enemy', None)
     session['searched'] = False
 
-    # maybe spawn an enemy
-    if session.get('remaining') and random.random() < spawn_chance:
-        choice = random.choice(session['remaining'])
-        e = next(x for x in ENEMIES if x.get('name') == choice).copy()
+    # Roll for spawn
+    if random.random() < spawn_chance:
+        # Use encounter_rate (0–100) as weights
+        weights = [e.get('encounter_rate', 0) for e in RAW_ENEMIES]
+        # If all rates zero, fallback to uniform
+        if sum(weights) > 0:
+            chosen = random.choices(RAW_ENEMIES, weights=weights, k=1)[0]
+        else:
+            chosen = random.choice(RAW_ENEMIES)
+
+        # Prepare the encounter copy
+        e = chosen.copy()
         lvl = e.get('level', 1)
         e['level']       = lvl
         e['max_hp']      = 15 + (lvl - 1) * 5
         e['current_hp']  = e['max_hp']
+
         session['enemy']     = e['name']
         session['encounter'] = e
 
         desc = e.get('description', '')
         return f"<b>Enemy:</b> {e['name']} — {desc}"
 
+    # No spawn
     return f"You enter {get_room_name(tgt_room)}. It's quiet."
-
 
 def search_room(session, search_chance=0.5):
     """
