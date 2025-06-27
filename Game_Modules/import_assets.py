@@ -1,5 +1,5 @@
-import os
-import json
+import os, json
+from Game_Modules import llm_client
 
 # Base directories
 MODULE_DIR   = os.path.dirname(__file__)
