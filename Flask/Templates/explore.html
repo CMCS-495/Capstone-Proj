@@ -10,7 +10,11 @@
     <div class="spinner"></div>
     <p>Loading… please wait.</p>
   </div>
-  <div class="container">
+  <div class="game-flex" style="display: flex; justify-content: center; align-items: flex-start; gap: 48px; margin-top: 40px; margin-right: 20vw;">
+    <div class="minimap-container" style="min-width: 320px; max-width: 400px;">
+      <img src="{{ url_for('static', filename='minimap.png') }}" alt="Mini Map" style="border:4px solid #333; display: block; width: 100%; height: auto;">
+    </div>
+    <div class="container" style="max-width: 600px; min-width: 350px; margin: 0 auto;">
     <h1>{{ room_name }}</h1>
 
     {# Show the LLM description if present #}
