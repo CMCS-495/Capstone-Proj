@@ -213,6 +213,7 @@ def explore():
     )
     player.hp = session.get('hp', player.hp)
 
+
     # 4) Lazy-generate room description
     room_id = session['room_id']
     room    = game_map[room_id]
@@ -220,6 +221,13 @@ def explore():
         ctx = {'prompt':room.get('llm_prompt',''),
                'neighbors':room.get('neighbors',[])}
         room['llm_description'] = llm_client.generate_description('room', ctx)
+
+    # 4.5) Generate/update minimap image for current position
+    from Game_Modules.MiniMap import generate_minimap
+    x = room.get('MiniMapX', 0)
+    y = room.get('MiniMapy', 0)
+    minimap_path = os.path.join(app.root_path, 'static', 'minimap.png')
+    generate_minimap(x, y, output_path=minimap_path)
 
     # 5) Build neighbor list & names map
     neighbors = dungeon_map.get_neighbors(room_id)
