@@ -30,7 +30,7 @@
 </head>
 <body>
   <!-- 1) Hidden, looping background music -->
-  <audio id="bgm" loop preload="auto" style="display:none">
+  <audio id="bgm" loop preload="auto" autoplay style="display:none">
     <source
       src="{{ url_for('static', filename='audio/escape-the-dungeon-dubious-dungeon.mp3') }}"
       type="audio/mpeg">
@@ -38,18 +38,8 @@
     Your browser doesn’t support HTML5 audio.
   </audio>
 
-  <!-- 2) Kick it off on first user click -->
-  <script>
-    document.addEventListener('click', function startBGM() {
-      const bgm = document.getElementById('bgm');
-      if (bgm && bgm.paused) {
-        bgm.volume = 0.5;  // adjust 0.0–1.0
-        bgm.play().catch(()=>{ /* ignore if still blocked */ });
-      }
-      // only once
-      document.removeEventListener('click', startBGM);
-    }, { once: true });
-  </script>
+  <!-- 2) Background music helper -->
+  <script src="{{ url_for('static', filename='bgm.js') }}"></script>
 
   <!-- overlay sits on top of all content -->
   <div id="loading-overlay">
