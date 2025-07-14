@@ -166,16 +166,20 @@ def load_save():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    # Simple stub: store e.g. "difficulty" in session
+    # Persist difficulty and music toggle in session
     if request.method == 'POST':
         diff = request.form.get('difficulty')
+        music = request.form.get('music') == 'on'
         session['settings'] = session.get('settings', {})
         session['settings']['difficulty'] = diff
+        session['settings']['music'] = music
         flash(f"Difficulty set to {diff}", "success")
         return redirect(url_for('menu'))
-    # On GET, show the form
+
+    # On GET, show the form with current settings
     current = session.get('settings', {}).get('difficulty', 'Normal')
-    return render_template('settings.html', current=current)
+    music_enabled = session.get('settings', {}).get('music', True)
+    return render_template('settings.html', current=current, music_enabled=music_enabled)
 
 # ----- EXPLORE -----
 @app.route('/explore', methods=['GET','POST'])
