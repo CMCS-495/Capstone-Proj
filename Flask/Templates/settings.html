@@ -15,10 +15,22 @@
         <option value="Hard"   {% if current=='Hard'   %}selected{% endif %}>Hard</option>
       </select>
     </label>
+    <label style="margin-left:1rem;">
+      <input type="checkbox" id="music-toggle"> Music
+    </label>
     <div class="button-row">
       <button type="submit" class="button">Save Settings</button>
       <a class="button" href="{{ url_for('menu') }}">← Back</a>
     </div>
   </form>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('music-toggle');
+    toggle.checked = localStorage.getItem('bgmEnabled') !== 'false';
+    toggle.addEventListener('change', () => {
+      window.setBgmEnabled(toggle.checked);
+    });
+  });
+</script>
 {% endblock %}
