@@ -14,6 +14,7 @@ from Game_Modules import save_load
 from Game_Modules.export_assets import SAVE_ROOT
 from Game_Modules.entities import Player, Enemy
 from Game_Modules.combat import player_attack, enemy_attack
+from Game_Modules.leveling import apply_leveling
 from Game_Modules.game_utils import (
     rebuild_player,
     get_room_name,
@@ -368,11 +369,16 @@ def artifact():
         # Fallback for malformed data
         xp_gain = 1
 
-    # Award XP
+    # Award XP and check for level ups
     session['xp'] = session.get('xp', 0) + xp_gain
+    leveled = apply_leveling(session, player_template)
 
-    # Let the player know
-    session['last_msg'] = f"You gained {xp_gain} XP!"
+    if leveled:
+        session['last_msg'] = (
+            f"You gained {xp_gain} XP and reached level {session['level']}!"
+        )
+    else:
+        session['last_msg'] = f"You gained {xp_gain} XP!"
 
     return redirect(url_for('explore'))
 
