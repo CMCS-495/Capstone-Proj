@@ -1,8 +1,12 @@
 import argparse
 import math
 import random
-from import_assets import import_assets
-from export_assets import export_assets
+try:
+    from .import_assets import import_assets
+    from .export_assets import export_assets
+except Exception:
+    import_assets = None
+    export_assets = None
 
 def xp_threshold(level):
     """
@@ -32,6 +36,35 @@ def process_level(total_xp):
 
     player['xp'] = total_xp
     return new_level > current_level, player
+
+def apply_leveling(session, player_template):
+    """Update session and template based on XP, return True if level up occurs."""
+    xp = session.get('xp', 0)
+    current_level = session.get('level', 1)
+    new_level = current_level
+
+    while xp >= xp_threshold(new_level + 1):
+        new_level += 1
+
+    if new_level > current_level:
+        for _ in range(new_level - current_level):
+            for stat in (
+                'attack',
+                'defense',
+                'speed',
+                'current_health',
+                'max_health',
+            ):
+                if 'stats' in player_template:
+                    stats = player_template.setdefault('stats', {})
+                    stats[stat] = stats.get(stat, 0) + random.randint(1, 3)
+                else:
+                    player_template[stat] = player_template.get(stat, 0) + random.randint(1, 3)
+        session['level'] = new_level
+        max_hp = player_template.get('stats', {}).get('max_health', session.get('hp', 0))
+        session['hp'] = min(session.get('hp', max_hp), max_hp)
+        return True
+    return False
 
 def main():
     parser = argparse.ArgumentParser(description="Handle player leveling based on total XP")
