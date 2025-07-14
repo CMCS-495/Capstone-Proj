@@ -6,6 +6,21 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+  <!-- Hidden, looping background music -->
+  <audio id="bgm" loop preload="auto" style="display:none">
+    <source src="{{ url_for('static', filename='audio/escape-the-dungeon-dubious-dungeon.mp3') }}" type="audio/mpeg">
+    Your browser doesn’t support HTML5 audio.
+  </audio>
+  <script>
+    document.addEventListener('click', function startBGM() {
+      const bgm = document.getElementById('bgm');
+      if (bgm && bgm.paused) {
+        bgm.volume = 0.5;
+        bgm.play().catch(() => { });
+      }
+      document.removeEventListener('click', startBGM);
+    }, { once: true });
+  </script>
   <div id="loading-overlay">
     <div class="spinner"></div>
     <p>Loading… please wait.</p>
