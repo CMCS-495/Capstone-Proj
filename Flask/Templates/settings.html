@@ -28,6 +28,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('music-toggle');
     toggle.checked = localStorage.getItem('bgmEnabled') !== 'false';
+    window.setBgmEnabled(toggle.checked);
     toggle.addEventListener('change', () => {
       window.setBgmEnabled(toggle.checked);
     });

@@ -13,14 +13,26 @@
     const enabled = storage.getItem(ENABLED) === 'true';
 
     const start = parseFloat(storage.getItem(TIME)) || 0;
-    if (!isNaN(start)) {
-      audio.currentTime = start;
-    }
     audio.volume = 0.5;
 
-    if (enabled) {
-      audio.play().catch(() => {});
+    function resume() {
+      if (!isNaN(start)) {
+        audio.currentTime = start;
+      }
+      if (enabled) {
+        audio.play().catch(() => {});
+      }
     }
+
+    if (audio.readyState >= 1) {
+      resume();
+    } else {
+      audio.addEventListener('loadedmetadata', resume, { once: true });
+    }
+
+    audio.addEventListener('timeupdate', () => {
+      storage.setItem(TIME, audio.currentTime);
+    });
 
     window.addEventListener('beforeunload', () => {
       storage.setItem(TIME, audio.currentTime);
@@ -34,6 +46,10 @@
     const audio = document.getElementById('bgm');
     if (!audio) return;
     if (flag) {
+      const start = parseFloat(storage.getItem(TIME)) || 0;
+      if (!isNaN(start)) {
+        audio.currentTime = start;
+      }
       audio.play().catch(() => {});
     } else {
       audio.pause();
