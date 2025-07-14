@@ -5,7 +5,9 @@
     "neighbors": ["R1_2", "R1_3"],
     "llm_prompt": "Moonlit clearing under twisted oak trees",
     "llm_description": "",
-    "name": "Twisted Oak Clearing"
+    "name": "Twisted Oak Clearing",
+    "MiniMapX": 262,
+    "MiniMapy": 3475
   },
   {
     "room_id": "R1_2",
@@ -13,7 +15,9 @@
     "neighbors": ["R1_1", "R1_4"],
     "llm_prompt": "Fog-choked path between skeletal birches",
     "llm_description": "",
-    "name": "Skeletal Birch Path"
+    "name": "Skeletal Birch Path",
+     "MiniMapX": 856,
+    "MiniMapy": 3180
   },
   {
     "room_id": "R1_3",
