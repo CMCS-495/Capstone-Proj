@@ -50,6 +50,7 @@ def start_game():
         'level':        player_template.get('level', 1),
         'xp':           player_template.get('xp', 0),
         'hp':           player_template.get('hp', 10),
+        'difficulty':   session.get('settings', {}).get('difficulty', 'Normal'),
         'equipped':     {
             'weapon': None, 'shield': None, 'armor': None,
             'boots':  None, 'ring':   None, 'helmet': None
@@ -288,6 +289,7 @@ def fight():
 
     if request.method == 'POST':
         action = request.form['action']
+        difficulty = session.get('settings', {}).get('difficulty', 'Normal')
 
         # Drink an aid item if available
         if action == 'potion' and potions > 0:
@@ -303,17 +305,34 @@ def fight():
             messages.append(f"You use an aid item and recover {heal_amount} HP.")
 
         if action == 'attack':
-            messages.append(player_attack(player, enemy))
+            if player.speed >= enemy.speed:
+                messages.append(player_attack(player, enemy))
+                if enemy.is_alive():
+                    messages.append(enemy_attack(player, enemy))
+            else:
+                messages.append(enemy_attack(player, enemy))
+                if player.hp > 0:
+                    messages.append(player_attack(player, enemy))
         elif action == 'run':
+            if difficulty.lower() in ('normal', 'hard'):
+                messages.append(enemy_attack(player, enemy))
+                if player.hp <= 0:
+                    session['hp'] = player.hp
+                    return render_template('fight.html',
+                                           outcome='defeat',
+                                           player=player,
+                                           enemy=e_data,
+                                           messages=messages,
+                                           potions=potions)
             session.pop('encounter', None)
             session.pop('enemy', None)
             session['hp'] = player.hp
             session['inventory'] = inv
             session['last_msg'] = "You fled!"
             return redirect(url_for('explore'))
-
-        if enemy.is_alive():
-            messages.append(enemy_attack(player, enemy))
+        else:
+            if enemy.is_alive():
+                messages.append(enemy_attack(player, enemy))
 
         # Update session state
         session['hp']                  = max(player.hp, 0)
