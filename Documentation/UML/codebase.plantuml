@@ -1,0 +1,51 @@
+@startuml codebase_overview
+skinparam packageStyle rectangle
+
+package "Flask" {
+  class flask_app
+}
+
+package "Game_Modules" {
+  class Player
+  class Enemy
+  class DungeonMap
+  class combat
+  class game_utils
+  class import_assets
+  class export_assets
+  class inventory
+  class llm_client
+  class leveling
+  class save_load
+  class MiniMap
+  class maptest
+  class rng
+}
+
+package "LLM" {
+  [transformers]
+}
+
+flask_app --> game_utils
+flask_app --> save_load
+flask_app --> llm_client
+flask_app --> inventory
+flask_app --> combat
+flask_app --> leveling
+
+llm_client --> transformers
+
+game_utils --> DungeonMap
+game_utils --> Player
+game_utils --> Enemy
+
+game_utils --> llm_client
+
+inventory --> import_assets
+export_assets --> import_assets
+save_load --> import_assets
+save_load --> export_assets
+leveling --> import_assets
+leveling --> export_assets
+
+@enduml
