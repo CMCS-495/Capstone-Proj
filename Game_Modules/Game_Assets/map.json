@@ -25,7 +25,9 @@
     "neighbors": ["R1_1", "R1_5"],
     "llm_prompt": "Shadowy grove with unseen whispering voices",
     "llm_description": "",
-    "name": "Whispering Shadow Grove"
+    "name": "Whispering Shadow Grove",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R1_4",
@@ -33,7 +35,9 @@
     "neighbors": ["R1_2", "R1_5"],
     "llm_prompt": "Mossy glade illuminated by flickering fireflies",
     "llm_description": "",
-    "name": "Firefly Moss Glade"
+    "name": "Firefly Moss Glade",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R1_5",
@@ -41,7 +45,9 @@
     "neighbors": ["R1_3", "R1_4", "R2_1"],
     "llm_prompt": "Ancient stone circle overgrown with vines",
     "llm_description": "",
-    "name": "Vine-Overgrown Stone Circle"
+    "name": "Vine-Overgrown Stone Circle",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R2_1",
@@ -49,7 +55,9 @@
     "neighbors": ["R2_2", "R2_3", "R1_5"],
     "llm_prompt": "Weather-beaten cabin porch creaking in the wind",
     "llm_description": "",
-    "name": "Creaking Cabin Porch"
+    "name": "Creaking Cabin Porch",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R2_2",
@@ -57,7 +65,9 @@
     "neighbors": ["R2_1", "R2_4"],
     "llm_prompt": "Dusty living room with a broken rocking chair",
     "llm_description": "",
-    "name": "Broken Rocking Chair Room"
+    "name": "Broken Rocking Chair Room",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R2_3",
@@ -65,7 +75,9 @@
     "neighbors": ["R2_1", "R2_5"],
     "llm_prompt": "Old kitchen strewn with rusted utensils and cobwebs",
     "llm_description": "",
-    "name": "Rusty Cobweb Kitchen"
+    "name": "Rusty Cobweb Kitchen",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R2_4",
@@ -73,7 +85,9 @@
     "neighbors": ["R2_2", "R2_5"],
     "llm_prompt": "Damp cellar lined with decaying wooden barrels",
     "llm_description": "",
-    "name": "Decaying Barrel Cellar"
+    "name": "Decaying Barrel Cellar",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R2_5",
@@ -81,7 +95,9 @@
     "neighbors": ["R2_3", "R2_4", "R3_1"],
     "llm_prompt": "Lofty attic filled with tattered curtains and secrets",
     "llm_description": "",
-    "name": "Tattered Curtains Attic"
+    "name": "Tattered Curtains Attic",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R3_1",
@@ -89,7 +105,9 @@
     "neighbors": ["R3_2", "R3_3", "R2_5"],
     "llm_prompt": "Thunderous waterfall crashing into a misty pool",
     "llm_description": "",
-    "name": "Misty Pool Waterfall"
+    "name": "Misty Pool Waterfall",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R3_2",
@@ -97,7 +115,9 @@
     "neighbors": ["R3_1", "R3_4"],
     "llm_prompt": "Slippery ledge overlooking the churning river below",
     "llm_description": "",
-    "name": "Slippery River Ledge"
+    "name": "Slippery River Ledge",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R3_3",
@@ -105,7 +125,9 @@
     "neighbors": ["R3_1", "R3_5"],
     "llm_prompt": "Hidden cave entrance carved into wet stone",
     "llm_description": "",
-    "name": "Wet Stone Cave Entrance"
+    "name": "Wet Stone Cave Entrance",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R3_4",
@@ -113,7 +135,9 @@
     "neighbors": ["R3_2", "R3_5"],
     "llm_prompt": "Sunlit alcove where the river slows to a calm stretch",
     "llm_description": "",
-    "name": "Calm River Alcove"
+    "name": "Calm River Alcove",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   },
   {
     "room_id": "R3_5",
@@ -121,6 +145,8 @@
     "neighbors": ["R3_3", "R3_4"],
     "llm_prompt": "Echoing chamber deep inside the river cave",
     "llm_description": "",
-    "name": "River Cave Echo Chamber"
+    "name": "River Cave Echo Chamber",
+    "MiniMapX": 0,
+    "MiniMapy": 0
   }
 ]
