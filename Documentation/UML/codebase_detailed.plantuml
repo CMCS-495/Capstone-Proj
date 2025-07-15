@@ -1,0 +1,110 @@
+@startuml codebase_detailed
+skinparam packageStyle rectangle
+package "Flask" {
+  class flask_app {
+    menu()
+    start_game()
+    rng_route()
+    save_as()
+    load_save()
+    settings()
+    explore()
+    fight()
+    artifact()
+    inventory_route()
+    loading()
+  }
+}
+package "Game_Modules" {
+  class MiniMap {
+    generate_minimap(player_x, player_y, view_width, view_height, marker_radius, output_path)
+  }
+  class export_assets {
+    export_assets()
+  }
+  class maptest {
+    load_rooms(json_path)
+    build_graph(rooms)
+    compute_positions(G, scale)
+    draw_tree(ax, x, y, w, h, orientation)
+    draw_map(json_path, discovered_rooms, output_file, title)
+  }
+  class import_assets {
+    load_json_file(filename)
+  }
+  class combat {
+    _calc_damage(attacker, defender)
+    player_attack(player, enemy)
+    enemy_attack(player, enemy)
+  }
+  class game_utils {
+    rebuild_player(session, player_template)
+    get_room_name(room_id)
+    move_player(session, tgt_room, spawn_chance)
+    search_room(session, search_chance)
+    process_explore_command(cmd, session, player_template, spawn_chance, search_chance)
+  }
+  class Player {
+    __init__(name, attack, defense, speed, level, xp)
+    take_damage(amt)
+    is_alive()
+  }
+  class Enemy {
+    __init__(name, stats, level)
+    take_damage(amt)
+    is_alive()
+  }
+  class inventory {
+    save_inventory()
+    find_item(uuid)
+    add_to_inventory(uuid)
+    remove_from_inventory(uuid)
+    display_inventory()
+  }
+  class DungeonMap {
+    __init__(map_data)
+    is_valid_move(current_room, target_room)
+    get_neighbors(room_id)
+  }
+  class rng {
+    main()
+  }
+  class leveling {
+    xp_threshold(level)
+    process_level(total_xp)
+    apply_leveling(session, player_template)
+    main()
+  }
+  class save_load {
+    save_game()
+    load_game()
+    load_map_from_file(path)
+    load_game_from_zip(stream, session)
+  }
+  class llm_client {
+    main()
+    _get_llm_pipeline(device)
+    generate_description(kind, context, max_new_tokens) : str
+  }
+}
+package "LLM" {
+  [transformers]
+}
+flask_app --> game_utils
+flask_app --> save_load
+flask_app --> llm_client
+flask_app --> inventory
+flask_app --> combat
+flask_app --> leveling
+llm_client --> transformers
+game_utils --> DungeonMap
+game_utils --> Player
+game_utils --> Enemy
+game_utils --> llm_client
+inventory --> import_assets
+export_assets --> import_assets
+save_load --> import_assets
+save_load --> export_assets
+leveling --> import_assets
+leveling --> export_assets
+@enduml
