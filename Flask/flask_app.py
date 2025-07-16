@@ -36,8 +36,22 @@ def menu():
 
 @app.route('/start', methods=['POST'])
 def start_game():
-    # Clear any old session
+    """Begin a new game using the selected difficulty settings."""
+    # Preserve settings then clear any old session
+    settings = session.get('settings', {})
+    diff    = settings.get('difficulty', 'Normal')
+    music   = settings.get('music', True)
     session.clear()
+    session['settings'] = {'difficulty': diff, 'music': music}
+
+    # Determine starting HP from difficulty
+    hp_map = {'easy': 100, 'normal': 50, 'hard': 10}
+    start_hp = hp_map.get(diff.lower(), 50)
+
+    # Update player template HP values before the game begins
+    stats = player_template.setdefault('stats', {})
+    stats['current_health'] = start_hp
+    stats['max_health'] = start_hp
 
     # Grab the name the user entered; if they submitted nothing, fall back to the template default
     player_name = request.form.get('name', '').strip()
@@ -49,8 +63,8 @@ def start_game():
         'room_id':      player_template.get('start_room', 'R1_1'),
         'level':        player_template.get('level', 1),
         'xp':           player_template.get('xp', 0),
-        'hp':           player_template.get('hp', 10),
-        'difficulty':   session.get('settings', {}).get('difficulty', 'Normal'),
+        'hp':           start_hp,
+        'difficulty':   diff,
         'equipped':     {
             'weapon': None, 'shield': None, 'armor': None,
             'boots':  None, 'ring':   None, 'helmet': None
@@ -191,7 +205,12 @@ def explore():
     # 2) Handle any POSTed command
     if request.method == 'POST':
         cmd = request.form.get('command','').strip().lower()
-        action, endpoint, msg = process_explore_command(cmd, session, player_template)
+        diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
+        spawn_table = {'easy': 0.3, 'normal': 0.6, 'hard': 1.0}
+        spawn_chance = spawn_table.get(diff, 0.6)
+        action, endpoint, msg = process_explore_command(
+            cmd, session, player_template, spawn_chance=spawn_chance
+        )
         if msg:
             session['last_msg'] = msg
         if action == 'redirect' and endpoint:
