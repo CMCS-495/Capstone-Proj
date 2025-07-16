@@ -26,6 +26,20 @@ def test_start_game(client):
     with client.session_transaction() as sess:
         assert sess['player_name'] == 'Hero'
 
+@pytest.mark.parametrize('diff,expected', [
+    ('Easy', 100),
+    ('Normal', 50),
+    ('Hard', 10),
+])
+def test_start_game_difficulty(client, diff, expected):
+    with client.session_transaction() as sess:
+        sess['settings'] = {'difficulty': diff}
+    resp = client.post('/start', data={'name': 'Hero'})
+    assert resp.status_code == 302
+    with client.session_transaction() as sess:
+        assert sess['hp'] == expected
+        assert sess['difficulty'] == diff
+
 def test_rng_route(client):
     resp = client.get('/rng?min=1&max=10')
     assert resp.data.strip() == b'5'
