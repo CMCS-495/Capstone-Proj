@@ -4,6 +4,6 @@ A text based dungeon crawler using Qwen for dynamic descriptions for rooms, item
 
 dependencies
 
-pip install flask networkx matplotlib pillow "transformers[torch]" .[torch]
+pip install flask networkx matplotlib pillow pytest "transformers[torch]" .[torch]
 
 must allow auto play in browser for audio

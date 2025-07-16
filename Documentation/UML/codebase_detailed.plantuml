@@ -88,7 +88,7 @@ package "Game_Modules" {
   }
 }
 package "LLM" {
-  [transformers]
+  class transformers
 }
 flask_app --> game_utils
 flask_app --> save_load
