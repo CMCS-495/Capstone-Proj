@@ -54,9 +54,7 @@ def start_game():
     stats['max_health'] = start_hp
 
     # Grab the name the user entered; if they submitted nothing, fall back to the template default
-    player_name = request.form.get('name', '').strip()
-    if not player_name:
-        player_name = player_template.get('name', 'Adventurer')
+    player_name = request.form.get('name', '').strip() or player_template.get('name', 'Adventurer')
 
     session.update({
         'player_name': player_name,
@@ -404,13 +402,7 @@ def artifact():
 
     # Fetch the enemy’s encounter rate (0–100)
     enc_rate = e_data.get('encounter_rate', 0)
-    if enc_rate > 0:
-        # Rarer enemies (low rate) give more XP
-        xp_gain = int(100 / enc_rate)
-    else:
-        # Fallback for malformed data
-        xp_gain = 1
-
+    xp_gain = int(100 / enc_rate) if enc_rate > 0 else 1
     # Award XP and check for level ups
     session['xp'] = session.get('xp', 0) + xp_gain
     leveled = apply_leveling(session, player_template)
@@ -449,17 +441,11 @@ def inventory_route():
         if action in ('equip', 'unequip') and 0 <= idx < len(inv):
             item = inv[idx]
             slot = item['type']
-            if action == 'equip':
-                eq[slot] = item
-            else:  # unequip
-                eq[slot] = None
-
-        # Use aid items
+            eq[slot] = item if action == 'equip' else None
         elif action == 'use' and 0 <= idx < len(inv):
             if inv[idx].get('type') == 'aid':
                 inv.pop(idx)
 
-        # Drop gear
         elif action == 'drop' and 0 <= idx < len(inv):
             inv.pop(idx)
 
