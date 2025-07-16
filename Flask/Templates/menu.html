@@ -21,6 +21,14 @@
       Enter your name:
       <input type="text" name="name" required style="font-family:inherit;">
     </label>
+    <label style="margin-left:1rem;">
+      Difficulty:
+      <select name="difficulty">
+        <option value="Easy"   {% if current=='Easy'   %}selected{% endif %}>Easy</option>
+        <option value="Normal" {% if current=='Normal' %}selected{% endif %}>Normal</option>
+        <option value="Hard"   {% if current=='Hard'   %}selected{% endif %}>Hard</option>
+      </select>
+    </label>
     <button type="submit" class="button">Begin Adventure</button>
   </form>
 

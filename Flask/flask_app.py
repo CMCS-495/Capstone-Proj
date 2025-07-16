@@ -32,15 +32,17 @@ ROOM_NAMES = {rid: get_room_name(rid) for rid in dungeon_map.rooms.keys()}
 # ----- MAIN MENU -----
 @app.route('/')
 def menu():
-    return render_template('menu.html')
+    current = session.get('settings', {}).get('difficulty', 'Normal')
+    return render_template('menu.html', current=current)
 
 @app.route('/start', methods=['POST'])
 def start_game():
     """Begin a new game using the selected difficulty settings."""
-    # Preserve settings then clear any old session
-    settings = session.get('settings', {})
-    diff    = settings.get('difficulty', 'Normal')
-    music   = settings.get('music', True)
+    # Difficulty may come from a form field or previous settings
+    form_diff = request.form.get('difficulty')
+    settings  = session.get('settings', {})
+    diff      = form_diff or settings.get('difficulty', 'Normal')
+    music     = settings.get('music', True)
     session.clear()
     session['settings'] = {'difficulty': diff, 'music': music}
 
