@@ -1,8 +1,11 @@
+import os, sys
+# insert the project root (one level up) onto sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import io
 import json
 import zipfile
 from Game_Modules import save_load
-
 
 def test_load_map_from_file(tmp_path):
     data = [{'room_id': 'A'}]
@@ -11,10 +14,8 @@ def test_load_map_from_file(tmp_path):
     loaded = save_load.load_map_from_file(p)
     assert loaded == data
 
-
 class DummySession(dict):
     modified = False
-
 
 def test_load_game_from_zip(tmp_path):
     session = DummySession()

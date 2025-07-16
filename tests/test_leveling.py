@@ -1,10 +1,12 @@
+import os, sys
+# insert the project root (one level up) onto sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import math
 from Game_Modules import leveling
 
-
 def test_xp_threshold_increases():
     assert leveling.xp_threshold(1) < leveling.xp_threshold(2)
-
 
 def test_apply_leveling(monkeypatch):
     xp_needed = leveling.xp_threshold(2) + 1
