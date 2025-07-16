@@ -2,7 +2,6 @@ import os, sys
 # insert the project root (one level up) onto sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-
 from Game_Modules import llm_client
 
 def test_generate_description(monkeypatch):
