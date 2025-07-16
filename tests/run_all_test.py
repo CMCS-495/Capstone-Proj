@@ -7,7 +7,12 @@ import sys
 
 def main():
     """Run all project tests and exit with appropriate status code."""
-    exit_code = pytest.main(['-q', 'tests'])
+    tests_dir = os.path.join(os.path.dirname(__file__))
+    exit_code = pytest.main([
+        '-q',
+        '-p', 'no:pytest-ansible',
+        tests_dir
+    ])
     sys.exit(exit_code)
 
 if __name__ == '__main__':
