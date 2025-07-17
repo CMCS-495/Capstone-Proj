@@ -8,7 +8,7 @@ import os
 
 MINIMAP_PATH = os.path.join(os.path.dirname(__file__), '../Textures/mini-map.png')
 
-def generate_minimap(player_x, player_y, view_width=500, view_height=500, marker_radius=5, output_path=None):
+def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, marker_radius=5, output_path=None):
     """
     Crops the mini-map so the player is centered, overlays a marker at the center, and saves/returns the image.
     Args:
