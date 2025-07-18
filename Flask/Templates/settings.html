@@ -16,7 +16,14 @@
       </select>
     </label>
     <label style="margin-left:1rem;">
-      <input type="checkbox" id="music-toggle" name="music" {% if music_enabled %}checked{% endif %}> Music
+      <input
+        type="checkbox"
+        id="music-toggle"
+        name="music"
+        {% if music_enabled %}checked{% endif %}
+        data-music-enabled="{{ music_enabled | tojson }}"
+      >
+      Music
     </label>
     <br>
     <label>
@@ -54,18 +61,19 @@
     </div>
   </form>
 </div>
+
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', function() {
     const toggle = document.getElementById('music-toggle');
+    const initial = toggle.dataset.musicEnabled === 'true';
     const stored = localStorage.getItem('bgmEnabled');
-    if (stored === null) {
-      toggle.checked = {{ 'true' if music_enabled else 'false' }};
-    } else {
-      toggle.checked = stored !== 'false';
-    }
+
+    toggle.checked = (stored === null) ? initial : (stored !== 'false');
     window.setBgmEnabled(toggle.checked);
-    toggle.addEventListener('change', () => {
+
+    toggle.addEventListener('change', function() {
       window.setBgmEnabled(toggle.checked);
+      localStorage.setItem('bgmEnabled', toggle.checked);
     });
   });
 </script>
