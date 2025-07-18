@@ -18,6 +18,36 @@
     <label style="margin-left:1rem;">
       <input type="checkbox" id="music-toggle" name="music" {% if music_enabled %}checked{% endif %}> Music
     </label>
+    <br>
+    <label>
+      LLM Return Length:
+      <input type="number" name="llm_return_length" min="15" max="100" value="{{ llm_length }}">
+    </label>
+    <label style="margin-left:1rem;">
+      <input type="checkbox" name="voice" {% if voice_enabled %}checked{% endif %}> Voice
+    </label>
+    <br>
+    <label>
+      Map Size:
+      <select name="map_size">
+        <option value="Small"  {% if map_size=='Small'  %}selected{% endif %}>Small</option>
+        <option value="Medium" {% if map_size=='Medium' %}selected{% endif %}>Medium</option>
+        <option value="Large"  {% if map_size=='Large'  %}selected{% endif %}>Large</option>
+      </select>
+    </label>
+    <label style="margin-left:1rem;">
+      <input type="checkbox" name="randomize_map" {% if randomize_map %}checked{% endif %}> Randomize Map
+    </label>
+    <br>
+    <label>
+      Display Theme:
+      <select name="display_theme">
+        <option value="Standard" {% if display_theme=='Standard' %}selected{% endif %}>Standard</option>
+        <option value="Light"    {% if display_theme=='Light'    %}selected{% endif %}>Light</option>
+        <option value="Burnt"    {% if display_theme=='Burnt'    %}selected{% endif %}>Burnt</option>
+        <option value="Retro"    {% if display_theme=='Retro'    %}selected{% endif %}>Retro</option>
+      </select>
+    </label>
     <div class="button-row">
       <button type="submit" class="button">Save Settings</button>
       <a class="button" href="{{ url_for('menu') }}">← Back</a>

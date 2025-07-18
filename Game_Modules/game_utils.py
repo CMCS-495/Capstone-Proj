@@ -88,7 +88,8 @@ def move_player(session, tgt_room, spawn_chance=0.6):
         # lazy-generate description and write it back to the master list
         if not e.get('llm_description'):
             ctx = {'name': e['name'], 'level': e.get('level',1)}
-            desc = llm_client.generate_description('enemy', ctx)
+            length = session.get('settings', {}).get('llm_return_length', 50)
+            desc = llm_client.generate_description('enemy', ctx, length)
             e['llm_description'] = desc
             # persist into RAW_ENEMIES so your save will include it
             for master in RAW_ENEMIES:
@@ -137,7 +138,8 @@ def search_room(session, search_chance=0.5):
                 'stats': {k:v for k,v in found.items()
                           if k not in ('name','type','drop_rate')}
             }
-            found['llm_description'] = llm_client.generate_description('gear', ctx)
+            length = session.get('settings', {}).get('llm_return_length', 50)
+            found['llm_description'] = llm_client.generate_description('gear', ctx, length)
 
         # Append to the player's inventory
         inv = session.setdefault('inventory', [])
