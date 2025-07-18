@@ -43,8 +43,21 @@ def start_game():
     settings  = session.get('settings', {})
     diff      = form_diff or settings.get('difficulty', 'Normal')
     music     = settings.get('music', True)
+    llm_len   = settings.get('llm_return_length', 50)
+    voice     = settings.get('voice', False)
+    map_size  = settings.get('map_size', 'Medium')
+    randomize = settings.get('randomize_map', False)
+    theme     = settings.get('display_theme', 'Standard')
     session.clear()
-    session['settings'] = {'difficulty': diff, 'music': music}
+    session['settings'] = {
+        'difficulty': diff,
+        'music': music,
+        'llm_return_length': llm_len,
+        'voice': voice,
+        'map_size': map_size,
+        'randomize_map': randomize,
+        'display_theme': theme,
+    }
 
     # Determine starting HP from difficulty
     hp_map = {'easy': 100, 'normal': 50, 'hard': 10}
@@ -180,20 +193,41 @@ def load_save():
 
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    # Persist difficulty and music toggle in session
+    # Persist difficulty and other toggles in session
     if request.method == 'POST':
-        diff = request.form.get('difficulty')
-        music = request.form.get('music') == 'on'
+        diff     = request.form.get('difficulty')
+        music    = request.form.get('music') == 'on'
+        llm_len  = int(request.form.get('llm_return_length', 50))
+        voice    = request.form.get('voice') == 'on'
+        map_size = request.form.get('map_size')
+        randomize = request.form.get('randomize_map') == 'on'
+        theme    = request.form.get('display_theme')
+
         session['settings'] = session.get('settings', {})
-        session['settings']['difficulty'] = diff
-        session['settings']['music'] = music
+        session['settings'].update({
+            'difficulty': diff,
+            'music': music,
+            'llm_return_length': llm_len,
+            'voice': voice,
+            'map_size': map_size,
+            'randomize_map': randomize,
+            'display_theme': theme,
+        })
         flash(f"Difficulty set to {diff}", "success")
         return redirect(url_for('menu'))
 
     # On GET, show the form with current settings
-    current = session.get('settings', {}).get('difficulty', 'Normal')
-    music_enabled = session.get('settings', {}).get('music', True)
-    return render_template('settings.html', current=current, music_enabled=music_enabled)
+    s = session.get('settings', {})
+    return render_template(
+        'settings.html',
+        current=s.get('difficulty', 'Normal'),
+        music_enabled=s.get('music', True),
+        llm_length=s.get('llm_return_length', 50),
+        voice_enabled=s.get('voice', False),
+        map_size=s.get('map_size', 'Medium'),
+        randomize_map=s.get('randomize_map', False),
+        display_theme=s.get('display_theme', 'Standard'),
+    )
 
 # ----- EXPLORE -----
 @app.route('/explore', methods=['GET','POST'])
@@ -243,9 +277,12 @@ def explore():
     room_id = session['room_id']
     room    = game_map[room_id]
     if not room.get('llm_description'):
-        ctx = {'prompt':room.get('llm_prompt',''),
-               'neighbors':room.get('neighbors',[])}
-        room['llm_description'] = llm_client.generate_description('room', ctx)
+        ctx = {
+            'prompt': room.get('llm_prompt', ''),
+            'neighbors': room.get('neighbors', [])
+        }
+        length = session.get('settings', {}).get('llm_return_length', 50)
+        room['llm_description'] = llm_client.generate_description('room', ctx, length)
 
     # 4.5) Generate/update minimap image for current position
     from Game_Modules.MiniMap import generate_minimap
