@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Loading…</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      background: #111;
+      color: #eee;
+      font-family: sans-serif;
+    }
+    .spinner {
+      border: 8px solid #333;
+      border-top: 8px solid #eee;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Hidden, looping background music -->
+  <audio id="bgm" loop preload="auto" autoplay style="display:none">
+    <source src="{{ url_for('static', filename='audio/escape-the-dungeon-dubious-dungeon.mp3') }}" type="audio/mpeg">
+    Your browser doesn’t support HTML5 audio.
+  </audio>
+  <script src="{{ url_for('static', filename='bgm.js') }}"></script>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p>Thinking… one moment please.</p>
+  </div>
+</body>
+</html>

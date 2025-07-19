@@ -1,0 +1,35 @@
+{# templates/load_save.html #}
+{% extends 'base.html' %}
+
+{% block title %}Load Save{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Load Your Save</h1>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <ul class="flash-list">
+        {% for category, msg in messages %}
+          <li class="{{ category }}">{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="post"
+        action="{{ url_for('load_save') }}"
+        enctype="multipart/form-data">
+    <label>
+      Select your save ZIP:
+      <input type="file"
+             name="save_file"
+             accept=".zip"
+             required>
+    </label>
+    <div class="button-row">
+      <button type="submit" class="button">Load Save</button>
+      <a class="button" href="{{ url_for('menu') }}">← Back</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
