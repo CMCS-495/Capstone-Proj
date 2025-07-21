@@ -199,13 +199,13 @@ def load_save():
 def settings():
     # Persist difficulty and other toggles in session
     if request.method == 'POST':
-        diff     = request.form.get('difficulty')
-        music    = request.form.get('music') == 'on'
-        llm_len  = int(request.form.get('llm_return_length', 50))
-        voice    = request.form.get('voice') == 'on'
-        map_size = request.form.get('map_size')
+        diff      = request.form.get('difficulty')
+        music     = request.form.get('music') == 'on'
+        llm_len   = int(request.form.get('llm_return_length', 50))
+        voice     = request.form.get('voice') == 'on'
+        map_size  = request.form.get('map_size')
         randomize = request.form.get('randomize_map') == 'on'
-        theme    = request.form.get('display_theme')
+        theme     = request.form.get('display_theme')
 
         session['settings'] = session.get('settings', {})
         session['settings'].update({
@@ -230,7 +230,7 @@ def settings():
         voice_enabled=s.get('voice', False),
         map_size=s.get('map_size', 'Medium'),
         randomize_map=s.get('randomize_map', False),
-        display_theme=s.get('display_theme', 'Standard'),
+        display_theme=s.get('display_theme', 'Standard')
     )
 
 # ----- EXPLORE -----
@@ -275,7 +275,6 @@ def explore():
         session.get('xp',0)
     )
     player.hp = session.get('hp', player.hp)
-
 
     # 4) Lazy-generate room description
     room_id = session['room_id']

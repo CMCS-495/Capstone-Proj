@@ -5,7 +5,9 @@
 
   function init() {
     const audio = document.getElementById('bgm');
-    if (!audio) return;
+    if (!audio) {
+      return;
+    }
 
     if (storage.getItem(ENABLED) === null) {
       storage.setItem(ENABLED, 'true');
@@ -44,7 +46,9 @@
   window.setBgmEnabled = function(flag) {
     storage.setItem(ENABLED, flag ? 'true' : 'false');
     const audio = document.getElementById('bgm');
-    if (!audio) return;
+    if (!audio) {
+      return;
+    }
     if (flag) {
       const start = parseFloat(storage.getItem(TIME)) || 0;
       if (!isNaN(start)) {

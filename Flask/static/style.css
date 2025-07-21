@@ -36,7 +36,7 @@ body {
   justify-content: center;
   min-height: 100vh;
   position: relative;
-  overflow-x: hidden;
+  overflow-x: visible;
 }
 
 /* Animated background particles */
@@ -366,8 +366,10 @@ li {
 }
 
 .settings-list li {
-  display: block;
   margin: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 li:hover {

@@ -1,8 +1,9 @@
 {
   "difficulty": "normal",
-  "llmReturnLength": 150,
+  "music": "on",
+  "llm_return_length": 150,
   "voice": "on",
-  "mapSize": "Medium",
-  "randomizeMap": "Off",
-  "displayTheme": "Standard"
+  "map_size": "Medium",
+  "randomize_map": "Off",
+  "display_theme": "Standard"
 }
