@@ -359,6 +359,12 @@ li {
   transition: all 0.3s ease;
 }
 
+.settings-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 li:hover {
   background: var(--panel-dark);
   border-left-color: var(--accent-glow);
