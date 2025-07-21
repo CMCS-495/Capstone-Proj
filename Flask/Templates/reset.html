@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Session Reset{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Session Reset</h1>
+        <p>Your session has been cleared. Please <a href="{{ url_for('menu') }}">go back/a> again to continue.</p>
+    </div>
+{% endblock %}

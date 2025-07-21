@@ -39,6 +39,13 @@ def menu():
     current = session.get('settings', {}).get('difficulty', 'Normal')
     return render_template('menu.html', current=current)
 
+@app.route('/reset', methods=['GET', 'POST'])
+def reset_session():
+    if request.method == 'POST':
+        session.clear()
+        return redirect(url_for('menu'))
+    return render_template('reset.html')
+
 @app.route('/start', methods=['POST'])
 def start_game():
     """Begin a new game using the selected difficulty settings."""

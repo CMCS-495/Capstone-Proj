@@ -1,4 +1,3 @@
-{# templates/settings.html #}
 {% extends 'base.html' %}
 
 {% block title %}Settings{% endblock %}
@@ -9,12 +8,9 @@
   <form method="post" action="{{ url_for('settings') }}">
     <ul class="settings-list">
       <li>
-        <label>
+        <label for="difficulty">
           Difficulty:
-          <span class="tooltip" title="Select the difficulty level for the game.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <select name="difficulty">
+          <select id="difficulty" name="difficulty">
             <option value="Easy"   {% if current=='Easy'   %}selected{% endif %}>Easy</option>
             <option value="Normal" {% if current=='Normal' %}selected{% endif %}>Normal</option>
             <option value="Hard"   {% if current=='Hard'   %}selected{% endif %}>Hard</option>
@@ -22,11 +18,8 @@
         </label>
       </li>
       <li>
-        <label>
+        <label for="music-toggle">
           Music:
-          <span class="tooltip" title="Enable or disable background music.">
-            <i class="fa fa-info-circle"></i>
-          </span>
           <input
             type="checkbox"
             id="music-toggle"
@@ -37,30 +30,33 @@
         </label>
       </li>
       <li>
-        <label>
+        <label for="llm_return_length">
           LLM Return Length:
-          <span class="tooltip" title="Adjust the length of responses from the language model.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <input type="number" name="llm_return_length" min="15" max="100" value="{{ llm_length }}">
+          <input
+            type="number"
+            id="llm_return_length"
+            name="llm_return_length"
+            min="15"
+            max="100"
+            value="{{ llm_length }}"
+          >
         </label>
       </li>
       <li>
-        <label>
+        <label for="voice-toggle">
           Voice:
-          <span class="tooltip" title="Enable or disable voice responses.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <input type="checkbox" name="voice" {% if voice_enabled %}checked{% endif %}> Voice
+          <input
+            type="checkbox"
+            id="voice-toggle"
+            name="voice"
+            {% if voice_enabled %}checked{% endif %}
+          >
         </label>
       </li>
       <li>
-        <label>
+        <label for="map-size">
           Map Size:
-          <span class="tooltip" title="Choose the size of the game map.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <select name="map_size">
+          <select id="map-size" name="map_size">
             <option value="Small"  {% if map_size=='Small'  %}selected{% endif %}>Small</option>
             <option value="Medium" {% if map_size=='Medium' %}selected{% endif %}>Medium</option>
             <option value="Large"  {% if map_size=='Large'  %}selected{% endif %}>Large</option>
@@ -68,21 +64,20 @@
         </label>
       </li>
       <li>
-        <label>
+        <label for="randomize-map">
           Randomize Map:
-          <span class="tooltip" title="Randomize the map layout each time you play.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <input type="checkbox" name="randomize_map" {% if randomize_map %}checked{% endif %}> Randomize Map
+          <input
+            type="checkbox"
+            id="randomize-map"
+            name="randomize_map"
+            {% if randomize_map %}checked{% endif %}
+          >
         </label>
       </li>
       <li>
-        <label>
+        <label for="display-theme">
           Display Theme:
-          <span class="tooltip" title="Choose the visual theme for the game.">
-            <i class="fa fa-info-circle"></i>
-          </span>
-          <select name="display_theme">
+          <select id="display-theme" name="display_theme">
             <option value="Standard" {% if display_theme=='Standard' %}selected{% endif %}>Standard</option>
             <option value="Light"    {% if display_theme=='Light'    %}selected{% endif %}>Light</option>
             <option value="Burnt"    {% if display_theme=='Burnt'    %}selected{% endif %}>Burnt</option>
