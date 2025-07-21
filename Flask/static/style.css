@@ -368,6 +368,9 @@ li {
 .settings-list li {
   display: block;
   margin: 0.75rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 li:hover {
