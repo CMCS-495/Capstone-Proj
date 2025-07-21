@@ -11,6 +11,9 @@
       <li>
         <label>
           Difficulty:
+          <span class="tooltip" title="Select the difficulty level for the game.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <select name="difficulty">
             <option value="Easy"   {% if current=='Easy'   %}selected{% endif %}>Easy</option>
             <option value="Normal" {% if current=='Normal' %}selected{% endif %}>Normal</option>
@@ -20,6 +23,10 @@
       </li>
       <li>
         <label>
+          Music:
+          <span class="tooltip" title="Enable or disable background music.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <input
             type="checkbox"
             id="music-toggle"
@@ -27,23 +34,32 @@
             {% if music_enabled %}checked{% endif %}
             data-music-enabled="{{ music_enabled | tojson }}"
           >
-          Music
         </label>
       </li>
       <li>
         <label>
           LLM Return Length:
+          <span class="tooltip" title="Adjust the length of responses from the language model.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <input type="number" name="llm_return_length" min="15" max="100" value="{{ llm_length }}">
         </label>
       </li>
       <li>
         <label>
+          Voice:
+          <span class="tooltip" title="Enable or disable voice responses.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <input type="checkbox" name="voice" {% if voice_enabled %}checked{% endif %}> Voice
         </label>
       </li>
       <li>
         <label>
           Map Size:
+          <span class="tooltip" title="Choose the size of the game map.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <select name="map_size">
             <option value="Small"  {% if map_size=='Small'  %}selected{% endif %}>Small</option>
             <option value="Medium" {% if map_size=='Medium' %}selected{% endif %}>Medium</option>
@@ -53,12 +69,19 @@
       </li>
       <li>
         <label>
+          Randomize Map:
+          <span class="tooltip" title="Randomize the map layout each time you play.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <input type="checkbox" name="randomize_map" {% if randomize_map %}checked{% endif %}> Randomize Map
         </label>
       </li>
       <li>
         <label>
           Display Theme:
+          <span class="tooltip" title="Choose the visual theme for the game.">
+            <i class="fa fa-info-circle"></i>
+          </span>
           <select name="display_theme">
             <option value="Standard" {% if display_theme=='Standard' %}selected{% endif %}>Standard</option>
             <option value="Light"    {% if display_theme=='Light'    %}selected{% endif %}>Light</option>
@@ -70,7 +93,7 @@
     </ul>
     <div class="button-row">
       <button type="submit" class="button">Save Settings</button>
-      <a class="button" href="{{ url_for('menu') }}">← Back</a>
+      <a class="button" href="{{ url_for('menu') }}">Back</a>
     </div>
   </form>
 </div>
