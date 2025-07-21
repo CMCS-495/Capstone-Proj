@@ -23,7 +23,10 @@ from Game_Modules.game_utils import (
 )
 from Game_Modules import rng, save_load
 
-app = Flask(__name__)
+# Explicitly point Flask to the capitalized Templates directory so the
+# application can locate HTML templates when running on case-sensitive
+# file systems.
+app = Flask(__name__, template_folder='Templates', static_folder='static')
 app.secret_key = os.urandom(24)
 
 # Precompute ROOM_NAMES mapping for templates
