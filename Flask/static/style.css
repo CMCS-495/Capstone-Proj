@@ -359,6 +359,12 @@ li {
   transition: all 0.3s ease;
 }
 
+.settings-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
 .settings-list li {
   display: flex;
   justify-content: space-between;
