@@ -1,141 +1,761 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{{ player.name }}'s Inventory</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <style>
-    /* Quick table styling */
-    table.inventory {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 1em;
-    }
-    table.inventory th,
-    table.inventory td {
-      border: 1px solid #666;
-      padding: 0.5em;
-      text-align: left;
-    }
-    table.inventory th {
-      background: #333;
-      color: #fff;
-    }
-    .actions button {
-      margin-right: 0.3em;
-    }
-  </style>
-</head>
-<body>
-  <!-- Hidden, looping background music -->
-  <audio id="bgm" loop preload="auto" autoplay style="display:none">
-    <source src="{{ url_for('static', filename='audio/escape-the-dungeon-dubious-dungeon.mp3') }}" type="audio/mpeg">
-    Your browser doesn’t support HTML5 audio.
-  </audio>
-  <script src="{{ url_for('static', filename='bgm.js') }}"></script>
-  <div class="container">
-    <h1>Inventory</h1>
+{% extends 'base.html' %}
 
-    <!-- Player stats -->
-    <div class="stats">
-      <div><strong>{{ player.name }}</strong> (Level {{ player.level }})</div>
-      <div>HP: {{ player.hp }} &nbsp; ATK: {{ player.attack }} &nbsp; DEF: {{ player.defense }} &nbsp; SPD: {{ player.speed }} &nbsp; XP: {{ player.xp }}</div>
+{% block title %}{{ player.name }}'s Inventory - Dungeon Crawler{% endblock %}
+
+{% block content %}
+<div class="inventory-container">
+  <!-- Inventory Header -->
+  <div class="inventory-header">
+    <h1>🎒 {{ player.name }}'s Inventory</h1>
+    <div class="hero-badge">
+      <span class="badge-icon">⭐</span>
+      <span class="badge-text">Level {{ player.level }} Hero</span>
     </div>
-
-    <hr>
-
-    <form method="post">
-      <table class="inventory">
-        <thead>
-          <tr>
-            <th>Type</th>
-            <th>Name</th>
-            <th>ATK</th>
-            <th>DEF</th>
-            <th>SPD</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-      <tbody>
-      {% for item in items %}
-        {% set idx = loop.index0 %}
-        <tr title="{{ item.llm_description }}">
-          <td>{{ item.type|capitalize }}</td>
-          <td>{{ item.name }}</td>
-          <td>{{ item.attack or '' }}</td>
-          <td>{{ item.defense or '' }}</td>
-          <td>{{ item.speed or '' }}</td>
-          <td class="actions">
-            {# Equip/Unequip or Use #}
-            <form method="post">
-              <input type="hidden" name="item_index" value="{{ idx }}">
-              {% if item.type != 'aid' %}
-                {% if equipped[item.type] and equipped[item.type].name == item.name %}
-                  <button name="action" value="unequip">Unequip</button>
-                {% else %}
-                  <button name="action" value="equip">Equip</button>
-                {% endif %}
-              {% else %}
-                <button name="action" value="use">Use</button>
-              {% endif %}
-            </form>
-
-            {# Drop #}
-            <form method="post">
-              <input type="hidden" name="item_index" value="{{ idx }}">
-              <button name="action" value="drop">Drop</button>
-            </form>
-          </td>
-        </tr>
-      {% else %}
-        <tr><td colspan="6"><em>No items in inventory.</em></td></tr>
-      {% endfor %}
-      </tbody>
-      </table>
-    </form>
-
-    <hr>
-
-    <h2>Equipped Gear</h2>
-    <table class="inventory">
-      <thead>
-        <tr>
-          <th>Slot</th>
-          <th>Item</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for slot, itm in equipped.items() %}
-        <tr>
-          <td>{{ slot|capitalize }}</td>
-          <td>{{ itm.name if itm else 'None' }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-
-    <p>
-      <a class="button" href="{{ url_for('explore') }}">← Back to Game</a>
-    </p>
   </div>
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('loading-overlay');
-    // Show overlay
-    const show = () => overlay.style.display = 'flex';
 
-    // Any form submit…
-    document.querySelectorAll('form').forEach(f => {
-      f.addEventListener('submit', show);
-    });
-    // Any internal link click…
-    document.querySelectorAll('a[href]').forEach(a => {
-      const href = a.getAttribute('href');
-      if(href.startsWith('/') && !href.startsWith('//')) {
-        a.addEventListener('click', show);
-      }
-    });
-  });
-  </script>
-</body>
-</html>
+  <!-- Player Stats Overview -->
+  <div class="stats-overview">
+    <div class="stats-card">
+      <div class="stats-title">📊 Character Stats</div>
+      <div class="stats-grid">
+        <div class="stat-item health">
+          <div class="stat-icon">❤️</div>
+          <div class="stat-info">
+            <div class="stat-label">Health</div>
+            <div class="stat-value">{{ player.hp }}</div>
+          </div>
+        </div>
+        
+        <div class="stat-item attack">
+          <div class="stat-icon">⚔️</div>
+          <div class="stat-info">
+            <div class="stat-label">Attack</div>
+            <div class="stat-value">{{ player.attack }}</div>
+          </div>
+        </div>
+        
+        <div class="stat-item defense">
+          <div class="stat-icon">🛡️</div>
+          <div class="stat-info">
+            <div class="stat-label">Defense</div>
+            <div class="stat-value">{{ player.defense }}</div>
+          </div>
+        </div>
+        
+        <div class="stat-item speed">
+          <div class="stat-icon">💨</div>
+          <div class="stat-info">
+            <div class="stat-label">Speed</div>
+            <div class="stat-value">{{ player.speed }}</div>
+          </div>
+        </div>
+        
+        <div class="stat-item xp">
+          <div class="stat-icon">✨</div>
+          <div class="stat-info">
+            <div class="stat-label">Experience</div>
+            <div class="stat-value">{{ player.xp }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipment Section -->
+  <div class="equipment-section">
+    <h2>⚡ Equipped Gear</h2>
+    <div class="equipment-grid">
+      {% for slot, item in equipped.items() %}
+        <div class="equipment-slot {{ slot }}" data-slot="{{ slot }}">
+          <div class="slot-header">
+            <div class="slot-icon">
+              {% if slot == 'weapon' %}🗡️
+              {% elif slot == 'armor' %}🛡️
+              {% elif slot == 'helmet' %}⛑️
+              {% elif slot == 'boots' %}👢
+              {% elif slot == 'ring' %}💍
+              {% else %}📦
+              {% endif %}
+            </div>
+            <div class="slot-name">{{ slot|title }}</div>
+          </div>
+          
+          <div class="slot-content">
+            {% if item %}
+              <div class="equipped-item">
+                <div class="item-name">{{ item.name }}</div>
+                <div class="item-stats">
+                  {% if item.attack %}
+                    <span class="stat-boost attack">⚔️ +{{ item.attack }}</span>
+                  {% endif %}
+                  {% if item.defense %}
+                    <span class="stat-boost defense">🛡️ +{{ item.defense }}</span>
+                  {% endif %}
+                  {% if item.speed %}
+                    <span class="stat-boost speed">💨 +{{ item.speed }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            {% else %}
+              <div class="empty-slot">
+                <div class="empty-text">Empty</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Inventory Items -->
+  <div class="inventory-section">
+    <h2>📦 Bag Contents</h2>
+    {% if items %}
+      <div class="inventory-grid">
+        {% for item in items %}
+          {% set idx = loop.index0 %}
+          <div class="inventory-item {{ item.type }}" title="{{ item.llm_description or item.name }}">
+            <div class="item-header">
+              <div class="item-icon">
+                {% if item.type == 'weapon' %}⚔️
+                {% elif item.type == 'armor' %}🛡️
+                {% elif item.type == 'helmet' %}⛑️
+                {% elif item.type == 'boots' %}👢
+                {% elif item.type == 'ring' %}💍
+                {% elif item.type == 'aid' %}🧪
+                {% else %}📦
+                {% endif %}
+              </div>
+              <div class="item-quality {{ item.type }}"></div>
+            </div>
+            
+            <div class="item-body">
+              <div class="item-name">{{ item.name }}</div>
+              
+              {% if item.type != 'aid' %}
+                <div class="item-stats">
+                  {% if item.attack %}
+                    <div class="stat-line attack">
+                      <span class="stat-icon">⚔️</span>
+                      <span class="stat-value">{{ item.attack }}</span>
+                    </div>
+                  {% endif %}
+                  {% if item.defense %}
+                    <div class="stat-line defense">
+                      <span class="stat-icon">🛡️</span>
+                      <span class="stat-value">{{ item.defense }}</span>
+                    </div>
+                  {% endif %}
+                  {% if item.speed %}
+                    <div class="stat-line speed">
+                      <span class="stat-icon">💨</span>
+                      <span class="stat-value">{{ item.speed }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="item-actions">
+              <form method="post" class="action-form">
+                <input type="hidden" name="item_index" value="{{ idx }}">
+                
+                {% if item.type != 'aid' %}
+                  {% if equipped[item.type] and equipped[item.type].name == item.name %}
+                    <button name="action" value="unequip" class="item-btn unequip-btn">
+                      <span class="btn-icon">🔓</span>
+                      <span class="btn-text">Unequip</span>
+                    </button>
+                  {% else %}
+                    <button name="action" value="equip" class="item-btn equip-btn">
+                      <span class="btn-icon">⚡</span>
+                      <span class="btn-text">Equip</span>
+                    </button>
+                  {% endif %}
+                {% else %}
+                  <button name="action" value="use" class="item-btn use-btn">
+                    <span class="btn-icon">🍶</span>
+                    <span class="btn-text">Use</span>
+                  </button>
+                {% endif %}
+                
+                <button name="action" value="drop" class="item-btn drop-btn">
+                  <span class="btn-icon">🗑️</span>
+                  <span class="btn-text">Drop</span>
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-inventory">
+        <div class="empty-icon">📭</div>
+        <div class="empty-message">
+          <h3>Your bag is empty!</h3>
+          <p>Explore the dungeon to find treasure and equipment.</p>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Navigation -->
+  <div class="inventory-navigation">
+    <a href="{{ url_for('explore') }}" class="nav-btn primary">
+      <span class="btn-icon">🚪</span>
+      <span class="btn-text">Back to Adventure</span>
+    </a>
+    
+    <a href="{{ url_for('save_as') }}" class="nav-btn secondary">
+      <span class="btn-icon">💾</span>
+      <span class="btn-text">Save Game</span>
+    </a>
+  </div>
+</div>
+
+<style>
+/* Enhanced inventory-specific styles */
+.inventory-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--panel-dark);
+  border: 3px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+.inventory-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.inventory-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--accent);
+}
+
+.hero-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--panel-light);
+  border: 2px solid var(--accent);
+  border-radius: 25px;
+  color: var(--accent);
+  box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+}
+
+.badge-icon {
+  font-size: 1.2rem;
+  animation: badgeGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes badgeGlow {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+
+.badge-text {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.stats-overview {
+  margin-bottom: 3rem;
+}
+
+.stats-card {
+  background: var(--panel-light);
+  border: 2px solid var(--border-color);
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.stats-title {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  text-shadow: 0 0 5px var(--accent-glow);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--panel-dark);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+.stat-item.health { border-left: 4px solid var(--health-color); }
+.stat-item.attack { border-left: 4px solid #e67e22; }
+.stat-item.defense { border-left: 4px solid var(--mana-color); }
+.stat-item.speed { border-left: 4px solid var(--success-color); }
+.stat-item.xp { border-left: 4px solid var(--xp-color); }
+
+.stat-icon {
+  font-size: 1.5rem;
+  width: 40px;
+  text-align: center;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text-light);
+}
+
+.equipment-section, .inventory-section {
+  margin-bottom: 3rem;
+}
+
+.equipment-section h2, .inventory-section h2 {
+  color: var(--accent);
+  font-size: 1.3rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  text-shadow: 0 0 5px var(--accent-glow);
+}
+
+.equipment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.equipment-slot {
+  background: var(--panel-light);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.equipment-slot:hover {
+  border-color: var(--accent);
+  box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+}
+
+.equipment-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.slot-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.slot-icon {
+  font-size: 2rem;
+  width: 50px;
+  text-align: center;
+}
+
+.slot-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.slot-content {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.equipped-item {
+  text-align: center;
+  width: 100%;
+}
+
+.item-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--text-light);
+  margin-bottom: 0.5rem;
+}
+
+.item-stats {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.stat-boost {
+  padding: 0.25rem 0.5rem;
+  border-radius: 15px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.stat-boost.attack {
+  background: rgba(231, 76, 60, 0.2);
+  color: var(--health-color);
+  border: 1px solid var(--health-color);
+}
+
+.stat-boost.defense {
+  background: rgba(52, 152, 219, 0.2);
+  color: var(--mana-color);
+  border: 1px solid var(--mana-color);
+}
+
+.stat-boost.speed {
+  background: rgba(39, 174, 96, 0.2);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
+
+.empty-slot {
+  text-align: center;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-style: italic;
+  color: #aaa;
+}
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.inventory-item {
+  background: var(--panel-light);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.inventory-item:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.inventory-item.weapon { border-left: 4px solid #e67e22; }
+.inventory-item.armor { border-left: 4px solid var(--mana-color); }
+.inventory-item.helmet { border-left: 4px solid #9b59b6; }
+.inventory-item.boots { border-left: 4px solid #16a085; }
+.inventory-item.ring { border-left: 4px solid var(--xp-color); }
+.inventory-item.aid { border-left: 4px solid var(--success-color); }
+
+.item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.item-icon {
+  font-size: 2rem;
+}
+
+.item-quality {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: qualityPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes qualityPulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+.item-body {
+  margin-bottom: 1.5rem;
+}
+
+.inventory-item .item-name {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+}
+
+.inventory-item .item-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--panel-dark);
+  border-radius: 5px;
+}
+
+.stat-line .stat-icon {
+  font-size: 1rem;
+  width: 20px;
+}
+
+.stat-line .stat-value {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.item-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--panel-dark);
+  color: var(--text-light);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 80px;
+}
+
+.item-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.equip-btn {
+  border-color: var(--success-color);
+  color: var(--success-color);
+}
+
+.equip-btn:hover {
+  background: var(--success-color);
+  color: white;
+}
+
+.unequip-btn {
+  border-color: var(--warning-color);
+  color: var(--warning-color);
+}
+
+.unequip-btn:hover {
+  background: var(--warning-color);
+  color: white;
+}
+
+.use-btn {
+  border-color: var(--mana-color);
+  color: var(--mana-color);
+}
+
+.use-btn:hover {
+  background: var(--mana-color);
+  color: white;
+}
+
+.drop-btn {
+  border-color: var(--health-color);
+  color: var(--health-color);
+}
+
+.drop-btn:hover {
+  background: var(--health-color);
+  color: white;
+}
+
+.btn-icon {
+  font-size: 1rem;
+}
+
+.btn-text {
+  font-weight: bold;
+}
+
+.empty-inventory {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--panel-light);
+  border: 2px dashed var(--border-color);
+  border-radius: 15px;
+  opacity: 0.7;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: emptyFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.empty-message h3 {
+  margin: 0 0 1rem 0;
+  color: var(--accent);
+  font-size: 1.2rem;
+}
+
+.empty-message p {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.inventory-navigation {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 2.5rem;
+  background: var(--panel-light);
+  color: var(--text-light);
+  border: 3px solid var(--accent);
+  border-radius: 12px;
+  text-decoration: none;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(230, 126, 34, 0.5);
+}
+
+.nav-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent-glow);
+}
+
+.nav-btn.secondary {
+  background: var(--panel-dark);
+  border-color: var(--border-color);
+}
+
+.nav-btn .btn-icon {
+  font-size: 1.2rem;
+}
+
+.nav-btn .btn-text {
+  font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+  
+  .equipment-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+  
+  .inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .inventory-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .inventory-navigation {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .nav-btn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+}
+</style>
+{% endblock %}
