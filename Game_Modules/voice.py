@@ -3,6 +3,13 @@ import uuid
 from voicebox.voiceboxes import SimpleVoicebox
 from voicebox.sinks.wavefile import WaveFile
 
+try:
+    from gtts.lang import tts_langs
+except ImportError:
+    def tts_langs() -> dict:
+        """Fallback if gtts is missing."""
+        return {"en": "English"}
+
 try:  # voicebox's gTTS engine depends on the gtts package
     from voicebox.tts.gtts import gTTS as VoiceboxGTTS
 except ImportError as exc:
