@@ -106,6 +106,17 @@
       window.setBgmEnabled(toggle.checked);
       localStorage.setItem('bgmEnabled', toggle.checked);
     });
+
+    const llmInput = document.getElementById('llm_return_length');
+    llmInput.addEventListener('input', function() {
+      const min = parseInt(llmInput.min, 10);
+      const max = parseInt(llmInput.max, 10);
+      const val = parseInt(llmInput.value, 10);
+      if (!isNaN(val)) {
+        if (val < min) llmInput.value = min;
+        if (val > max) llmInput.value = max;
+      }
+    });
   });
 </script>
 {% endblock %}
