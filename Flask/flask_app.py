@@ -27,7 +27,7 @@ from Game_Modules import voice
 
 try:
     from gtts.lang import tts_langs
-except ModuleNotFoundError:
+except ImportError:
     def tts_langs() -> dict:
         """Fallback if gtts is missing."""
         return {"en": "English"}
