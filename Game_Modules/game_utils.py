@@ -6,6 +6,7 @@ from Game_Modules.import_assets import enemies as RAW_ENEMIES
 from Game_Modules               import llm_client
 from Game_Modules.map           import DungeonMap
 from Game_Modules.entities      import Player
+from Game_Modules import voice
 import random
 
 # initialize shared assets once
@@ -140,6 +141,11 @@ def search_room(session, search_chance=0.5):
             }
             length = session.get('settings', {}).get('llm_return_length', 50)
             found['llm_description'] = llm_client.generate_description('gear', ctx, length)
+
+        # Generate audio for item description if enabled
+        if session.get('settings', {}).get('voice'):
+            voice_name = session.get('settings', {}).get('voice_name', 'en')
+            session['voice_audio'] = voice.generate_voice(found['llm_description'], voice_name)
 
         # Append to the player's inventory
         inv = session.setdefault('inventory', [])

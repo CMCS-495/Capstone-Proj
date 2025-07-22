@@ -54,6 +54,16 @@
         </label>
       </li>
       <li>
+        <label for="voice-name">
+          Voice Language:
+          <select id="voice-name" name="voice_name">
+            {% for code, name in voice_choices.items() %}
+              <option value="{{ code }}" {% if voice_name==code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+      </li>
+      <li>
         <label for="map-size">
           Map Size:
           <select id="map-size" name="map_size">
