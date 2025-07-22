@@ -24,7 +24,7 @@ from Game_Modules.game_utils import (
 
 from Game_Modules import rng, save_load
 from Game_Modules import voice
-from gtts.lang import tts_langs
+from Game_Modules.voice import tts_langs
 
 # Explicitly point Flask to the capitalized Templates directory so the
 # application can locate HTML templates when running on case-sensitive

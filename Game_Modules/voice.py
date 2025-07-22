@@ -1,6 +1,5 @@
 import os
 import uuid
-from gtts import gTTS
 from voicebox.voiceboxes import SimpleVoicebox
 from voicebox.sinks.wavefile import WaveFile
 from voicebox.tts.gtts import gTTS as VoiceboxGTTS
