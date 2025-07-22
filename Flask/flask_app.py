@@ -23,6 +23,8 @@ from Game_Modules.game_utils import (
 )
 
 from Game_Modules import rng, save_load
+from Game_Modules import voice
+from gtts.lang import tts_langs
 
 # Explicitly point Flask to the capitalized Templates directory so the
 # application can locate HTML templates when running on case-sensitive
@@ -32,6 +34,7 @@ app.secret_key = os.urandom(24)
 
 # Precompute ROOM_NAMES mapping for templates
 ROOM_NAMES = {rid: get_room_name(rid) for rid in dungeon_map.rooms.keys()}
+VOICE_CHOICES = tts_langs()
 
 # ----- MAIN MENU -----
 @app.route('/')
@@ -56,6 +59,7 @@ def start_game():
     music     = settings.get('music', True)
     llm_len   = settings.get('llm_return_length', 50)
     voice     = settings.get('voice', False)
+    voice_name = settings.get('voice_name', 'en')
     map_size  = settings.get('map_size', 'Medium')
     randomize = settings.get('randomize_map', False)
     theme     = settings.get('display_theme', 'Standard')
@@ -65,6 +69,7 @@ def start_game():
         'music': music,
         'llm_return_length': llm_len,
         'voice': voice,
+        'voice_name': voice_name,
         'map_size': map_size,
         'randomize_map': randomize,
         'display_theme': theme,
@@ -93,7 +98,8 @@ def start_game():
             'weapon': None, 'shield': None, 'armor': None,
             'boots':  None, 'ring':   None, 'helmet': None
         },
-        'inventory':    []
+        'inventory':    [],
+        'visited':      [],
     })
     return redirect(url_for('explore'))
 
@@ -216,6 +222,7 @@ def settings():
         else:
             llm_len = max(15, min(100, llm_len))
         voice     = request.form.get('voice') == 'on'
+        voice_name = request.form.get('voice_name', 'en')
         map_size  = request.form.get('map_size')
         randomize = request.form.get('randomize_map') == 'on'
         theme     = request.form.get('display_theme')
@@ -226,6 +233,7 @@ def settings():
             'music': music,
             'llm_return_length': llm_len,
             'voice': voice,
+            'voice_name': voice_name,
             'map_size': map_size,
             'randomize_map': randomize,
             'display_theme': theme,
@@ -241,6 +249,8 @@ def settings():
         music_enabled=s.get('music', True),
         llm_length=s.get('llm_return_length', 50),
         voice_enabled=s.get('voice', False),
+        voice_name=s.get('voice_name', 'en'),
+        voice_choices=VOICE_CHOICES,
         map_size=s.get('map_size', 'Medium'),
         randomize_map=s.get('randomize_map', False),
         display_theme=s.get('display_theme', 'Standard')
@@ -300,6 +310,15 @@ def explore():
         length = session.get('settings', {}).get('llm_return_length', 50)
         room['llm_description'] = llm_client.generate_description('room', ctx, length)
 
+    # Trigger voice narration on first entry
+    if session.get('settings', {}).get('voice'):
+        visited = session.setdefault('visited', [])
+        if room_id not in visited:
+            visited.append(room_id)
+            session['visited'] = visited
+            voice_name = session.get('settings', {}).get('voice_name', 'en')
+            session['voice_audio'] = voice.generate_voice(room['llm_description'], voice_name)
+
     # 4.5) Generate/update minimap image for current position
     from Game_Modules.MiniMap import generate_minimap
     x = room.get('MiniMapX', 0)
@@ -314,6 +333,7 @@ def explore():
     # 6) Pull a one-time message and potion count
     response = session.pop('last_msg','')
     potions  = len([i for i in session.get('inventory',[]) if i.get('type')=='aid'])
+    audio_file = session.pop('voice_audio', None)
 
     # 7) Render with **xp** and **player.name** guaranteed in context
     return render_template('explore.html',
@@ -328,7 +348,8 @@ def explore():
         enemy            = session.get('encounter'),
         response         = response,
         potions          = potions,
-        ROOM_NAMES       = ROOM_NAMES
+        ROOM_NAMES       = ROOM_NAMES,
+        audio_file       = audio_file
     )
 
 # ----- FIGHT -----

@@ -207,6 +207,25 @@
   </div>
 </div>
 
+{% if audio_file %}
+  <audio id="voicebox" autoplay>
+    <source src="{{ url_for('static', filename='voice/' + audio_file) }}" type="audio/wav">
+  </audio>
+  <script>
+    const voiceAudio = document.getElementById('voicebox');
+    const bgm = document.getElementById('bgm');
+    if (voiceAudio) {
+      const orig = bgm ? bgm.volume : 1;
+      voiceAudio.addEventListener('play', () => {
+        if (bgm) bgm.volume = orig * 0.3;
+      });
+      voiceAudio.addEventListener('ended', () => {
+        if (bgm) bgm.volume = orig;
+      });
+    }
+  </script>
+{% endif %}
+
 <style>
 /* Enhanced exploration-specific styles */
 .minimap-header h3 {
