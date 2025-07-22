@@ -6,7 +6,7 @@ from voicebox.sinks.wavefile import WaveFile
 try:  # voicebox's gTTS engine depends on the gtts package
     from voicebox.tts.gtts import gTTS as VoiceboxGTTS
     _import_error = None
-except ModuleNotFoundError as exc:
+except ImportError as exc:
     VoiceboxGTTS = None
     _import_error = exc
 
