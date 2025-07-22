@@ -31,6 +31,8 @@ except ModuleNotFoundError:
     def tts_langs() -> dict:
         """Fallback if gtts is missing."""
         return {"en": "English"}
+from Game_Modules.voice import tts_langs
+
 
 # Explicitly point Flask to the capitalized Templates directory so the
 # application can locate HTML templates when running on case-sensitive
