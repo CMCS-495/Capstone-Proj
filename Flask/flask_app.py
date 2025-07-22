@@ -208,7 +208,13 @@ def settings():
     if request.method == 'POST':
         diff      = request.form.get('difficulty')
         music     = request.form.get('music') == 'on'
-        llm_len   = int(request.form.get('llm_return_length', 50))
+        llm_val   = request.form.get('llm_return_length', '').strip()
+        try:
+            llm_len = int(llm_val)
+        except (TypeError, ValueError):
+            llm_len = session.get('settings', {}).get('llm_return_length', 50)
+        else:
+            llm_len = max(15, min(100, llm_len))
         voice     = request.form.get('voice') == 'on'
         map_size  = request.form.get('map_size')
         randomize = request.form.get('randomize_map') == 'on'
