@@ -45,6 +45,9 @@ def voice_file(filename):
 @app.route('/minimap.png')
 def minimap_png():
     path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+    if not os.path.exists(path):
+        from flask import abort
+        abort(404, description="Minimap image not found.")
     return send_file(path, mimetype='image/png')
 
 # Precompute ROOM_NAMES mapping for templates
