@@ -8,6 +8,8 @@ from Game_Modules.map           import DungeonMap
 from Game_Modules.entities      import Player
 from Game_Modules import voice
 import random
+import threading
+import os
 
 # initialize shared assets once
 dungeon_map = DungeonMap(game_map)
@@ -33,6 +35,10 @@ for category, items in RAW_GEAR.items():
 
 ENEMIES = enemies
 
+# Preloaded room descriptions and spawn rolls
+PRELOADED_ROOMS = {}
+PRESPAWN = {}
+
 def rebuild_player(session, player_template):
     """Reconstruct a Player object from session state + equipped gear."""
     base = player_template.get('stats', {'attack':5,'defense':3,'speed':4})
@@ -56,6 +62,53 @@ def get_room_name(room_id):
     return info.get('name', room_id)
 
 
+def preload_room(room_id, session, spawn_chance=0.6, search_chance=0.5):
+    """Background-preload LLM description and spawn rolls for one room."""
+    if room_id not in dungeon_map.rooms:
+        return
+
+    def task():
+        room = dungeon_map.rooms[room_id]
+        if not room.get('llm_description'):
+            ctx = {
+                'prompt': room.get('llm_prompt', ''),
+                'neighbors': room.get('neighbors', [])
+            }
+            length = session.get('settings', {}).get('llm_return_length', 50)
+            desc = llm_client.generate_description('room', ctx, length)
+            room['llm_description'] = desc
+        pre = {}
+        if random.random() < spawn_chance:
+            weights = [e.get('encounter_rate', 0) for e in RAW_ENEMIES]
+            chosen = random.choices(RAW_ENEMIES, weights=weights, k=1)[0] if sum(weights) > 0 else random.choice(RAW_ENEMIES)
+            enemy = chosen.copy()
+            if not enemy.get('llm_description'):
+                ctx = {'name': enemy['name'], 'level': enemy.get('level',1)}
+                length = session.get('settings', {}).get('llm_return_length', 50)
+                enemy['llm_description'] = llm_client.generate_description('enemy', ctx, length)
+            pre['enemy'] = enemy
+        if random.random() < search_chance:
+            found = random.choice(GEAR_POOL).copy()
+            if not found.get('llm_description'):
+                ctx = {
+                    'name': found.get('name',''),
+                    'stats': {k:v for k,v in found.items() if k not in ('name','type','drop_rate')}
+                }
+                length = session.get('settings', {}).get('llm_return_length', 50)
+                found['llm_description'] = llm_client.generate_description('gear', ctx, length)
+            pre['gear'] = found
+        PRESPAWN[room_id] = pre
+        PRELOADED_ROOMS[room_id] = True
+
+    threading.Thread(target=task, daemon=True).start()
+
+
+def preload_neighbors(room_id, session, spawn_chance=0.6, search_chance=0.5):
+    for nbr in dungeon_map.get_neighbors(room_id):
+        if nbr not in PRELOADED_ROOMS:
+            preload_room(nbr, session, spawn_chance, search_chance)
+
+
 def move_player(session, tgt_room, spawn_chance=0.6):
     """
     Attempt to move. Each time you enter a room, with probability spawn_chance
@@ -73,30 +126,32 @@ def move_player(session, tgt_room, spawn_chance=0.6):
     session.pop('enemy', None)
     session['searched'] = False
 
+    pre = PRESPAWN.pop(tgt_room, None)
+    enemy_data = pre.get('enemy') if pre else None
+
     # Roll for spawn
-    if random.random() < spawn_chance:
-        # Use encounter_rate (0–100) as weights
-        weights = [e.get('encounter_rate', 0) for e in RAW_ENEMIES]
-        # If all rates zero, fallback to uniform
-        if sum(weights) > 0:
-            chosen = random.choices(RAW_ENEMIES, weights=weights, k=1)[0]
+    if enemy_data or random.random() < spawn_chance:
+        if enemy_data:
+            e = enemy_data
         else:
-            chosen = random.choice(RAW_ENEMIES)
+            # Use encounter_rate (0–100) as weights
+            weights = [e.get('encounter_rate', 0) for e in RAW_ENEMIES]
+            # If all rates zero, fallback to uniform
+            chosen = random.choices(RAW_ENEMIES, weights=weights, k=1)[0] if sum(weights) > 0 else random.choice(RAW_ENEMIES)
+            # Prepare the encounter copy
+            e = chosen.copy()
 
-        # Prepare the encounter copy
-        e = chosen.copy()
-
-        # lazy-generate description and write it back to the master list
-        if not e.get('llm_description'):
-            ctx = {'name': e['name'], 'level': e.get('level',1)}
-            length = session.get('settings', {}).get('llm_return_length', 50)
-            desc = llm_client.generate_description('enemy', ctx, length)
-            e['llm_description'] = desc
-            # persist into RAW_ENEMIES so your save will include it
-            for master in RAW_ENEMIES:
-                if master['name'] == e['name']:
-                    master['llm_description'] = desc
-                    break
+            # lazy-generate description and write it back to the master list
+            if not e.get('llm_description'):
+                ctx = {'name': e['name'], 'level': e.get('level',1)}
+                length = session.get('settings', {}).get('llm_return_length', 50)
+                desc = llm_client.generate_description('enemy', ctx, length)
+                e['llm_description'] = desc
+                # persist into RAW_ENEMIES so your save will include it
+                for master in RAW_ENEMIES:
+                    if master['name'] == e['name']:
+                        master['llm_description'] = desc
+                        break
 
         lvl = e.get('level', 1)
         e['level']       = lvl
@@ -111,10 +166,13 @@ def move_player(session, tgt_room, spawn_chance=0.6):
             voice_name = session.get('settings', {}).get('voice_name', 'default')
             session['voice_audio'] = voice.generate_voice(e['llm_description'], voice_name)
 
-        return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
+        msg = f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
+    else:
+        msg = f"You enter {get_room_name(tgt_room)}. It's quiet."
 
-    # No spawn
-    return f"You enter {get_room_name(tgt_room)}. It's quiet."
+    if 'PYTEST_CURRENT_TEST' not in os.environ:
+        preload_neighbors(tgt_room, session)
+    return msg
 
 def search_room(session, search_chance=0.5):
     """
@@ -132,10 +190,14 @@ def search_room(session, search_chance=0.5):
     # mark as searched for this visit
     session['searched'] = True
 
+    pre = PRESPAWN.get(session.get('room_id'), {})
+    found = pre.pop('gear', None) if pre else None
+
     # Roll for a drop
-    if random.random() < search_chance:
-        # Pick and copy a gear item
-        found = random.choice(GEAR_POOL).copy()
+    if found or random.random() < search_chance:
+        if not found:
+            # Pick and copy a gear item
+            found = random.choice(GEAR_POOL).copy()
 
         # Lazy‐generate a description
         if not found.get('llm_description'):

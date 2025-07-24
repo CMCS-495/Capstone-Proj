@@ -19,7 +19,11 @@ from Game_Modules.game_utils import (
     rebuild_player,
     get_room_name,
     process_explore_command,
-    dungeon_map
+    dungeon_map,
+    preload_room,
+    preload_neighbors,
+    PRESPAWN,
+    PRELOADED_ROOMS,
 )
 
 from Game_Modules import rng, save_load
@@ -41,6 +45,9 @@ VOICE_CHOICES = available_voices()
 @app.route('/')
 def menu():
     current = session.get('settings', {}).get('difficulty', 'Normal')
+    if not app.config.get('TESTING'):
+        start_room = player_template.get('start_room', 'R1_1')
+        preload_room(start_room, session)
     return render_template('menu.html', current=current)
 
 @app.route('/reset', methods=['GET', 'POST'])
@@ -65,6 +72,7 @@ def start_game():
     randomize = settings.get('randomize_map', False)
     theme     = settings.get('display_theme', 'Standard')
     session.clear()
+    PRESPAWN.clear()
     session['settings'] = {
         'difficulty': diff,
         'music': music,
@@ -202,6 +210,8 @@ def load_save():
         flash("Please upload a .zip save file.", "error")
         return redirect(url_for('load_save'))
     try:
+        PRESPAWN.clear()
+        PRELOADED_ROOMS.clear()
         save_load.load_game_from_zip(file.stream, session)
         flash("Save loaded successfully.", "success")
         return redirect(url_for('explore'))
@@ -326,6 +336,12 @@ def explore():
     y = room.get('MiniMapy', 0)
     minimap_path = os.path.join(app.root_path, 'static', 'minimap.png')
     generate_minimap(x, y, output_path=minimap_path)
+
+    if not app.config.get('TESTING'):
+        diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
+        spawn_table = {'easy': 0.3, 'normal': 0.6, 'hard': 1.0}
+        spawn_chance = spawn_table.get(diff, 0.6)
+        preload_neighbors(room_id, session, spawn_chance)
 
     # 5) Build neighbor list & names map
     neighbors = dungeon_map.get_neighbors(room_id)
