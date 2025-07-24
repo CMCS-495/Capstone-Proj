@@ -158,7 +158,14 @@ if(-not (Test-Path $sevenZipExePath)){
 #----------------------------------------
 # 5) Install / Extract FFmpeg if missing
 #----------------------------------------
-if(-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)){
+$ffmpegCheck = try {
+    & ffmpeg -version | Out-Null
+    $true
+}catch{
+    $false
+}
+
+if(-not $ffmpegCheck){
     
     Write-Host "FFmpeg not found. Installing..."
     
