@@ -108,7 +108,7 @@ def move_player(session, tgt_room, spawn_chance=0.6):
 
         # Generate audio for the enemy description if voice is enabled
         if session.get('settings', {}).get('voice'):
-            voice_name = session.get('settings', {}).get('voice_name', 'en')
+            voice_name = session.get('settings', {}).get('voice_name', 'default')
             session['voice_audio'] = voice.generate_voice(e['llm_description'], voice_name)
 
         return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
@@ -149,7 +149,7 @@ def search_room(session, search_chance=0.5):
 
         # Generate audio for item description if enabled
         if session.get('settings', {}).get('voice'):
-            voice_name = session.get('settings', {}).get('voice_name', 'en')
+            voice_name = session.get('settings', {}).get('voice_name', 'default')
             session['voice_audio'] = voice.generate_voice(found['llm_description'], voice_name)
 
         # Append to the player's inventory
