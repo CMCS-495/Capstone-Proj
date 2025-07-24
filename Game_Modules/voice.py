@@ -67,7 +67,13 @@ def _glados_voice(text: str, out_mp3: str) -> None:
         sink=WaveFile(wav_path),
     )
     vb.say(text)
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav_path, out_mp3], check=True)
+    try:
+        subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav_path, out_mp3], check=True)
+    except FileNotFoundError:
+        raise RuntimeError(
+            "ffmpeg is required for audio processing but was not found. "
+            "Please install ffmpeg and ensure it is available in your system's PATH."
+        )
     os.remove(wav_path)
 
 
