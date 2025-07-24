@@ -2,8 +2,11 @@
 
 A text based dungeon crawler using Qwen for dynamic descriptions for rooms, items and npc dialog
 
-dependencies
+Dependencies
 
-pip install flask networkx matplotlib pillow pytest voicebox-tts gtts "transformers[torch]" .[torch]
+```
+pip install flask networkx matplotlib pillow pytest gtts "transformers[torch]" .[torch]
+```
 
-must allow auto play in browser for audio
+Audio narration now uses ``gtts`` directly and saves MP3 files in
+``Flask/static/voice``. Ensure your browser allows autoplay of audio.

@@ -1,39 +1,40 @@
 import os
 import uuid
-from voicebox.voiceboxes import SimpleVoicebox
-from voicebox.sinks.wavefile import WaveFile
 
 try:
+    from gtts import gTTS
     from gtts.lang import tts_langs
-except ImportError:
+except ImportError as exc:  # pragma: no cover - gtts is an optional dependency
+    gTTS = None
+
     def tts_langs() -> dict:
-        """Fallback if gtts is missing."""
+        """Return minimal language mapping when gtts is missing."""
         return {"en": "English"}
 
-try:  # voicebox's gTTS engine depends on the gtts package
-    from voicebox.tts.gtts import gTTS as VoiceboxGTTS
-except ImportError as exc:
-    VoiceboxGTTS = None
     _import_error = exc
+
 
 VOICE_DIR = os.path.join(os.path.dirname(__file__), '..', 'Flask', 'static', 'voice')
 
 os.makedirs(VOICE_DIR, exist_ok=True)
 
-def generate_voice(text: str, lang: str = 'en') -> str:
+def generate_voice(text: str, lang: str = "en") -> str:
     """Generate speech audio for the given text.
 
-    Returns the relative filename of the generated WAV file under
-    ``static/voice``.
+    The audio is saved under ``static/voice`` and the relative filename is
+    returned. ``gtts`` is used directly to avoid external decoding
+    dependencies such as ``ffmpeg``.
     """
-    if VoiceboxGTTS is None:
+
+    if gTTS is None:  # pragma: no cover - raised only when dependency missing
         raise RuntimeError(
             "gtts package is required for speech output; install it with 'pip install gtts'"
         ) from _import_error
 
-    filename = f"{uuid.uuid4().hex}.wav"
+    filename = f"{uuid.uuid4().hex}.mp3"
     path = os.path.join(VOICE_DIR, filename)
-    tts_engine = VoiceboxGTTS(lang=lang)
-    vb = SimpleVoicebox(tts=tts_engine, sink=WaveFile(path))
-    vb.say(text)
+
+    tts = gTTS(text=text, lang=lang)
+    tts.save(path)
+
     return filename

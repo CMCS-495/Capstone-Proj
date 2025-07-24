@@ -209,7 +209,7 @@
 
 {% if audio_file %}
   <audio id="voicebox" autoplay>
-    <source src="{{ url_for('static', filename='voice/' + audio_file) }}" type="audio/wav">
+    <source src="{{ url_for('static', filename='voice/' + audio_file) }}" type="audio/mpeg">
   </audio>
   <script>
     const voiceAudio = document.getElementById('voicebox');
