@@ -199,10 +199,13 @@ def save_as():
             z.writestr('inventory.json', json.dumps(player_inv,   indent=2))
             raw_map = list(game_map.values()) if isinstance(game_map, dict) else game_map
             z.writestr('map.json',       json.dumps(raw_map,     indent=2))
-            for fname in os.listdir(temp_utils.VOICE_DIR):
-                fp = os.path.join(temp_utils.VOICE_DIR, fname)
-                if os.path.isfile(fp):
-                    z.write(fp, f"voice/{fname}")
+            if os.path.isdir(temp_utils.VOICE_DIR):
+                for fname in os.listdir(temp_utils.VOICE_DIR):
+                    fp = os.path.join(temp_utils.VOICE_DIR, fname)
+                    if os.path.isfile(fp):
+                        z.write(fp, f"voice/{fname}")
+            else:
+                print(f"Warning: VOICE_DIR '{temp_utils.VOICE_DIR}' does not exist or is not accessible.")
             for fname in os.listdir(temp_utils.MAP_DIR):
                 fp = os.path.join(temp_utils.MAP_DIR, fname)
                 if os.path.isfile(fp):
