@@ -25,3 +25,10 @@ if(-not (Get-Command pip -ErrorAction SilentlyContinue)) {
 
 #install pip packages
 pip install -r requirements.txt
+
+#install ffmpeg
+$ffmpegInstaller = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full.7z"
+$ffmpegInstallerPath = "$env:TEMP\ffmpeg-release-full.7z"
+Invoke-WebRequest -Uri $ffmpegInstaller -OutFile $ffmpegInstallerPath
+Start-Process -FilePath "7z.exe" -ArgumentList "x $ffmpegInstallerPath -o$env:ProgramFiles\ffmpeg" -Wait
+Remove-Item -Path $ffmpegInstallerPath -Force
