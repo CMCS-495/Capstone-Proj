@@ -8,12 +8,9 @@ Start-Process -FilePath $pythonInstallerPath -ArgumentList "/quiet InstallAllUse
 #remove installer after installation
 Remove-Item -Path $pythonInstallerPath -Force
 
-#validate system path
-$pythonPath = (Get-Command python).Source
-if(-not $pythonPath) {
-    Write-Error "Python installation failed or not found in system path."
-    exit 1
-}
+#add python to system path
+$pythonPath = "C:\Python314"
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$pythonPath", [EnvironmentVariableTarget]::Machine)
 
 #install pip if not already installed
 if(-not (Get-Command pip -ErrorAction SilentlyContinue)) {  
@@ -32,3 +29,7 @@ $ffmpegInstallerPath = "$env:TEMP\ffmpeg-release-full.7z"
 Invoke-WebRequest -Uri $ffmpegInstaller -OutFile $ffmpegInstallerPath
 Start-Process -FilePath "7z.exe" -ArgumentList "x $ffmpegInstallerPath -o$env:ProgramFiles\ffmpeg" -Wait
 Remove-Item -Path $ffmpegInstallerPath -Force
+
+#add ffmpeg to system path
+$ffmpegPath = "$env:ProgramFiles\ffmpeg\bin"
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";$ffmpegPath", [EnvironmentVariableTarget]::Machine)
