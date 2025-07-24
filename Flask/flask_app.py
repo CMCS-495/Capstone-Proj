@@ -39,7 +39,9 @@ app.secret_key = os.urandom(24)
 
 @app.route('/voice/<path:filename>')
 def voice_file(filename):
-    path = os.path.join(temp_utils.VOICE_DIR, filename)
+    from werkzeug.utils import secure_filename
+    safe_filename = secure_filename(filename)
+    path = os.path.join(temp_utils.VOICE_DIR, safe_filename)
     return send_file(path, mimetype='audio/mpeg')
 
 @app.route('/minimap.png')
