@@ -31,7 +31,7 @@ class _GTTSWavTTS(WavFileTTS):
 
     def generate_speech_audio_file(self, text: str, audio_file_path: str) -> None:
         tmp_mp3 = f"{audio_file_path}.mp3"
-        gTTS(text=text).save(tmp_mp3)
+        gTTS(text=text, lang='en').save(tmp_mp3)
         subprocess.run(
             ['ffmpeg', '-y', '-loglevel', 'error', '-i', tmp_mp3, audio_file_path],
             check=True,
