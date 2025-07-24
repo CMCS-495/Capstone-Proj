@@ -43,7 +43,7 @@ def test_move_player_spawn(monkeypatch):
 
 def test_move_player_spawn_voice(monkeypatch):
     setup_basic(monkeypatch)
-    session = {'room_id': 'A', 'settings': {'voice': True, 'voice_name': 'en'}}
+    session = {'room_id': 'A', 'settings': {'voice': True, 'voice_name': 'default'}}
     monkeypatch.setattr(random, 'random', lambda: 0.0)
     monkeypatch.setattr(game_utils.voice, 'generate_voice', lambda t, l: 'audio.wav')
     msg = game_utils.move_player(session, 'B', spawn_chance=1.0)
