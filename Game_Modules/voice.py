@@ -84,7 +84,7 @@ def generate_voice(text: str, voice: str = 'default') -> str:
     filename = f"{uuid.uuid4().hex}.mp3"
     path = os.path.join(VOICE_DIR, filename)
 
-    if voice.lower() == 'glados':
+    if voice.lower() == next(key for key in VOICE_OPTIONS if key.lower() == 'glados'):
         _glados_voice(text, path)
     else:
         tts = gTTS(text=text)
