@@ -59,7 +59,7 @@ def start_game():
     diff      = form_diff or settings.get('difficulty', 'Normal')
     music     = settings.get('music', True)
     llm_len   = settings.get('llm_return_length', 50)
-    voice     = settings.get('voice', False)
+    voice     = settings.get('voice', True)
     voice_name = settings.get('voice_name', 'default')
     map_size  = settings.get('map_size', 'Medium')
     randomize = settings.get('randomize_map', False)
@@ -249,7 +249,7 @@ def settings():
         current=s.get('difficulty', 'Normal'),
         music_enabled=s.get('music', True),
         llm_length=s.get('llm_return_length', 50),
-        voice_enabled=s.get('voice', False),
+        voice_enabled=s.get('voice', True),
         voice_name=s.get('voice_name', 'default'),
         voice_choices=VOICE_CHOICES,
         map_size=s.get('map_size', 'Medium'),
