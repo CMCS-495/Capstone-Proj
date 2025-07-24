@@ -117,6 +117,10 @@ if(-not (Get-Command pip -ErrorAction SilentlyContinue)){
     Remove-Item -Path $getPipPath -Force -ErrorAction SilentlyContinue
 }else{
     Write-Host "pip is already installed."
+
+    if(Test-Path "$projectRoot\requirements.txt"){
+        pip install "$projectRoot\requirements.txt"
+    }
 }
 
 #----------------------------------------
