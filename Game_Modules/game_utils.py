@@ -106,6 +106,11 @@ def move_player(session, tgt_room, spawn_chance=0.6):
         session['enemy']     = e['name']
         session['encounter'] = e
 
+        # Generate audio for the enemy description if voice is enabled
+        if session.get('settings', {}).get('voice'):
+            voice_name = session.get('settings', {}).get('voice_name', 'en')
+            session['voice_audio'] = voice.generate_voice(e['llm_description'], voice_name)
+
         return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
 
     # No spawn

@@ -41,6 +41,15 @@ def test_move_player_spawn(monkeypatch):
     assert session['room_id'] == 'B'
     assert 'encounter' in session
 
+def test_move_player_spawn_voice(monkeypatch):
+    setup_basic(monkeypatch)
+    session = {'room_id': 'A', 'settings': {'voice': True, 'voice_name': 'en'}}
+    monkeypatch.setattr(random, 'random', lambda: 0.0)
+    monkeypatch.setattr(game_utils.voice, 'generate_voice', lambda t, l: 'audio.wav')
+    msg = game_utils.move_player(session, 'B', spawn_chance=1.0)
+    assert 'Enemy:' in msg
+    assert session['voice_audio'] == 'audio.wav'
+
 def test_move_player_no_spawn(monkeypatch):
     setup_basic(monkeypatch)
     session = {'room_id':'A'}
