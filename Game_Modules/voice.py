@@ -41,6 +41,11 @@ def available_voices() -> Dict[str, str]:
     return VOICE_OPTIONS
 
 def _ensure_gtts():
+    """Ensure that gtts is available for use."""
+    if gTTS is None:  # pragma: no cover - raised only when dependency missing
+        raise RuntimeError(
+            "gtts package is required for speech output; install it with 'pip install gtts'"
+        ) from _import_error
 
 def generate_voice(text: str, lang: str = "en") -> str:
     """Generate speech audio for the given text.
@@ -60,7 +65,7 @@ def _glados_voice(text: str, out_mp3: str) -> None:
     """Generate audio using the built-in GLaDOS character."""
     from voicebox.examples import glados
 
-    wav_path = out_mp3 + '.wav'
+    wav_path = f'{out_mp3}.wav'
     vb = SimpleVoicebox(
         tts=glados.build_glados_tts(),
         effects=glados.build_glados_effects(),
@@ -69,11 +74,11 @@ def _glados_voice(text: str, out_mp3: str) -> None:
     vb.say(text)
     try:
         subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', wav_path, out_mp3], check=True)
-    except FileNotFoundError:
+    except FileNotFoundError as e:
         raise RuntimeError(
             "ffmpeg is required for audio processing but was not found. "
             "Please install ffmpeg and ensure it is available in your system's PATH."
-        )
+        ) from e
     os.remove(wav_path)
 
 
