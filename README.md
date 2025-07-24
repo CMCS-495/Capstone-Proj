@@ -7,7 +7,8 @@ Dependencies
 ```
 pip install flask networkx matplotlib pillow pytest voicebox-tts gtts "transformers[torch]" .[torch]
 
-You will also need ffmpeg installed for applying voice effects.
+You will also need ffmpeg installed and available on your PATH for applying the
+GLaDOS voice effects.
 
 Audio narration saves MP3 files in ``Flask/static/voice``. The voice can be
 changed in the game settings. Available options are "Default" and the

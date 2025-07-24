@@ -1,6 +1,7 @@
 import os
 import uuid
 import subprocess
+import shutil
 from typing import Dict
 
 try:
@@ -35,10 +36,7 @@ class _GTTSWavTTS(WavFileTTS):
     def generate_speech_audio_file(self, text: str, audio_file_path: str) -> None:
         tmp_mp3 = f"{audio_file_path}.mp3"
         gTTS(text=text, lang='en').save(tmp_mp3)
-        subprocess.run(
-            ['ffmpeg', '-y', '-loglevel', 'error', '-i', tmp_mp3, audio_file_path],
-            check=True,
-        )
+        _run_ffmpeg(['ffmpeg', '-y', '-loglevel', 'error', '-i', tmp_mp3, audio_file_path])
         os.remove(tmp_mp3)
 
 def _ensure_gtts():
@@ -46,6 +44,20 @@ def _ensure_gtts():
         raise RuntimeError(
             "gtts package is required for speech output; install it with 'pip install gtts'"
         ) from _import_error
+
+
+def _run_ffmpeg(cmd: list[str]) -> None:
+    """Run ffmpeg with better error reporting."""
+    if shutil.which('ffmpeg') is None:
+        raise RuntimeError(
+            "ffmpeg executable not found. Please install ffmpeg and ensure it is available in your PATH."
+        )
+    try:
+        subprocess.run(cmd, check=True)
+    except FileNotFoundError as exc:  # pragma: no cover - should not happen if which succeeded
+        raise RuntimeError(
+            "ffmpeg executable not found. Please install ffmpeg and ensure it is available in your PATH."
+        ) from exc
 
 
 def _glados_voice(text: str, out_mp3: str) -> None:
@@ -59,9 +71,9 @@ def _glados_voice(text: str, out_mp3: str) -> None:
         sink=WaveFile(wav_path),
     )
     vb.say(text)
-    subprocess.run([
+    _run_ffmpeg([
         'ffmpeg', '-y', '-loglevel', 'error', '-i', wav_path, out_mp3
-    ], check=True)
+    ])
     os.remove(wav_path)
 
 
