@@ -5,6 +5,7 @@ Requires Pillow: pip install pillow
 
 from PIL import Image, ImageDraw
 import os
+from . import temp_utils
 
 MINIMAP_PATH = os.path.join(os.path.dirname(__file__), '../Textures/mini-map.png')
 
@@ -46,6 +47,7 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, mark
         (center_x + marker_radius, center_y + marker_radius)
     ], fill='red', outline='black')
 
-    if output_path:
-        cropped.save(output_path)
+    if output_path is None:
+        output_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+    cropped.save(output_path)
     return cropped

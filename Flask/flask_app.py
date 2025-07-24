@@ -27,7 +27,7 @@ from Game_Modules.game_utils import (
 )
 
 from Game_Modules import rng, save_load
-from Game_Modules import voice
+from Game_Modules import voice, temp_utils
 from Game_Modules.voice import available_voices
 
 
@@ -36,6 +36,21 @@ from Game_Modules.voice import available_voices
 # file systems.
 app = Flask(__name__, template_folder='Templates', static_folder='static')
 app.secret_key = os.urandom(24)
+
+@app.route('/voice/<path:filename>')
+def voice_file(filename):
+    from werkzeug.utils import secure_filename
+    safe_filename = secure_filename(filename)
+    path = os.path.join(temp_utils.VOICE_DIR, safe_filename)
+    return send_file(path, mimetype='audio/mpeg')
+
+@app.route('/minimap.png')
+def minimap_png():
+    path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+    if not os.path.exists(path):
+        from flask import abort
+        abort(404, description="Minimap image not found.")
+    return send_file(path, mimetype='image/png')
 
 # Precompute ROOM_NAMES mapping for templates
 ROOM_NAMES = {rid: get_room_name(rid) for rid in dungeon_map.rooms.keys()}
@@ -186,6 +201,21 @@ def save_as():
             z.writestr('inventory.json', json.dumps(player_inv,   indent=2))
             raw_map = list(game_map.values()) if isinstance(game_map, dict) else game_map
             z.writestr('map.json',       json.dumps(raw_map,     indent=2))
+            if os.path.isdir(temp_utils.VOICE_DIR):
+                for fname in os.listdir(temp_utils.VOICE_DIR):
+                    fp = os.path.join(temp_utils.VOICE_DIR, fname)
+                    if os.path.isfile(fp):
+                        z.write(fp, f"voice/{fname}")
+            else:
+                print(f"Warning: VOICE_DIR '{temp_utils.VOICE_DIR}' does not exist or is not accessible.")
+            if os.path.isdir(temp_utils.MAP_DIR):
+                for fname in os.listdir(temp_utils.MAP_DIR):
+                    fp = os.path.join(temp_utils.MAP_DIR, fname)
+                    if os.path.isfile(fp):
+                        z.write(fp, f"map/{fname}")
+            else:
+                # Log a warning or handle the missing directory gracefully
+                print(f"Warning: Directory {temp_utils.MAP_DIR} does not exist or is inaccessible.")
         buf.seek(0)
 
         return send_file(
@@ -321,20 +351,27 @@ def explore():
         length = session.get('settings', {}).get('llm_return_length', 50)
         room['llm_description'] = llm_client.generate_description('room', ctx, length)
 
-    # Trigger voice narration on first entry
+    # Trigger voice narration
     if session.get('settings', {}).get('voice'):
         visited = session.setdefault('visited', [])
-        if room_id not in visited:
+        first_visit = room_id not in visited
+        if first_visit:
             visited.append(room_id)
             session['visited'] = visited
-            voice_name = session.get('settings', {}).get('voice_name', 'default')
-            session['voice_audio'] = voice.generate_voice(room['llm_description'], voice_name)
+        voice_name = session.get('settings', {}).get('voice_name', 'default')
+        parts = []
+        if first_visit:
+            parts.append(room['llm_description'])
+        if 'encounter_voice' in session:
+            parts.append(session.pop('encounter_voice'))
+        if parts:
+            session['voice_audio'] = voice.generate_voice(' '.join(parts), voice_name)
 
     # 4.5) Generate/update minimap image for current position
     from Game_Modules.MiniMap import generate_minimap
     x = room.get('MiniMapX', 0)
     y = room.get('MiniMapy', 0)
-    minimap_path = os.path.join(app.root_path, 'static', 'minimap.png')
+    minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
     generate_minimap(x, y, output_path=minimap_path)
 
     if not app.config.get('TESTING'):

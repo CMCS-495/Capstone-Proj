@@ -48,7 +48,7 @@ def test_move_player_spawn_voice(monkeypatch):
     monkeypatch.setattr(game_utils.voice, 'generate_voice', lambda t, l: 'audio.wav')
     msg = game_utils.move_player(session, 'B', spawn_chance=1.0)
     assert 'Enemy:' in msg
-    assert session['voice_audio'] == 'audio.wav'
+    assert session['encounter_voice'].startswith('Enemy Encountered')
 
 def test_move_player_no_spawn(monkeypatch):
     setup_basic(monkeypatch)
