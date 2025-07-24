@@ -55,7 +55,7 @@
       </li>
       <li>
         <label for="voice-name">
-          Voice Language:
+          Voice Character:
           <select id="voice-name" name="voice_name">
             {% for code, name in voice_choices.items() %}
               <option value="{{ code }}" {% if voice_name==code %}selected{% endif %}>{{ name }}</option>
