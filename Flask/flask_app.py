@@ -208,10 +208,14 @@ def save_as():
                         z.write(fp, f"voice/{fname}")
             else:
                 print(f"Warning: VOICE_DIR '{temp_utils.VOICE_DIR}' does not exist or is not accessible.")
-            for fname in os.listdir(temp_utils.MAP_DIR):
-                fp = os.path.join(temp_utils.MAP_DIR, fname)
-                if os.path.isfile(fp):
-                    z.write(fp, f"map/{fname}")
+            if os.path.isdir(temp_utils.MAP_DIR):
+                for fname in os.listdir(temp_utils.MAP_DIR):
+                    fp = os.path.join(temp_utils.MAP_DIR, fname)
+                    if os.path.isfile(fp):
+                        z.write(fp, f"map/{fname}")
+            else:
+                # Log a warning or handle the missing directory gracefully
+                print(f"Warning: Directory {temp_utils.MAP_DIR} does not exist or is inaccessible.")
         buf.seek(0)
 
         return send_file(
