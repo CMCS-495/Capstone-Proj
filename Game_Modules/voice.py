@@ -49,7 +49,7 @@ def _glados_voice(text: str, out_mp3: str) -> None:
     """Generate audio using the built-in GLaDOS character."""
     from voicebox.examples import glados
 
-    wav_path = out_mp3 + '.wav'
+    wav_path = f'{out_mp3}.wav'
     vb = SimpleVoicebox(
         tts=_GTTSWavTTS(),
         effects=glados.build_glados_effects(),
