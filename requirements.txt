@@ -1,0 +1,9 @@
+#pip requirements for the game
+#flask networkx matplotlib pillow pytest gtts "transformers[torch]" .[torch]
+Flask==2.0.1
+networkx==2.5
+matplotlib==3.4.3
+pillow==8.4.0
+pytest==6.2.5
+gtts==2.2.2
+transformers[torch]==4.12.0
