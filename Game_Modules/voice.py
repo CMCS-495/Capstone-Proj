@@ -72,7 +72,7 @@ def generate_voice(text: str, voice: str = 'default') -> str:
     if voice.lower() == 'glados':
         _glados_voice(text, path)
     else:
-        tts = gTTS(text=text)
+        tts = gTTS(text=text, lang='en')
         tts.save(path)
 
     return filename
