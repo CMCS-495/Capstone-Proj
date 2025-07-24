@@ -85,15 +85,15 @@ def load_game_from_zip(stream, session):
         # 6) enemies.json → import_assets.enemies
         import_assets.enemies = json.loads(z.read('enemies.json').decode('utf-8'))
 
-        for name in z.namelist():
-            if name.startswith('voice/'):
-                tgt = os.path.join(temp_utils.VOICE_DIR, os.path.basename(name))
+        for info in z.infolist():
+            if info.filename.startswith('voice/'):
+                tgt = os.path.join(temp_utils.VOICE_DIR, os.path.basename(info.filename))
                 with open(tgt, 'wb') as f:
-                    f.write(z.read(name))
-            if name.startswith('map/'):
-                tgt = os.path.join(temp_utils.MAP_DIR, os.path.basename(name))
+                    f.write(z.read(info.filename))
+            if info.filename.startswith('map/'):
+                tgt = os.path.join(temp_utils.MAP_DIR, os.path.basename(info.filename))
                 with open(tgt, 'wb') as f:
-                    f.write(z.read(name))
+                    f.write(z.read(info.filename))
 
     # Clear out any in-combat state so you re-enter explore
     session.pop('encounter', None)
