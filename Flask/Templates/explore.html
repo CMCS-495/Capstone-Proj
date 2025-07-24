@@ -10,8 +10,8 @@
       <h3>🗺️ Dungeon Map</h3>
     </div>
     <div class="minimap-frame">
-      <img src="{{ url_for('static', filename='minimap.png') }}" 
-           alt="Mini Map" 
+      <img src="{{ url_for('minimap_png') }}"
+           alt="Mini Map"
            class="minimap-image">
       <div class="minimap-overlay">
         <div class="current-position">📍</div>
@@ -209,7 +209,7 @@
 
 {% if audio_file %}
   <audio id="voicebox" autoplay>
-    <source src="{{ url_for('static', filename='voice/' + audio_file) }}" type="audio/mpeg">
+    <source src="{{ url_for('voice_file', filename=audio_file) }}" type="audio/mpeg">
   </audio>
   <script>
     const voiceAudio = document.getElementById('voicebox');

@@ -1,6 +1,6 @@
 import os, json, zipfile
 from io import BytesIO
-from . import export_assets, import_assets
+from . import export_assets, import_assets, temp_utils
 
 BASE_DIR = os.path.dirname(__file__)
 SAVE_ROOT = os.path.join(BASE_DIR, 'Player_Saves')
@@ -84,6 +84,16 @@ def load_game_from_zip(stream, session):
 
         # 6) enemies.json → import_assets.enemies
         import_assets.enemies = json.loads(z.read('enemies.json').decode('utf-8'))
+
+        for name in z.namelist():
+            if name.startswith('voice/'):
+                tgt = os.path.join(temp_utils.VOICE_DIR, os.path.basename(name))
+                with open(tgt, 'wb') as f:
+                    f.write(z.read(name))
+            if name.startswith('map/'):
+                tgt = os.path.join(temp_utils.MAP_DIR, os.path.basename(name))
+                with open(tgt, 'wb') as f:
+                    f.write(z.read(name))
 
     # Clear out any in-combat state so you re-enter explore
     session.pop('encounter', None)

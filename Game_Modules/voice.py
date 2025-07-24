@@ -4,6 +4,8 @@ import subprocess
 import shutil
 from typing import Dict
 
+from . import temp_utils
+
 try:
     from gtts import gTTS
 except ImportError as exc:  # pragma: no cover - gtts is optional
@@ -14,8 +16,7 @@ from voicebox.voiceboxes import SimpleVoicebox
 from voicebox.sinks.wavefile import WaveFile
 from voicebox.tts.tts import WavFileTTS
 
-VOICE_DIR = os.path.join(os.path.dirname(__file__), '..', 'Flask', 'static', 'voice')
-os.makedirs(VOICE_DIR, exist_ok=True)
+VOICE_DIR = temp_utils.VOICE_DIR
 
 VOICE_OPTIONS: Dict[str, str] = {
     'default': 'Default',
