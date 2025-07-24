@@ -4,7 +4,7 @@ A text based dungeon crawler using Qwen for dynamic descriptions for rooms, item
 
 Dependencies
 
-
+```
 pip install flask networkx matplotlib pillow pytest voicebox-tts gtts "transformers[torch]" .[torch]
 
 You will also need ffmpeg installed for applying voice effects.
