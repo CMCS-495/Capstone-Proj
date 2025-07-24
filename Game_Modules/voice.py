@@ -29,6 +29,9 @@ def available_voices() -> Dict[str, str]:
 class _GTTSWavTTS(WavFileTTS):
     """Minimal TTS engine that outputs a WAV file using gTTS and ffmpeg."""
 
+    def __init__(self) -> None:
+        super().__init__(None, "gtts_")
+
     def generate_speech_audio_file(self, text: str, audio_file_path: str) -> None:
         tmp_mp3 = f"{audio_file_path}.mp3"
         gTTS(text=text, lang='en').save(tmp_mp3)
