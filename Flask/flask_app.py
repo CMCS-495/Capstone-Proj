@@ -389,7 +389,11 @@ def explore():
         x = room.get('MiniMapX', 0)
         y = room.get('MiniMapy', 0)
         minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
-        generate_minimap(x, y, output_path=minimap_path)
+        _, marker_x, marker_y = generate_minimap(
+            x, y, output_path=minimap_path, return_coords=True
+        )
+        marker_x_pct = marker_x / 1500 * 100
+        marker_y_pct = marker_y / 1000 * 100
 
     if not app.config.get('TESTING'):
         diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
@@ -422,7 +426,9 @@ def explore():
         potions          = potions,
         ROOM_NAMES       = ROOM_NAMES,
         audio_file       = audio_file,
-        show_minimap     = show_minimap
+        show_minimap     = show_minimap,
+        marker_x         = marker_x_pct if show_minimap else 50,
+        marker_y         = marker_y_pct if show_minimap else 50
     )
 
 # ----- FIGHT -----
