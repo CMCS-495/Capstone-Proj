@@ -27,7 +27,9 @@
   document.addEventListener('submit', e => {
     const form = e.target.closest('form');
     if (!form) return;
+
     const path = new URL(form.action || window.location.href, window.location.href).pathname;
+
     if (path !== '/save_as' && path !== '/save-as') {
       e.preventDefault();
       const method = (form.method || 'GET').toUpperCase();
