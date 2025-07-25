@@ -94,6 +94,17 @@
         </label>
       </li>
       <li>
+        <label for="hide-minimap">
+          Hide Minimap:
+          <input
+            type="checkbox"
+            id="hide-minimap"
+            name="hide_minimap"
+            {% if hide_minimap %}checked{% endif %}
+          >
+        </label>
+      </li>
+      <li>
         <label for="display-theme">
           Display Theme:
           <select id="display-theme" name="display_theme">

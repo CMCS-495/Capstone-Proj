@@ -2,7 +2,7 @@ from flask import (
     Flask, render_template, request,
     redirect, session, url_for, send_file, flash
 )
-import os, sys, io, time, zipfile, json
+import os, sys, io, time, zipfile, json, random, math
 
 # ensure Game_Modules package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -85,6 +85,7 @@ def start_game():
     voice_name = settings.get('voice_name', 'default')
     map_size  = settings.get('map_size', 'Medium')
     randomize = settings.get('randomize_map', False)
+    hide_map  = settings.get('hide_minimap', False)
     theme     = settings.get('display_theme', 'Standard')
     llm_device = settings.get('llm_device', 'cpu')
     session.clear()
@@ -97,6 +98,7 @@ def start_game():
         'voice_name': voice_name,
         'map_size': map_size,
         'randomize_map': randomize,
+        'hide_minimap': hide_map,
         'display_theme': theme,
         'llm_device': llm_device,
     }
@@ -128,6 +130,10 @@ def start_game():
         'inventory':    [],
         'visited':      [],
     })
+    if randomize:
+        dungeon_map.randomize_rooms(session['room_id'])
+    else:
+        dungeon_map.randomize_rooms(session['room_id'], pct=0)
     return redirect(url_for('explore'))
 
 # ----- RNG -----
@@ -270,6 +276,7 @@ def settings():
         voice_name = request.form.get('voice_name', 'default')
         map_size  = request.form.get('map_size')
         randomize = request.form.get('randomize_map') == 'on'
+        hide_map  = request.form.get('hide_minimap') == 'on'
         theme     = request.form.get('display_theme')
 
         session['settings'] = session.get('settings', {})
@@ -281,6 +288,7 @@ def settings():
             'voice_name': voice_name,
             'map_size': map_size,
             'randomize_map': randomize,
+            'hide_minimap': hide_map,
             'display_theme': theme,
             'llm_device': llm_device,
         })
@@ -300,6 +308,7 @@ def settings():
         voice_choices=VOICE_CHOICES,
         map_size=s.get('map_size', 'Medium'),
         randomize_map=s.get('randomize_map', False),
+        hide_minimap=s.get('hide_minimap', False),
         display_theme=s.get('display_theme', 'Standard'),
         llm_device=s.get('llm_device', 'cpu')
     )
@@ -377,12 +386,16 @@ def explore():
         if parts:
             session['voice_audio'] = voice.generate_voice(' '.join(parts), voice_name)
 
+    settings = session.get('settings', {})
+    show_minimap = not (settings.get('hide_minimap') or settings.get('randomize_map'))
+
     # 4.5) Generate/update minimap image for current position
-    from Game_Modules.MiniMap import generate_minimap
-    x = room.get('MiniMapX', 0)
-    y = room.get('MiniMapy', 0)
-    minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
-    generate_minimap(x, y, output_path=minimap_path)
+    if show_minimap:
+        from Game_Modules.MiniMap import generate_minimap
+        x = room.get('MiniMapX', 0)
+        y = room.get('MiniMapy', 0)
+        minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+        generate_minimap(x, y, output_path=minimap_path)
 
     if not app.config.get('TESTING'):
         diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
@@ -414,7 +427,8 @@ def explore():
         response         = response,
         potions          = potions,
         ROOM_NAMES       = ROOM_NAMES,
-        audio_file       = audio_file
+        audio_file       = audio_file,
+        show_minimap     = show_minimap
     )
 
 # ----- FIGHT -----
@@ -455,15 +469,17 @@ def fight():
 
         # Drink an aid item if available
         if action == 'potion' and potions > 0:
-            heal_amount = 20
-            # consume one aid item
             for idx, itm in enumerate(inv):
                 if itm.get('type') == 'aid':
-                    inv.pop(idx)
+                    item = inv.pop(idx)
                     break
-            potions -= 1
+            else:
+                item = None
 
-            player.hp = min(player.hp + heal_amount, player_template.get('stats',{}).get('max_health',100))
+            potions -= 1
+            heal_amount = item.get('health', 20) if item else 20
+            max_hp = player_template.get('stats', {}).get('max_health', 100)
+            player.hp = min(player.hp + heal_amount, max_hp)
             messages.append(f"You use an aid item and recover {heal_amount} HP.")
 
         if action == 'attack':
@@ -541,9 +557,16 @@ def artifact():
     e_data = session.pop('encounter')
     session.pop('enemy', None)
 
-    # Fetch the enemy’s encounter rate (0–100)
-    enc_rate = e_data.get('encounter_rate', 0)
-    xp_gain = int(100 / enc_rate) if enc_rate > 0 else 1
+    # XP gain based on level ratio and enemy difficulty
+    lvl = session.get('level', 1)
+    xp_needed = xp_threshold(lvl + 1) - xp_threshold(lvl)
+    ratio = lvl / xp_needed if xp_needed else 0
+    base_stats = player_template.get('stats', {})
+    eq = session.get('equipped', {})
+    atk = base_stats.get('attack', 1) + sum(i.get('attack', 0) for i in eq.values() if i)
+    enemy_hp = e_data.get('max_hp', 1)
+    rand_max = max(1, math.ceil(enemy_hp / max(1, atk)))
+    xp_gain = math.ceil(ratio + random.randint(1, rand_max))
     # Award XP and check for level ups
     session['xp'] = session.get('xp', 0) + xp_gain
     leveled = apply_leveling(session, player_template)
@@ -585,7 +608,10 @@ def inventory_route():
             eq[slot] = item if action == 'equip' else None
         elif action == 'use' and 0 <= idx < len(inv):
             if inv[idx].get('type') == 'aid':
-                inv.pop(idx)
+                item = inv.pop(idx)
+                heal = item.get('health', 0)
+                max_hp = player_template.get('stats', {}).get('max_health', session.get('hp', 0))
+                session['hp'] = min(session.get('hp', 0) + heal, max_hp)
 
         elif action == 'drop' and 0 <= idx < len(inv):
             inv.pop(idx)

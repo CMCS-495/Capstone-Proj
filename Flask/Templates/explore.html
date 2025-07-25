@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="game-flex">
+  {% if show_minimap %}
   <!-- Enhanced Minimap Section -->
   <div class="minimap-container">
     <div class="minimap-header">
@@ -24,6 +25,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
 
   <!-- Main Game Content -->
   <div class="game-container">
@@ -592,6 +594,7 @@
     flex-direction: column;
     gap: 2rem;
     margin: 1rem;
+    align-items: center;
   }
   
   .minimap-container {
@@ -628,6 +631,9 @@
   
   .menu-actions {
     flex-direction: column;
+  }
+  .game-flex {
+    align-items: center;
   }
 }
 </style>
