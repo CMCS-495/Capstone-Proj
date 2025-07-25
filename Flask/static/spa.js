@@ -41,14 +41,15 @@
       const method = (form.method || 'GET').toUpperCase();
       let url = form.action || window.location.href;
       const opts = { method, credentials: 'same-origin' };
+      const data = new FormData(form);
+      if (e.submitter && e.submitter.name) {
+        data.append(e.submitter.name, e.submitter.value);
+      }
       if (method === 'GET') {
-        const params = new URLSearchParams();
-        for (const [key, value] of new FormData(form).entries()) {
-          params.append(key, value);
-        }
+        const params = new URLSearchParams(data);
         url += (url.includes('?') ? '&' : '?') + params.toString();
       } else {
-        opts.body = new FormData(form);
+        opts.body = data;
       }
       fetchAndReplace(url, opts);
     }
