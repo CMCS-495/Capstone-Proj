@@ -90,6 +90,10 @@ def generate_voice(text: str, voice: str = 'default') -> str:
         _glados_voice(text, path)
     else:
         tts = gTTS(text=text)
-        tts.save(path)
+        try:
+            tts.save(path)
+        except FileNotFoundError:
+            os.makedirs(VOICE_DIR, exist_ok=True)
+            tts.save(path)
 
     return filename
