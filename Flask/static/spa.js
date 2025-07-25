@@ -5,14 +5,16 @@
     if (window.startLoading) {
       window.startLoading();
     }
-    fetch(url, options).then(r => r.text()).then(html => {
+    fetch(url, options).then(async r => {
+      const html = await r.text();
+      const finalUrl = r.url;
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const main = doc.getElementById('content');
-      if (!main) { window.location.href = url; return; }
+      if (!main) { window.location.href = finalUrl; return; }
       document.getElementById('content').innerHTML = main.innerHTML;
       document.title = doc.title;
-      window.history.pushState({url}, '', url);
+      window.history.pushState({finalUrl}, '', finalUrl);
       if (window.endLoading) {
         window.endLoading();
       }
