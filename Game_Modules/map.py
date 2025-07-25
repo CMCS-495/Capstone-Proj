@@ -35,18 +35,35 @@ class DungeonMap:
         return list(self.rooms.get(room_id, {}).get('neighbors', []))
 
     def randomize_rooms(self, start_room=None, pct=0.3):
-        """Randomly disable rooms except ``start_room`` and cleanup neighbors."""
+        """Randomly disable rooms while keeping the map connected."""
         for r in self.rooms.values():
             r.pop('disabled', None)
 
         if start_room is None:
             start_room = next(iter(self.rooms))
 
-        for rid, room in self.rooms.items():
-            if rid == start_room:
-                continue
+        def reachable(start):
+            seen = {start}
+            stack = [start]
+            while stack:
+                cur = stack.pop()
+                for nbr in self.rooms.get(cur, {}).get('neighbors', []):
+                    if self.rooms.get(nbr, {}).get('disabled'):
+                        continue
+                    if nbr not in seen:
+                        seen.add(nbr)
+                        stack.append(nbr)
+            return seen
+
+        others = [r for r in self.rooms if r != start_room]
+        random.shuffle(others)
+        for rid in others:
             if random.random() < pct:
-                room['disabled'] = True
+                self.rooms[rid]['disabled'] = True
+                if len(reachable(start_room)) != len(
+                    [k for k, v in self.rooms.items() if not v.get('disabled')]
+                ):
+                    self.rooms[rid].pop('disabled', None)
 
         for room in self.rooms.values():
             room['neighbors'] = [n for n in room.get('neighbors', [])

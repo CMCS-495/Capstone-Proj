@@ -123,7 +123,7 @@ def _get_llm_pipeline(device: int = None):
     return pipeline(
         "text-generation",
         model=MODEL_NAME,
-        device=device
+        device_map="auto"
     )
 
 # Lazy‐initialized singleton and device choice
