@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import importlib
+import os
 import sys
 from pathlib import Path
 
@@ -34,6 +35,18 @@ def _load_real_pipeline():
         else:
             pipeline = transformers.pipeline
     except (ImportError, AttributeError):
+        if Path(getattr(transformers, "__file__", "")).resolve().parent == stub_dir:
+            sys.modules.pop("transformers", None)
+            if str(stub_dir) in sys.path:
+                sys.path.remove(str(stub_dir))
+            try:
+                pipeline = importlib.import_module("transformers").pipeline
+            finally:
+                if str(stub_dir) not in sys.path:
+                    sys.path.insert(0, str(stub_dir))
+        else:
+            pipeline = transformers.pipeline
+    except Exception:
         pipeline = None
 
 MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
