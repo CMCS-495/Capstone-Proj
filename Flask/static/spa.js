@@ -26,10 +26,20 @@
 
   document.addEventListener('submit', e => {
     const form = e.target.closest('form');
-    if (form && form.getAttribute('action') && form.getAttribute('action') !== '/save_as' && form.getAttribute('action') !== '/save-as') {
+    if (!form) return;
+    const path = new URL(form.action || window.location.href, window.location.href).pathname;
+    if (path !== '/save_as' && path !== '/save-as') {
       e.preventDefault();
-      const data = new FormData(form);
-      fetchAndReplace(form.action, { method: form.method || 'GET', body: data });
+      const method = (form.method || 'GET').toUpperCase();
+      let url = form.action || window.location.href;
+      const opts = { method, credentials: 'same-origin' };
+      if (method === 'GET') {
+        const params = new URLSearchParams(new FormData(form));
+        url += (url.includes('?') ? '&' : '?') + params.toString();
+      } else {
+        opts.body = new FormData(form);
+      }
+      fetchAndReplace(url, opts);
     }
   });
 
