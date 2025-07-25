@@ -27,10 +27,9 @@
       <div class="health-section">
         <div class="health-label">Health</div>
         <div class="health-bar">
-          <div class="health-fill player-health" 
-               style="width: {{ (player.hp / 100 * 100)|round }}%">
-            <span class="health-text">{{ player.hp }} HP</span>
-          </div>
+          <div class="health-fill player-health"
+               style="width: {{ (player.hp / 100 * 100)|round }}%"></div>
+          <span class="health-text">{{ player.hp }} HP</span>
         </div>
       </div>
       
@@ -75,10 +74,9 @@
       <div class="health-section">
         <div class="health-label">Health</div>
         <div class="health-bar">
-          <div class="health-fill enemy-health" 
-               style="width: {{ (enemy.current_hp / enemy.max_hp * 100)|round }}%">
-            <span class="health-text">{{ enemy.current_hp }} / {{ enemy.max_hp }} HP</span>
-          </div>
+          <div class="health-fill enemy-health"
+               style="width: {{ (enemy.current_hp / enemy.max_hp * 100)|round }}%"></div>
+          <span class="health-text">{{ enemy.current_hp }} / {{ enemy.max_hp }} HP</span>
         </div>
       </div>
       
