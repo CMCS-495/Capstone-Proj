@@ -84,6 +84,7 @@ def generate_voice(text: str, voice: str = 'default') -> str:
 
     filename = f"{uuid.uuid4().hex}.mp3"
     path = os.path.join(VOICE_DIR, filename)
+    os.makedirs(VOICE_DIR, exist_ok=True)
 
     if voice.lower() == 'glados':
         _glados_voice(text, path)
