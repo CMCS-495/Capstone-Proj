@@ -393,7 +393,7 @@ def explore():
         width, height = 300, 600
         _, marker_x, marker_y = generate_minimap(
             x, y, view_width=width, view_height=height,
-            output_path=minimap_path, return_coords=True, full_map=True
+            output_path=minimap_path, return_coords=True
         )
         marker_x_pct = marker_x / width * 100
         marker_y_pct = marker_y / height * 100
