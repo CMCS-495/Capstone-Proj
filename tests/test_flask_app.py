@@ -59,3 +59,11 @@ def test_rng_route(client):
 def test_shutdown(client):
     resp = client.post('/shutdown')
     assert resp.status_code == 204
+
+def test_minimap_caching(client):
+    client.post('/start', data={'name': 'Hero'})
+    client.get('/explore')
+    resp = client.get('/minimap.png')
+    assert resp.status_code == 200
+    cache_control = resp.headers.get('Cache-Control', '')
+    assert 'max-age=0' in cache_control

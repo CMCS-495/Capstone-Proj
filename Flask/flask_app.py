@@ -50,7 +50,7 @@ def minimap_png():
     if not os.path.exists(path):
         from flask import abort
         abort(404, description="Minimap image not found.")
-    return send_file(path, mimetype='image/png')
+    return send_file(path, mimetype='image/png', max_age=0)
 
 # Precompute ROOM_NAMES mapping for templates
 ROOM_NAMES = {rid: get_room_name(rid) for rid in dungeon_map.rooms.keys()}
