@@ -11,7 +11,8 @@ MINIMAP_PATH = os.path.join(os.path.dirname(__file__), '../Textures/mini-map.png
 
 def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, marker_radius=5, output_path=None):
     """
-    Crops the mini-map so the player is centered, overlays a marker at the center, and saves/returns the image.
+    Crops the mini-map so the player is centered when possible, overlays a marker
+    at the player's location within the cropped view, and saves/returns the image.
     Args:
         player_x, player_y: Player's position on the map image (in pixels)
         view_width, view_height: Size of the cropped view (in pixels)
@@ -38,13 +39,13 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, mark
 
     cropped = minimap.crop((left, upper, right, lower))
 
-    # Draw marker at center
+    # Draw marker at the player's coordinates relative to the crop
     draw = ImageDraw.Draw(cropped)
-    center_x = view_width // 2
-    center_y = view_height // 2
+    draw_x = player_x - left
+    draw_y = player_y - upper
     draw.ellipse([
-        (center_x - marker_radius, center_y - marker_radius),
-        (center_x + marker_radius, center_y + marker_radius)
+        (draw_x - marker_radius, draw_y - marker_radius),
+        (draw_x + marker_radius, draw_y + marker_radius)
     ], fill='red', outline='black')
 
     if output_path is None:

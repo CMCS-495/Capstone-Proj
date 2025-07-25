@@ -4,6 +4,5 @@
   "llm_return_length": 150,
   "voice": "on",
   "map_size": "Medium",
-  "randomize_map": "Off",
   "display_theme": "Standard"
 }
