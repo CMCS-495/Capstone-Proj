@@ -45,18 +45,19 @@
       return;
     }
 
+    let actionAttr = form.getAttribute('action');
     let path;
     try {
-      path = new URL(form.action || window.location.href, window.location.href).pathname;
+      path = new URL(actionAttr || window.location.href, window.location.href).pathname;
     } catch (error) {
-      console.error('Invalid form action URL:', form.action, error);
+      console.error('Invalid form action URL:', actionAttr, error);
       path = new URL(window.location.href).pathname;
     }
 
     if (path !== '/save_as' && path !== '/save-as') {
       e.preventDefault();
       const method = (form.method || 'GET').toUpperCase();
-      let url = form.action || window.location.href;
+      let url = actionAttr || window.location.href;
       const opts = { method, credentials: 'same-origin' };
       const data = new FormData(form);
       const submitter = e.submitter || lastSubmitter;
