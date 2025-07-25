@@ -1,9 +1,34 @@
 #!/usr/bin/env python3
 import argparse
+import importlib
+import sys
+from pathlib import Path
+
 try:
     from transformers import pipeline
 except ImportError:  # pragma: no cover - optional dependency
     pipeline = None
+
+
+def _load_real_pipeline():
+    """Attempt to import the real transformers.pipeline, bypassing the stub."""
+    global pipeline
+    try:
+        import transformers  # type: ignore
+        repo_root = Path(__file__).resolve().parents[1]
+        stub_dir = repo_root / "transformers"
+        src_dir = repo_root / "LLM" / "transformers" / "src"
+        if Path(getattr(transformers, "__file__", "")).resolve().parent == stub_dir:
+            sys.modules.pop("transformers", None)
+            if str(stub_dir) in sys.path:
+                sys.path.remove(str(stub_dir))
+            if str(src_dir) not in sys.path:
+                sys.path.insert(0, str(src_dir))
+            pipeline = importlib.import_module("transformers").pipeline
+        else:
+            pipeline = transformers.pipeline
+    except Exception:
+        pipeline = None
 
 MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 
@@ -75,6 +100,8 @@ def _get_llm_pipeline(device: int = None):
     """
     Factory for downstream calls (e.g. generate_description) to reuse the same settings.
     """
+    if pipeline is None:
+        _load_real_pipeline()
     if pipeline is None:
         raise RuntimeError("transformers package is required for LLM features")
     return pipeline(
