@@ -627,5 +627,14 @@ def inventory_route():
 def loading():
     return render_template('loading.html'), 202
 
+# --- Shutdown Route ---
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    """Terminate the Flask development server."""
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func:
+        func()
+    return '', 204
+
 if __name__ == '__main__':
     app.run(debug=True)
