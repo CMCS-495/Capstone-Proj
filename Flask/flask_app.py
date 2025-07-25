@@ -346,13 +346,15 @@ def explore():
         'speed':   sum(i.get('speed',0)   for i in eq.values() if i),
     }
     from Game_Modules.entities import Player
+    max_hp = player_template.get('stats', {}).get('max_health', 100)
     player = Player(
         session['player_name'],
         base.get('attack',1)  + bonus['attack'],
         base.get('defense',1) + bonus['defense'],
         base.get('speed',1)   + bonus['speed'],
         session.get('level',1),
-        session.get('xp',0)
+        session.get('xp',0),
+        max_hp
     )
     player.hp = session.get('hp', player.hp)
 
@@ -446,13 +448,15 @@ def fight():
     # Rebuild the player
     base = player_template.get('stats', {'attack':10,'defense':5,'speed':5})
     bonus = {k: sum(item.get(k,0) for item in session['equipped'].values() if item) for k in base}
+    max_hp = player_template.get('stats', {}).get('max_health', 100)
     player = Player(
         session['player_name'],
         base['attack']  + bonus['attack'],
         base['defense'] + bonus['defense'],
         base['speed']   + bonus['speed'],
         session['level'],
-        session['xp']
+        session['xp'],
+        max_hp
     )
     player.hp = session['hp']
 

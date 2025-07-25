@@ -28,8 +28,8 @@
         <div class="health-label">Health</div>
         <div class="health-bar">
           <div class="health-fill player-health"
-               style="width: {{ (player.hp / 100 * 100)|round }}%"></div>
-          <span class="health-text">{{ player.hp }} HP</span>
+               style="width: {{ (player.hp / player.max_hp * 100)|round }}%"></div>
+          <span class="health-text">{{ player.hp }} / {{ player.max_hp }} HP</span>
         </div>
       </div>
       

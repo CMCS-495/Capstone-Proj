@@ -1,12 +1,13 @@
 class Player:
-    def __init__(self, name, attack=0, defense=0, speed=0, level=1, xp=0):
+    def __init__(self, name, attack=0, defense=0, speed=0, level=1, xp=0, max_hp=100):
         self.name = name
         self.attack = attack
         self.defense = defense
         self.speed = speed
         self.level = level
         self.xp = xp
-        self.hp = 100
+        self.max_hp = max_hp
+        self.hp = max_hp
 
     def take_damage(self, amt):
         self.hp = max(0, self.hp - amt)
@@ -21,7 +22,8 @@ class Enemy:
         self.attack = stats.get("attack", 0)
         self.defense = stats.get("defense", 0)
         self.speed = stats.get("speed", 0)
-        self.hp = 50 + (level * 10)
+        self.max_hp = 50 + (level * 10)
+        self.hp = self.max_hp
 
     def take_damage(self, amt):
         self.hp = max(0, self.hp - amt)
