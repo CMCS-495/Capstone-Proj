@@ -9,7 +9,8 @@ from . import temp_utils
 
 MINIMAP_PATH = os.path.join(os.path.dirname(__file__), '../Textures/mini-map.png')
 
-def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, marker_radius=5, output_path=None):
+def generate_minimap(player_x, player_y, view_width=1500, view_height=1000,
+                     marker_radius=5, output_path=None, return_coords=False):
     """
     Crops the mini-map so the player is centered when possible, overlays a marker
     at the player's location within the cropped view, and saves/returns the image.
@@ -19,7 +20,8 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, mark
         marker_radius: Radius of the marker dot
         output_path: If provided, saves the image to this path
     Returns:
-        Cropped PIL Image object
+        Cropped PIL Image object. If ``return_coords`` is True, also returns the
+        player's coordinates within the cropped image as ``(x, y)``.
     """
     # Load the mini-map image
     minimap = Image.open(MINIMAP_PATH).convert('RGBA')
@@ -51,4 +53,7 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000, mark
     if output_path is None:
         output_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
     cropped.save(output_path)
+
+    if return_coords:
+        return cropped, draw_x, draw_y
     return cropped
