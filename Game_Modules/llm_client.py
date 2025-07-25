@@ -7,44 +7,32 @@ from pathlib import Path
 
 try:
     from transformers import pipeline
-except ImportError:  # pragma: no cover - optional dependency
+except Exception:  # pragma: no cover - optional dependency
     pipeline = None
 
 
 def _load_real_pipeline():
-    """Attempt to import the real transformers.pipeline, bypassing the stub."""
+    """Load the actual Hugging Face ``pipeline`` implementation."""
     global pipeline
-    try:
+    try:  # Attempt to use any already installed transformers package
         import transformers  # type: ignore
         repo_root = Path(__file__).resolve().parents[1]
         stub_dir = repo_root / "transformers"
         src_dir = repo_root / "LLM" / "transformers" / "src"
-        transformers_path = Path(getattr(transformers, "__file__", "")).resolve()
-        print(f"Debug: transformers_path={transformers_path}, stub_dir={stub_dir}")  # Debug logging
-        if transformers_path.is_relative_to(stub_dir):
-            for module_name in list(sys.modules.keys()):
-                if module_name.startswith("transformers"):
-                    sys.modules.pop(module_name, None)
+        t_path = Path(getattr(transformers, "__file__", "")).resolve()
+        needs_reload = (not hasattr(transformers, "pipeline") or
+                        t_path.is_relative_to(stub_dir))
+        if needs_reload:
+            for name in list(sys.modules.keys()):
+                if name.startswith("transformers"):
+                    sys.modules.pop(name, None)
             if str(stub_dir) in sys.path:
                 sys.path.remove(str(stub_dir))
             if str(src_dir) not in sys.path:
                 sys.path.insert(0, str(src_dir))
             importlib.invalidate_caches()
-            pipeline = importlib.import_module("transformers").pipeline
-        else:
-            pipeline = transformers.pipeline
-    except (ImportError, AttributeError):
-        if Path(getattr(transformers, "__file__", "")).resolve().parent == stub_dir:
-            sys.modules.pop("transformers", None)
-            if str(stub_dir) in sys.path:
-                sys.path.remove(str(stub_dir))
-            try:
-                pipeline = importlib.import_module("transformers").pipeline
-            finally:
-                if str(stub_dir) not in sys.path:
-                    sys.path.insert(0, str(stub_dir))
-        else:
-            pipeline = transformers.pipeline
+            transformers = importlib.import_module("transformers")  # noqa: F811
+        pipeline = getattr(transformers, "pipeline", None)
     except Exception:
         pipeline = None
 
