@@ -26,7 +26,9 @@
 
   document.addEventListener('submit', e => {
     const form = e.target.closest('form');
-    if (form && form.getAttribute('action') && form.getAttribute('action') !== '/save_as' && form.getAttribute('action') !== '/save-as') {
+    if (!form) return;
+    const path = new URL(form.action, window.location.href).pathname;
+    if (path !== '/save_as' && path !== '/save-as') {
       e.preventDefault();
       const data = new FormData(form);
       fetchAndReplace(form.action, { method: form.method || 'GET', body: data });
