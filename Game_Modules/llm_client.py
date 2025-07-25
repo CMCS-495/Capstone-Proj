@@ -29,6 +29,7 @@ def _load_real_pipeline():
                 sys.path.remove(str(stub_dir))
             if str(src_dir) not in sys.path:
                 sys.path.insert(0, str(src_dir))
+            importlib.invalidate_caches()
             pipeline = importlib.import_module("transformers").pipeline
         else:
             pipeline = transformers.pipeline
