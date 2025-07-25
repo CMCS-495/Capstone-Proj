@@ -20,7 +20,6 @@ def _load_real_pipeline():
         stub_dir = repo_root / "transformers"
         src_dir = repo_root / "LLM" / "transformers" / "src"
         transformers_path = Path(getattr(transformers, "__file__", "")).resolve()
-        if transformers_path.is_relative_to(stub_dir):
         print(f"Debug: transformers_path={transformers_path}, stub_dir={stub_dir}")  # Debug logging
         if transformers_path.is_relative_to(stub_dir):
             for module_name in list(sys.modules.keys()):
