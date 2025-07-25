@@ -14,7 +14,7 @@ from Game_Modules import save_load
 from Game_Modules.export_assets import SAVE_ROOT
 from Game_Modules.entities import Player, Enemy
 from Game_Modules.combat import player_attack, enemy_attack
-from Game_Modules.leveling import apply_leveling
+from Game_Modules.leveling import apply_leveling, xp_threshold
 from Game_Modules.game_utils import (
     rebuild_player,
     get_room_name,
@@ -86,6 +86,7 @@ def start_game():
     map_size  = settings.get('map_size', 'Medium')
     randomize = settings.get('randomize_map', False)
     theme     = settings.get('display_theme', 'Standard')
+    llm_device = settings.get('llm_device', 'cpu')
     session.clear()
     PRESPAWN.clear()
     session['settings'] = {
@@ -97,7 +98,9 @@ def start_game():
         'map_size': map_size,
         'randomize_map': randomize,
         'display_theme': theme,
+        'llm_device': llm_device,
     }
+    llm_client.set_device(llm_device)
 
     # Determine starting HP from difficulty
     hp_map = {'easy': 100, 'normal': 50, 'hard': 10}
@@ -256,6 +259,7 @@ def settings():
         diff      = request.form.get('difficulty')
         music     = request.form.get('music') == 'on'
         llm_val   = request.form.get('llm_return_length', '').strip()
+        llm_device = request.form.get('llm_device', 'cpu')
         try:
             llm_len = int(llm_val)
         except (TypeError, ValueError):
@@ -278,7 +282,9 @@ def settings():
             'map_size': map_size,
             'randomize_map': randomize,
             'display_theme': theme,
+            'llm_device': llm_device,
         })
+        llm_client.set_device(llm_device)
         flash(f"Difficulty set to {diff}", "success")
         return redirect(url_for('menu'))
 
@@ -294,7 +300,8 @@ def settings():
         voice_choices=VOICE_CHOICES,
         map_size=s.get('map_size', 'Medium'),
         randomize_map=s.get('randomize_map', False),
-        display_theme=s.get('display_theme', 'Standard')
+        display_theme=s.get('display_theme', 'Standard'),
+        llm_device=s.get('llm_device', 'cpu')
     )
 
 # ----- EXPLORE -----
@@ -339,6 +346,9 @@ def explore():
         session.get('xp',0)
     )
     player.hp = session.get('hp', player.hp)
+
+    # XP needed for next level
+    xp_next = max(0, int(xp_threshold(player.level + 1) - session.get('xp', 0)))
 
     # 4) Lazy-generate room description
     room_id = session['room_id']
@@ -394,6 +404,7 @@ def explore():
         player_name      = session['player_name'],
         player           = player,
         xp               = session.get('xp', 0),
+        xp_to_next       = xp_next,
         room_name        = room.get('name', room_id),
         room_description = room['llm_description'],
         gear             = eq,
@@ -602,9 +613,12 @@ def inventory_route():
         'speed':   base_stats.get('speed',1)   + bonus_spd
     }
 
+    xp_next = max(0, int(xp_threshold(player['level'] + 1) - player['xp']))
+
     return render_template(
         'inventory.html',
         player   = player,
+        xp_to_next = xp_next,
         items    = session.get('inventory', []),
         equipped = eq
     )

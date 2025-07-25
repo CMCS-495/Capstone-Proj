@@ -96,7 +96,9 @@
           <div class="stat-icon">✨</div>
           <div class="stat-content">
             <div class="stat-label">Experience</div>
-            <div class="stat-value">{{ xp }}</div>
+            <div class="stat-value">{{ xp }}
+              <span class="stat-extra">{{ xp_to_next }} to next</span>
+            </div>
           </div>
           <div class="stat-bar">
             <div class="stat-fill xp-fill" style="width: {{ ((xp % 100) / 100 * 100)|round }}%"></div>
@@ -386,6 +388,11 @@
   font-size: 0.8rem;
   font-weight: bold;
   color: var(--text-light);
+}
+.stat-extra {
+  font-size: 0.6rem;
+  color: #aaa;
+  margin-left: 0.25rem;
 }
 
 .stat-bar {

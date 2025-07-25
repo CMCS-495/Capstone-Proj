@@ -116,8 +116,17 @@ def _get_llm_pipeline(device: int = None):
         device=device
     )
 
-# Lazy‐initialized singleton
+# Lazy‐initialized singleton and device choice
 _LLM = None
+_DEVICE = None
+
+def set_device(choice: str | None):
+    """Set the preferred device ('cpu' or 'gpu')."""
+    global _DEVICE, _LLM
+    new = 0 if choice == 'gpu' else None
+    if new != _DEVICE:
+        _DEVICE = new
+        _LLM = None
 
 def generate_description(kind: str, context: dict, max_new_tokens: int = 120) -> str:
     """
@@ -125,9 +134,9 @@ def generate_description(kind: str, context: dict, max_new_tokens: int = 120) ->
     context: dict with fields relevant to that kind.
     Returns a single, concise, one-sentence description.
     """
-    global _LLM
+    global _LLM, _DEVICE
     if _LLM is None:
-        _LLM = _get_llm_pipeline(device=None)
+        _LLM = _get_llm_pipeline(device=_DEVICE)
 
     # Build a clear one-sentence prompt (no Markdown)
     if kind == 'gear':
