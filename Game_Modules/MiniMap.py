@@ -10,7 +10,8 @@ from . import temp_utils
 MINIMAP_PATH = os.path.join(os.path.dirname(__file__), '../Textures/mini-map.png')
 
 def generate_minimap(player_x, player_y, view_width=1500, view_height=1000,
-                     marker_radius=5, output_path=None, return_coords=False):
+                     marker_radius=5, output_path=None, return_coords=False,
+                     full_map=False):
     """
     Crops the mini-map so the player is centered when possible, overlays a marker
     at the player's location within the cropped view, and saves/returns the image.
@@ -26,6 +27,23 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000,
     # Load the mini-map image
     minimap = Image.open(MINIMAP_PATH).convert('RGBA')
     map_w, map_h = minimap.size
+
+    if full_map:
+        draw = ImageDraw.Draw(minimap)
+        draw.ellipse([
+            (player_x - marker_radius, player_y - marker_radius),
+            (player_x + marker_radius, player_y + marker_radius)
+        ], fill='red', outline='black')
+        resized = minimap.resize((view_width, view_height), Image.BILINEAR)
+        if output_path is None:
+            output_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        resized.save(output_path)
+        if return_coords:
+            scale_x = view_width / map_w
+            scale_y = view_height / map_h
+            return resized, player_x * scale_x, player_y * scale_y
+        return resized
 
     # Calculate crop box so player is centered
     left = int(player_x - view_width // 2)

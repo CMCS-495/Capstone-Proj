@@ -389,11 +389,13 @@ def explore():
         x = room.get('MiniMapX', 0)
         y = room.get('MiniMapy', 0)
         minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+        width, height = 300, 600
         _, marker_x, marker_y = generate_minimap(
-            x, y, output_path=minimap_path, return_coords=True
+            x, y, view_width=width, view_height=height,
+            output_path=minimap_path, return_coords=True, full_map=True
         )
-        marker_x_pct = marker_x / 1500 * 100
-        marker_y_pct = marker_y / 1000 * 100
+        marker_x_pct = marker_x / width * 100
+        marker_y_pct = marker_y / height * 100
 
     if not app.config.get('TESTING'):
         diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
