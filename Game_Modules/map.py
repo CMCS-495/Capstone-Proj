@@ -71,3 +71,13 @@ class DungeonMap:
         for room in self.rooms.values():
             room['neighbors'] = [n for n in room.get('neighbors', [])
                                  if not self.rooms.get(n, {}).get('disabled')]
+
+        # Ensure the starting room has at least one available neighbour
+        if not self.get_neighbors(start_room):
+            choices = [n for n in self._orig_neighbors.get(start_room, [])]
+            if choices:
+                chosen = random.choice(choices)
+                self.rooms[chosen].pop('disabled', None)
+                for room in self.rooms.values():
+                    room['neighbors'] = [n for n in room.get('neighbors', [])
+                                         if not self.rooms.get(n, {}).get('disabled')]
