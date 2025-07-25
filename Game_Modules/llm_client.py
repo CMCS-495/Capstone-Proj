@@ -19,7 +19,9 @@ def _load_real_pipeline():
         stub_dir = repo_root / "transformers"
         src_dir = repo_root / "LLM" / "transformers" / "src"
         if Path(getattr(transformers, "__file__", "")).resolve().parent == stub_dir:
-            sys.modules.pop("transformers", None)
+            for module_name in list(sys.modules.keys()):
+                if module_name.startswith("transformers"):
+                    sys.modules.pop(module_name, None)
             if str(stub_dir) in sys.path:
                 sys.path.remove(str(stub_dir))
             if str(src_dir) not in sys.path:
