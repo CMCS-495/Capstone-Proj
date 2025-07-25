@@ -109,7 +109,16 @@ def _get_llm_pipeline(device: int = None):
     if pipeline is None:
         _load_real_pipeline()
     if pipeline is None:
-        raise RuntimeError("transformers package is required for LLM features")
+        # Fall back to a simple stub that returns a generic response so
+        # the rest of the application keeps working even when the real
+        # transformers package is not installed. This avoids server
+        # crashes that would otherwise force a full page reload on every
+        # action.
+        def _dummy_llm(prompt: str, *args, **kwargs):
+            return [{"generated_text": "Description not available."}]
+
+        return _dummy_llm
+
     return pipeline(
         "text-generation",
         model=MODEL_NAME,
