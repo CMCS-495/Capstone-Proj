@@ -84,7 +84,6 @@ def start_game():
     voice     = settings.get('voice', True)
     voice_name = settings.get('voice_name', 'default')
     map_size  = settings.get('map_size', 'Medium')
-    randomize = settings.get('randomize_map', False)
     hide_map  = settings.get('hide_minimap', False)
     theme     = settings.get('display_theme', 'Standard')
     llm_device = settings.get('llm_device', 'cpu')
@@ -97,7 +96,6 @@ def start_game():
         'voice': voice,
         'voice_name': voice_name,
         'map_size': map_size,
-        'randomize_map': randomize,
         'hide_minimap': hide_map,
         'display_theme': theme,
         'llm_device': llm_device,
@@ -130,10 +128,7 @@ def start_game():
         'inventory':    [],
         'visited':      [],
     })
-    if randomize:
-        dungeon_map.randomize_rooms(session['room_id'])
-    else:
-        dungeon_map.randomize_rooms(session['room_id'], pct=0)
+    dungeon_map.randomize_rooms(session['room_id'], pct=0)
     return redirect(url_for('explore'))
 
 # ----- RNG -----
@@ -275,7 +270,6 @@ def settings():
         voice     = request.form.get('voice') == 'on'
         voice_name = request.form.get('voice_name', 'default')
         map_size  = request.form.get('map_size')
-        randomize = request.form.get('randomize_map') == 'on'
         hide_map  = request.form.get('hide_minimap') == 'on'
         theme     = request.form.get('display_theme')
 
@@ -287,7 +281,6 @@ def settings():
             'voice': voice,
             'voice_name': voice_name,
             'map_size': map_size,
-            'randomize_map': randomize,
             'hide_minimap': hide_map,
             'display_theme': theme,
             'llm_device': llm_device,
@@ -307,7 +300,6 @@ def settings():
         voice_name=s.get('voice_name', 'default'),
         voice_choices=VOICE_CHOICES,
         map_size=s.get('map_size', 'Medium'),
-        randomize_map=s.get('randomize_map', False),
         hide_minimap=s.get('hide_minimap', False),
         display_theme=s.get('display_theme', 'Standard'),
         llm_device=s.get('llm_device', 'cpu')
@@ -389,7 +381,7 @@ def explore():
             session['voice_audio'] = voice.generate_voice(' '.join(parts), voice_name)
 
     settings = session.get('settings', {})
-    show_minimap = not (settings.get('hide_minimap') or settings.get('randomize_map'))
+    show_minimap = not settings.get('hide_minimap')
 
     # 4.5) Generate/update minimap image for current position
     if show_minimap:
@@ -581,6 +573,14 @@ def artifact():
         )
     else:
         session['last_msg'] = f"You gained {xp_gain} XP!"
+
+    cleared = set(session.get('rooms_cleared', []))
+    current_room = session.get('room_id')
+    if current_room:
+        cleared.add(current_room)
+    session['rooms_cleared'] = list(cleared)
+    if len(cleared) >= len(game_map):
+        return render_template('complete.html')
 
     return redirect(url_for('explore'))
 
