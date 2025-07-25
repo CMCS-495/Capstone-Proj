@@ -14,7 +14,7 @@
       if (!main) { window.location.href = finalUrl; return; }
       document.getElementById('content').innerHTML = main.innerHTML;
       document.title = doc.title;
-      window.history.pushState({url: finalUrl}, '', finalUrl);
+      window.history.pushState({finalUrl}, '', finalUrl);
       if (window.endLoading) {
         window.endLoading();
       }
