@@ -159,7 +159,7 @@
   </div>
 
   <!-- Main content with page transition -->
-  <main class="page-transition">
+  <main id="content" class="page-transition">
     {% block content %}{% endblock %}
   </main>
 
@@ -167,11 +167,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const overlay = document.getElementById('loading-overlay');
-      
-      // Show loading overlay function
-      const showOverlay = () => {
+      const saveAsURL = "{{ url_for('save_as') }}";
+
+      window.startLoading = () => {
         overlay.style.display = 'flex';
-        // Add random loading messages
         const messages = [
           'Loading dungeon secrets...',
           'Preparing your adventure...',
@@ -182,172 +181,118 @@
           'Consulting the map...',
           'Gathering courage...'
         ];
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        overlay.querySelector('p').textContent = randomMessage;
+        overlay.querySelector('p').textContent = messages[Math.floor(Math.random() * messages.length)];
       };
 
-      // Add loading overlay to forms (except save-as)
-      document.querySelectorAll('form').forEach(form => {
-        if (form.getAttribute('action') !== "{{ url_for('save_as') }}") {
-          form.addEventListener('submit', showOverlay);
-        }
-      });
+      window.endLoading = () => { overlay.style.display = 'none'; };
 
-      // Add loading overlay to internal navigation links
-      document.querySelectorAll('a[href]').forEach(link => {
-        const href = link.getAttribute('href');
-        if (href && href.startsWith('/') && !href.startsWith('//') && href !== "{{ url_for('save_as') }}") {
-          link.addEventListener('click', showOverlay);
-        }
-      });
-
-      // Auto-hide flash messages after 5 seconds
-      document.querySelectorAll('.flash-message').forEach(message => {
-        setTimeout(() => {
-          message.style.animation = 'slideInRight 0.5s ease-out reverse';
-          setTimeout(() => message.remove(), 500);
-        }, 5000);
-      });
-
-      // Add click-to-dismiss flash messages
-      document.querySelectorAll('.flash-message').forEach(message => {
-        message.style.cursor = 'pointer';
-        message.addEventListener('click', () => {
-          message.style.animation = 'slideInRight 0.5s ease-out reverse';
-          setTimeout(() => message.remove(), 500);
-        });
-      });
-
-      // Enhanced button hover effects
-      document.querySelectorAll('button, .button').forEach(btn => {
-        btn.addEventListener('mouseenter', () => {
-          btn.style.transform = 'translateY(-3px) scale(1.02)';
-        });
-        
-        btn.addEventListener('mouseleave', () => {
-          btn.style.transform = 'translateY(0) scale(1)';
-        });
-      });
-
-      // Add particle effects to certain actions
-      function createParticle(x, y, color = '#e67e22') {
-        const particle = document.createElement('div');
-        particle.style.cssText = `
-          position: fixed;
-          width: 4px;
-          height: 4px;
-          background: ${color};
-          border-radius: 50%;
-          pointer-events: none;
-          z-index: 9998;
-          left: ${x}px;
-          top: ${y}px;
-          box-shadow: 0 0 6px ${color};
-        `;
-        
-        document.body.appendChild(particle);
-        
-        const deltaX = (Math.random() - 0.5) * 100;
-        const deltaY = (Math.random() - 0.5) * 100;
-        
-        particle.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: `translate(${deltaX}px, ${deltaY}px) scale(0)`, opacity: 0 }
-        ], {
-          duration: 1000,
-          easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
-        }).onfinish = () => particle.remove();
-      }
-
-      // Add particle effects to button clicks
-      document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const rect = btn.getBoundingClientRect();
-          const x = rect.left + rect.width / 2;
-          const y = rect.top + rect.height / 2;
-          
-          for (let i = 0; i < 6; i++) {
-            setTimeout(() => createParticle(x, y), i * 50);
+      window.initUI = () => {
+        document.querySelectorAll('form').forEach(form => {
+          if (form.getAttribute('action') !== saveAsURL) {
+            form.addEventListener('submit', startLoading);
           }
         });
-      });
 
-      // Keyboard shortcuts
-      document.addEventListener('keydown', (e) => {
-        // ESC key to go back to menu (if not in menu already)
-        if (e.key === 'Escape' && !window.location.pathname.endsWith('/')) {
-          const menuLink = document.querySelector('a[href*="menu"]');
-          if (menuLink) {
-            showOverlay();
-            window.location.href = menuLink.href;
+        document.querySelectorAll('a[href]').forEach(link => {
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('/') && !href.startsWith('//') && href !== saveAsURL) {
+            link.addEventListener('click', startLoading);
           }
+        });
+
+        document.querySelectorAll('.flash-message').forEach(message => {
+          setTimeout(() => {
+            message.style.animation = 'slideInRight 0.5s ease-out reverse';
+            setTimeout(() => message.remove(), 500);
+          }, 5000);
+
+          message.style.cursor = 'pointer';
+          message.addEventListener('click', () => {
+            message.style.animation = 'slideInRight 0.5s ease-out reverse';
+            setTimeout(() => message.remove(), 500);
+          });
+        });
+
+        document.querySelectorAll('button, .button').forEach(btn => {
+          btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-3px) scale(1.02)'; });
+          btn.addEventListener('mouseleave', () => { btn.style.transform = 'translateY(0) scale(1)'; });
+        });
+
+        function createParticle(x, y, color = '#e67e22') {
+          const particle = document.createElement('div');
+          particle.style.cssText = `position:fixed;width:4px;height:4px;background:${color};border-radius:50%;pointer-events:none;z-index:9998;left:${x}px;top:${y}px;box-shadow:0 0 6px ${color};`;
+          document.body.appendChild(particle);
+          const deltaX = (Math.random() - 0.5) * 100;
+          const deltaY = (Math.random() - 0.5) * 100;
+          particle.animate([
+            { transform: 'translate(0,0) scale(1)', opacity: 1 },
+            { transform: `translate(${deltaX}px, ${deltaY}px) scale(0)`, opacity: 0 }
+          ], { duration: 1000, easing: 'cubic-bezier(0.25,0.46,0.45,0.94)' }).onfinish = () => particle.remove();
         }
-        
-        // Enter key to submit forms
-        if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
-          const form = e.target.closest('form');
-          if (form) {
-            const submitBtn = form.querySelector('button[type="submit"], button:not([type])');
-            if (submitBtn) {
-              submitBtn.click();
+
+        document.querySelectorAll('button').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const rect = btn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            for (let i = 0; i < 6; i++) {
+              setTimeout(() => createParticle(x, y), i * 50);
+            }
+          });
+        });
+
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && !window.location.pathname.endsWith('/')) {
+            const menuLink = document.querySelector('a[href*="menu"]');
+            if (menuLink) {
+              startLoading();
+              window.location.href = menuLink.href;
             }
           }
-        }
-        
-        // Number keys for quick actions (1-9)
-        if (/^[1-9]$/.test(e.key)) {
-          const buttons = document.querySelectorAll('button:not([disabled])');
-          const index = parseInt(e.key) - 1;
-          if (buttons[index]) {
-            buttons[index].click();
-          }
-        }
-      });
 
-      // Add tooltips to buttons with keyboard shortcuts
-      document.querySelectorAll('button').forEach((btn, index) => {
-        if (index < 9) {
-          btn.title = `${btn.title || btn.textContent} (Press ${index + 1})`;
-        }
-      });
-
-      // Preload images for better performance
-      const imagesToPreload = [
-        "{{ url_for('static', filename='minimap.png') }}"
-      ];
-      
-      imagesToPreload.forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
-
-      // Add smooth scrolling
-      document.documentElement.style.scrollBehavior = 'smooth';
-
-      // Enhanced focus management for accessibility
-      let lastFocusedElement = null;
-      
-      document.addEventListener('focusin', (e) => {
-        lastFocusedElement = e.target;
-      });
-
-      // Restore focus when overlay is hidden
-      const observer = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-          if (mutation.target === overlay && mutation.attributeName === 'style') {
-            if (overlay.style.display === 'none' && lastFocusedElement) {
-              setTimeout(() => {
-                if (lastFocusedElement && document.contains(lastFocusedElement)) {
-                  lastFocusedElement.focus();
-                }
-              }, 100);
+          if (e.key === 'Enter' && e.target.tagName !== 'BUTTON') {
+            const form = e.target.closest('form');
+            if (form) {
+              const submitBtn = form.querySelector('button[type="submit"], button:not([type])');
+              if (submitBtn) submitBtn.click();
             }
           }
-        });
-      });
-      
-      observer.observe(overlay, { attributes: true });
 
+          if (/^[1-9]$/.test(e.key)) {
+            const buttons = document.querySelectorAll('button:not([disabled])');
+            const index = parseInt(e.key) - 1;
+            if (buttons[index]) buttons[index].click();
+          }
+        });
+
+        document.querySelectorAll('button').forEach((btn, index) => {
+          if (index < 9) btn.title = `${btn.title || btn.textContent} (Press ${index + 1})`;
+        });
+
+        const imagesToPreload = ["{{ url_for('static', filename='minimap.png') }}"];
+        imagesToPreload.forEach(src => { const img = new Image(); img.src = src; });
+
+        document.documentElement.style.scrollBehavior = 'smooth';
+
+        let lastFocusedElement = null;
+        document.addEventListener('focusin', e => { lastFocusedElement = e.target; });
+        const observer = new MutationObserver(mutations => {
+          mutations.forEach(m => {
+            if (m.target === overlay && m.attributeName === 'style') {
+              if (overlay.style.display === 'none' && lastFocusedElement) {
+                setTimeout(() => {
+                  if (lastFocusedElement && document.contains(lastFocusedElement)) {
+                    lastFocusedElement.focus();
+                  }
+                }, 100);
+              }
+            }
+          });
+        });
+        observer.observe(overlay, { attributes: true });
+      };
+
+      initUI();
       console.log('🏰 Dungeon Crawler Enhanced UI Loaded Successfully! 🗡️');
     });
 
@@ -386,5 +331,6 @@
       }
     };
   </script>
+  <script src="{{ url_for('static', filename='spa.js') }}"></script>
 </body>
 </html>
