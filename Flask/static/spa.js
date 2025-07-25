@@ -42,7 +42,10 @@
       let url = form.action || window.location.href;
       const opts = { method, credentials: 'same-origin' };
       if (method === 'GET') {
-        const params = new URLSearchParams(new FormData(form));
+        const params = new URLSearchParams();
+        for (const [key, value] of new FormData(form).entries()) {
+          params.append(key, value);
+        }
         url += (url.includes('?') ? '&' : '?') + params.toString();
       } else {
         opts.body = new FormData(form);
