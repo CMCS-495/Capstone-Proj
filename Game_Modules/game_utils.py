@@ -133,7 +133,7 @@ def move_player(session, tgt_room, spawn_chance=0.6):
     # Roll for spawn
     if enemy_data:
         e = enemy_data
-        msg = _extracted_from_move_player_45(e, session)
+        msg = enemy_audio_desc(e, session)
     elif random.random() < spawn_chance:
         if enemy_data:
             e = enemy_data
@@ -157,7 +157,7 @@ def move_player(session, tgt_room, spawn_chance=0.6):
                         master['llm_description'] = desc
                         break
 
-        msg = _extracted_from_move_player_45(e, session)
+        msg = enemy_audio_desc(e, session)
     else:
         msg = f"You enter {get_room_name(tgt_room)}. It's quiet."
 
@@ -167,7 +167,7 @@ def move_player(session, tgt_room, spawn_chance=0.6):
 
 
 # TODO Rename this here and in `move_player`
-def _extracted_from_move_player_45(e, session):
+def enemy_audio_desc(e, session):
     lvl = e.get('level', 1)
     e['level']       = lvl
     e['max_hp']      = 15 + (lvl - 1) * 5
@@ -203,18 +203,18 @@ def search_room(session, search_chance=0.5):
 
     # Roll for a drop
     if found:
-        return _extracted_from_search_room_27(found, session)
+        return item_audio_desc(found, session)
     elif random.random() < search_chance:
         if not found:
             # Pick and copy a gear item
             found = random.choice(GEAR_POOL).copy()
 
-        return _extracted_from_search_room_27(found, session)
+        return item_audio_desc(found, session)
     return "Nothing found."
 
 
 # TODO Rename this here and in `search_room`
-def _extracted_from_search_room_27(found, session):
+def item_audio_desc(found, session):
     # Lazy‐generate a description
     if not found.get('llm_description'):
         ctx = {
