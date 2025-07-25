@@ -52,6 +52,7 @@ def generate_minimap(player_x, player_y, view_width=1500, view_height=1000,
 
     if output_path is None:
         output_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     cropped.save(output_path)
 
     return (cropped, draw_x, draw_y) if return_coords else cropped
