@@ -54,7 +54,9 @@
           <div class="stat-icon">✨</div>
           <div class="stat-info">
             <div class="stat-label">Experience</div>
-            <div class="stat-value">{{ player.xp }}</div>
+            <div class="stat-value">{{ player.xp }}
+              <span class="stat-extra">{{ xp_to_next }} to next</span>
+            </div>
           </div>
         </div>
       </div>
@@ -152,6 +154,13 @@
                       <span class="stat-value">{{ item.speed }}</span>
                     </div>
                   {% endif %}
+                </div>
+              {% else %}
+                <div class="item-stats">
+                  <div class="stat-line health">
+                    <span class="stat-icon">❤️</span>
+                    <span class="stat-value">{{ item.health }}</span>
+                  </div>
                 </div>
               {% endif %}
             </div>
@@ -338,6 +347,11 @@
   font-size: 1.2rem;
   font-weight: bold;
   color: var(--text-light);
+}
+.stat-extra {
+  font-size: 0.7rem;
+  color: #aaa;
+  margin-left: 0.25rem;
 }
 
 .equipment-section, .inventory-section {

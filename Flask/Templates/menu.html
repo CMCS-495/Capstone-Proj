@@ -88,15 +88,9 @@
             <span class="label-text">Difficulty:</span>
           </label>
           <select id="difficulty" name="difficulty">
-            <option value="Easy" {% if current=='Easy' %}selected{% endif %}>
-              🟢 Easy - More health, safer exploration
-            </option>
-            <option value="Normal" {% if current=='Normal' %}selected{% endif %}>
-              🟡 Normal - Balanced challenge
-            </option>
-            <option value="Hard" {% if current=='Hard' %}selected{% endif %}>
-              🔴 Hard - Brutal difficulty for experts
-            </option>
+            <option value="Easy" {% if current=='Easy' %}selected{% endif %}>🟢 Easy - Safe</option>
+            <option value="Normal" {% if current=='Normal' %}selected{% endif %}>🟡 Normal - Balanced</option>
+            <option value="Hard" {% if current=='Hard' %}selected{% endif %}>🔴 Hard - Brutal</option>
           </select>
         </div>
       </div>
@@ -410,6 +404,8 @@
   font-family: inherit;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+  text-align: center;
+  text-align-last: center;
 }
 
 .input-group input:focus, .input-group select:focus {

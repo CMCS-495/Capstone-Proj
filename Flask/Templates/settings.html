@@ -43,6 +43,15 @@
         </label>
       </li>
       <li>
+        <label for="llm-device">
+          LLM Device:
+          <select id="llm-device" name="llm_device">
+            <option value="cpu" {% if llm_device=='cpu' %}selected{% endif %}>CPU</option>
+            <option value="gpu" {% if llm_device=='gpu' %}selected{% endif %}>GPU</option>
+          </select>
+        </label>
+      </li>
+      <li>
         <label for="voice-toggle">
           Voice:
           <input
