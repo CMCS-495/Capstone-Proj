@@ -1,4 +1,6 @@
 (() => {
+  let lastSubmitter = null;
+
   function fetchAndReplace(url, options) {
     if (window.startLoading) {
       window.startLoading();
@@ -22,6 +24,11 @@
   }
 
   document.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (btn && btn.type !== 'button') {
+      lastSubmitter = btn;
+    }
+
     const a = e.target.closest('a');
     if (a && a.getAttribute('href') && a.getAttribute('href').startsWith('/') &&
         a.getAttribute('href') !== '/save_as' && a.getAttribute('href') !== '/save-as') {
@@ -50,9 +57,11 @@
       let url = form.action || window.location.href;
       const opts = { method, credentials: 'same-origin' };
       const data = new FormData(form);
-      if (e.submitter && e.submitter.name) {
-        data.append(e.submitter.name, e.submitter.value);
+      const submitter = e.submitter || lastSubmitter;
+      if (submitter && submitter.name) {
+        data.append(submitter.name, submitter.value);
       }
+      lastSubmitter = null;
       if (method === 'GET') {
         const params = new URLSearchParams(data);
         url += (url.includes('?') ? '&' : '?') + params.toString();
