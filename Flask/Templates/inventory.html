@@ -297,8 +297,8 @@
 }
 
 .stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.5rem;
 }
 
@@ -307,6 +307,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
+  width: fit-content;
   background: var(--panel-dark);
   border: 2px solid var(--border-color);
   border-radius: 10px;
@@ -729,7 +730,7 @@
 /* Responsive design */
 @media (max-width: 1024px) {
   .stats-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    justify-content: center;
   }
   
   .equipment-grid {
@@ -748,8 +749,8 @@
   }
   
   .stats-grid {
-    grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    justify-content: center;
   }
   
   .equipment-grid {
