@@ -131,7 +131,10 @@ def move_player(session, tgt_room, spawn_chance=0.6):
     enemy_data = pre.get('enemy') if pre else None
 
     # Roll for spawn
-    if enemy_data or random.random() < spawn_chance:
+    if enemy_data:
+        e = enemy_data
+        msg = _extracted_from_move_player_45(e, session)
+    elif random.random() < spawn_chance:
         if enemy_data:
             e = enemy_data
         else:
@@ -154,25 +157,30 @@ def move_player(session, tgt_room, spawn_chance=0.6):
                         master['llm_description'] = desc
                         break
 
-        lvl = e.get('level', 1)
-        e['level']       = lvl
-        e['max_hp']      = 15 + (lvl - 1) * 5
-        e['current_hp']  = e['max_hp']
-
-        session['enemy']     = e['name']
-        session['encounter'] = e
-
-        # Queue voice text if narration is enabled
-        if session.get('settings', {}).get('voice'):
-            session['encounter_voice'] = f"Enemy Encountered. {e['llm_description']}"
-
-        msg = f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
+        msg = _extracted_from_move_player_45(e, session)
     else:
         msg = f"You enter {get_room_name(tgt_room)}. It's quiet."
 
     if 'PYTEST_CURRENT_TEST' not in os.environ:
         preload_neighbors(tgt_room, session)
     return msg
+
+
+# TODO Rename this here and in `move_player`
+def _extracted_from_move_player_45(e, session):
+    lvl = e.get('level', 1)
+    e['level']       = lvl
+    e['max_hp']      = 15 + (lvl - 1) * 5
+    e['current_hp']  = e['max_hp']
+
+    session['enemy']     = e['name']
+    session['encounter'] = e
+
+    # Queue voice text if narration is enabled
+    if session.get('settings', {}).get('voice'):
+        session['encounter_voice'] = f"Enemy Encountered. {e['llm_description']}"
+
+    return f"<b>Enemy:</b> {e['name']} — {e['llm_description']}"
 
 def search_room(session, search_chance=0.5):
     """
@@ -194,35 +202,41 @@ def search_room(session, search_chance=0.5):
     found = pre.pop('gear', None) if pre else None
 
     # Roll for a drop
-    if found or random.random() < search_chance:
+    if found:
+        return _extracted_from_search_room_27(found, session)
+    elif random.random() < search_chance:
         if not found:
             # Pick and copy a gear item
             found = random.choice(GEAR_POOL).copy()
 
-        # Lazy‐generate a description
-        if not found.get('llm_description'):
-            ctx = {
-                'name':  found.get('name',''),
-                'stats': {k:v for k,v in found.items()
-                          if k not in ('name','type','drop_rate')}
-            }
-            length = session.get('settings', {}).get('llm_return_length', 50)
-            found['llm_description'] = llm_client.generate_description('gear', ctx, length)
-
-        # Generate audio for item description if enabled
-        if session.get('settings', {}).get('voice'):
-            voice_name = session.get('settings', {}).get('voice_name', 'default')
-            text = f"You found an item. {found['llm_description']}"
-            session['voice_audio'] = voice.generate_voice(text, voice_name)
-
-        # Append to the player's inventory
-        inv = session.setdefault('inventory', [])
-        inv.append(found)
-
-        # Show name + description
-        return f"Found gear: <strong>{found['name']}</strong><br>{found['llm_description']}"
-
+        return _extracted_from_search_room_27(found, session)
     return "Nothing found."
+
+
+# TODO Rename this here and in `search_room`
+def _extracted_from_search_room_27(found, session):
+    # Lazy‐generate a description
+    if not found.get('llm_description'):
+        ctx = {
+            'name':  found.get('name',''),
+            'stats': {k:v for k,v in found.items()
+                      if k not in ('name','type','drop_rate')}
+        }
+        length = session.get('settings', {}).get('llm_return_length', 50)
+        found['llm_description'] = llm_client.generate_description('gear', ctx, length)
+
+    # Generate audio for item description if enabled
+    if session.get('settings', {}).get('voice'):
+        voice_name = session.get('settings', {}).get('voice_name', 'default')
+        text = f"You found an item. {found['llm_description']}"
+        session['voice_audio'] = voice.generate_voice(text, voice_name)
+
+    # Append to the player's inventory
+    inv = session.setdefault('inventory', [])
+    inv.append(found)
+
+    # Show name + description
+    return f"Found gear: <strong>{found['name']}</strong><br>{found['llm_description']}"
 
 def process_explore_command(cmd, session,
                             player_template,

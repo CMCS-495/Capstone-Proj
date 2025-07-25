@@ -631,8 +631,7 @@ def loading():
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
     """Terminate the Flask development server."""
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func:
+    if func := request.environ.get('werkzeug.server.shutdown'):
         func()
     return '', 204
 

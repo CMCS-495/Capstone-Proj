@@ -20,9 +20,10 @@ def _load_real_pipeline():
         stub_dir = repo_root / "transformers"
         src_dir = repo_root / "LLM" / "transformers" / "src"
         t_path = Path(getattr(transformers, "__file__", "")).resolve()
-        needs_reload = (not hasattr(transformers, "pipeline") or
-                        t_path.is_relative_to(stub_dir))
-        if needs_reload:
+        if needs_reload := (
+            not hasattr(transformers, "pipeline")
+            or t_path.is_relative_to(stub_dir)
+        ):
             for name in list(sys.modules.keys()):
                 if name.startswith("transformers"):
                     sys.modules.pop(name, None)

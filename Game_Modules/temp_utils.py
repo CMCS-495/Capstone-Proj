@@ -11,7 +11,6 @@ MAP_DIR = os.path.join(TEMP_ROOT, 'map')
 os.makedirs(VOICE_DIR, exist_ok=True)
 os.makedirs(MAP_DIR, exist_ok=True)
 
-
 def _cleanup() -> None:
     shutil.rmtree(TEMP_ROOT, ignore_errors=True)
 

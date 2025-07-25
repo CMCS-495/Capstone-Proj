@@ -1,6 +1,8 @@
 (() => {
   function fetchAndReplace(url, options) {
-    if (window.startLoading) window.startLoading();
+    if (window.startLoading) {
+      window.startLoading();
+    }
     fetch(url, options).then(r => r.text()).then(html => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
@@ -9,8 +11,12 @@
       document.getElementById('content').innerHTML = main.innerHTML;
       document.title = doc.title;
       window.history.pushState({url}, '', url);
-      if (window.endLoading) window.endLoading();
-      if (window.initUI) window.initUI();
+      if (window.endLoading) {
+        window.endLoading();
+      }
+      if (window.initUI) {
+        window.initUI();
+      }
       window.scrollTo(0,0);
     }).catch(() => { window.location.href = url; });
   }
@@ -26,7 +32,9 @@
 
   document.addEventListener('submit', e => {
     const form = e.target.closest('form');
-    if (!form) return;
+    if (!form) {
+      return;
+    }
 
     let path;
     try {
