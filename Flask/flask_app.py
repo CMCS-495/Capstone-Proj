@@ -382,6 +382,7 @@ def explore():
 
     settings = session.get('settings', {})
     show_minimap = not settings.get('hide_minimap')
+    map_version = int(time.time() * 1000)
 
     # 4.5) Generate/update minimap image for current position
     if show_minimap:
@@ -396,7 +397,8 @@ def explore():
         )
         marker_x_pct = marker_x / width * 100
         marker_y_pct = marker_y / height * 100
-
+        map_version = int(time.time() * 1000)
+    
     if not app.config.get('TESTING'):
         diff = session.get('settings', {}).get('difficulty', 'Normal').lower()
         spawn_table = {'easy': 0.3, 'normal': 0.6, 'hard': 1.0}
@@ -430,7 +432,8 @@ def explore():
         audio_file       = audio_file,
         show_minimap     = show_minimap,
         marker_x         = marker_x_pct if show_minimap else 50,
-        marker_y         = marker_y_pct if show_minimap else 50
+        marker_y         = marker_y_pct if show_minimap else 50,
+        map_version      = map_version
     )
 
 # ----- FIGHT -----

@@ -11,7 +11,7 @@
       <h3>🗺️ Dungeon Map</h3>
     </div>
     <div class="minimap-frame">
-      <img src="{{ url_for('minimap_png') }}"
+      <img src="{{ url_for('minimap_png') }}?v={{ map_version }}"
            alt="Mini Map"
            class="minimap-image">
       <div class="minimap-overlay">
