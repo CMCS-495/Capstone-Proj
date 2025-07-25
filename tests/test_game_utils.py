@@ -75,3 +75,25 @@ def test_process_explore_command(monkeypatch):
     assert game_utils.process_explore_command('go B', session, {})[0] == 'redirect'
     assert game_utils.process_explore_command('search', session, {})[0] == 'redirect'
     assert game_utils.process_explore_command('unknown', session, {}) == ('stay', None, None)
+
+
+def test_preload_room_thread_safe(monkeypatch):
+    """preload_room should not rely on Flask request context"""
+    setup_basic(monkeypatch)
+    session = {'settings': {'llm_return_length': 7}}
+
+    captured = {}
+
+    def fake_gen(kind, ctx, length):
+        captured['kind'] = kind
+        captured['len'] = length
+        return 'desc'
+
+    monkeypatch.setattr(game_utils.llm_client, 'generate_description', fake_gen)
+    monkeypatch.setattr(game_utils.threading, 'Thread',
+                        lambda target, daemon=True: types.SimpleNamespace(start=lambda: target()))
+
+    game_utils.preload_room('A', session, spawn_chance=0.0, search_chance=0.0)
+
+    assert captured.get('kind') == 'room'
+    assert captured.get('len') == 7
