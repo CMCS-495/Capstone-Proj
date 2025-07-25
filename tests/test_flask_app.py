@@ -55,3 +55,7 @@ def test_start_game_difficulty_form(client, diff, expected):
 def test_rng_route(client):
     resp = client.get('/rng?min=1&max=10')
     assert resp.data.strip() == b'5'
+
+def test_shutdown(client):
+    resp = client.post('/shutdown')
+    assert resp.status_code == 204

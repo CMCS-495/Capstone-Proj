@@ -351,6 +351,11 @@
       console.log('🏰 Dungeon Crawler Enhanced UI Loaded Successfully! 🗡️');
     });
 
+    // Attempt to shut down the server when leaving the page
+    window.addEventListener('pagehide', () => {
+      navigator.sendBeacon("{{ url_for('shutdown') }}");
+    });
+
     // Global utility functions
     window.dungeonUtils = {
       showNotification: (message, type = 'info') => {
