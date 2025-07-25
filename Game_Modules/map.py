@@ -20,6 +20,8 @@ class DungeonMap:
                 if key := room.get('id') or room.get('room_id'):
                     rooms[key] = room
             self.rooms = rooms
+        self._orig_neighbors = {rid: list(r.get('neighbors', []))
+                                for rid, r in self.rooms.items()}
 
     def is_valid_move(self, current_room, target_room):
         """Return True if ``target_room`` is a valid enabled neighbour."""
@@ -36,8 +38,9 @@ class DungeonMap:
 
     def randomize_rooms(self, start_room=None, pct=0.3):
         """Randomly disable rooms while keeping the map connected."""
-        for r in self.rooms.values():
+        for rid, r in self.rooms.items():
             r.pop('disabled', None)
+            r['neighbors'] = list(self._orig_neighbors.get(rid, []))
 
         if start_room is None:
             start_room = next(iter(self.rooms))

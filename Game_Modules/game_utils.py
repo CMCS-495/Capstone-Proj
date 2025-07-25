@@ -45,13 +45,15 @@ def rebuild_player(session, player_template):
     bonuses = { stat: sum(item.get(stat,0)
                    for item in session['equipped'].values() if item)
                for stat in base }
+    max_hp = player_template.get('stats', {}).get('max_health', 100)
     p = Player(
         session['player_name'],
         base['attack']  + bonuses['attack'],
         base['defense'] + bonuses['defense'],
         base['speed']   + bonuses['speed'],
         session['level'],
-        session['xp']
+        session['xp'],
+        max_hp
     )
     p.hp = session['hp']
     return p
