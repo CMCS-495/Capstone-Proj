@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import argparse
-from transformers import pipeline
+try:
+    from transformers import pipeline
+except ImportError:  # pragma: no cover - optional dependency
+    pipeline = None
 
 MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
 
@@ -72,6 +75,8 @@ def _get_llm_pipeline(device: int = None):
     """
     Factory for downstream calls (e.g. generate_description) to reuse the same settings.
     """
+    if pipeline is None:
+        raise RuntimeError("transformers package is required for LLM features")
     return pipeline(
         "text-generation",
         model=MODEL_NAME,

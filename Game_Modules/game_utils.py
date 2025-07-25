@@ -67,6 +67,7 @@ def preload_room(room_id, session, spawn_chance=0.6, search_chance=0.5):
     if room_id not in dungeon_map.rooms:
         return
 
+    settings = session.get('settings', {}).copy()
     def task():
         room = dungeon_map.rooms[room_id]
         if not room.get('llm_description'):
@@ -74,7 +75,7 @@ def preload_room(room_id, session, spawn_chance=0.6, search_chance=0.5):
                 'prompt': room.get('llm_prompt', ''),
                 'neighbors': room.get('neighbors', [])
             }
-            length = session.get('settings', {}).get('llm_return_length', 50)
+            length = settings.get('llm_return_length', 50)
             desc = llm_client.generate_description('room', ctx, length)
             room['llm_description'] = desc
         pre = {}
@@ -84,7 +85,7 @@ def preload_room(room_id, session, spawn_chance=0.6, search_chance=0.5):
             enemy = chosen.copy()
             if not enemy.get('llm_description'):
                 ctx = {'name': enemy['name'], 'level': enemy.get('level',1)}
-                length = session.get('settings', {}).get('llm_return_length', 50)
+                length = settings.get('llm_return_length', 50)
                 enemy['llm_description'] = llm_client.generate_description('enemy', ctx, length)
             pre['enemy'] = enemy
         if random.random() < search_chance:
@@ -94,7 +95,7 @@ def preload_room(room_id, session, spawn_chance=0.6, search_chance=0.5):
                     'name': found.get('name',''),
                     'stats': {k:v for k,v in found.items() if k not in ('name','type','drop_rate')}
                 }
-                length = session.get('settings', {}).get('llm_return_length', 50)
+                length = settings.get('llm_return_length', 50)
                 found['llm_description'] = llm_client.generate_description('gear', ctx, length)
             pre['gear'] = found
         PRESPAWN[room_id] = pre
