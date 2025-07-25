@@ -1,0 +1,75 @@
+# Custom Artistic License – Limited Modification and Redistribution
+
+## Preamble
+
+This License is intended to facilitate the use, reuse, distribution, and personal modification of the Software while protecting the original integrity and intent of the work. This License is based on the Artistic License, with additional limitations on redistribution and commercial use.
+
+---
+
+## 1. Definitions
+
+- **"Software"**: The original work of authorship, including source code, object code, documentation, and configuration files.
+- **"You"**: Any individual or legal entity exercising rights under this License.
+
+---
+
+## 2. Permissions
+
+You are permitted to:
+
+- ✅ **Package** the Software with other software.
+- ✅ **Link** the Software with other code and binaries.
+- ✅ **Reuse code** in your own projects, *with proper credit given to the original authors*.
+- ✅ **Advertise** your use or integration of the Software.
+- ✅ **Host** and make the Software available via any networked service.
+- ✅ **Distribute** unmodified copies of the Software.
+- ✅ **Download** the Software from any source.
+- ✅ **Modify** the Software *for personal, non-distributed use only*.
+
+---
+
+## 3. Restrictions
+
+You are **not** permitted to:
+
+- ❌ **Modify and redistribute** the Software or any derivative works.
+- ❌ **Distribute modified versions** of the Software under any name (including the original or a different name).
+- ❌ **Sell** the Software, modified or unmodified, for a fee or other compensation.
+- ❌ **Sublicense** the Software or grant others redistribution rights under separate terms.
+- ❌ **Grant patents** or patent licenses covering any portion of the Software.
+- ❌ **Use the Software name or branding** in a way that implies a **trademark license or endorsement** by the original authors.
+
+---
+
+## 4. Attribution
+
+If you incorporate portions of this Software into your own projects (as permitted above):
+
+- You must **clearly credit** the original authors.
+- You must **include a copy of this License** or a link to its location in your project.
+
+---
+
+## 5. Disclaimer of Warranty
+
+> THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+>  
+> THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE SOFTWARE IS WITH YOU.
+
+---
+
+## 6. Limitation of Liability
+
+> IN NO EVENT SHALL THE COPYRIGHT HOLDER OR ANY OTHER PARTY WHO MAY MODIFY
+> AND/OR REDISTRIBUTE THE SOFTWARE BE LIABLE FOR ANY DAMAGES WHATSOEVER,
+> INCLUDING BUT NOT LIMITED TO GENERAL, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES.
+
+---
+
+## 7. Termination
+
+Violation of any terms in this License **automatically terminates** your rights. Upon termination:
+
+- You must **cease all use, modification, and distribution** of the Software.
+
+---
