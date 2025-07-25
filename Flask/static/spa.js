@@ -28,7 +28,13 @@
     const form = e.target.closest('form');
     if (!form) return;
 
-    const path = new URL(form.action || window.location.href, window.location.href).pathname;
+    let path;
+    try {
+      path = new URL(form.action || window.location.href, window.location.href).pathname;
+    } catch (error) {
+      console.error('Invalid form action URL:', form.action, error);
+      path = new URL(window.location.href).pathname;
+    }
 
     if (path !== '/save_as' && path !== '/save-as') {
       e.preventDefault();
