@@ -6,12 +6,13 @@ import importlib
 import types
 import pytest
 from Flask import flask_app
-from Game_Modules import rng
+from Game_Modules import rng, voice
 
 @pytest.fixture
 def client(monkeypatch):
     monkeypatch.setattr(rng, 'main', lambda: print('5'))
     monkeypatch.setattr(flask_app, 'render_template', lambda *a, **k: 'OK')
+    monkeypatch.setattr(voice, 'generate_voice', lambda *a, **k: 'audio.wav')
     flask_app.app.config['TESTING'] = True
     with flask_app.app.test_client() as client:
         yield client

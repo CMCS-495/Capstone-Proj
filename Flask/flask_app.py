@@ -390,7 +390,12 @@ def explore():
         x = room.get('MiniMapX', 0)
         y = room.get('MiniMapy', 0)
         minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
-        width, height = 300, 600
+        size_map = {
+            'Small': (150, 300),
+            'Medium': (300, 600),
+            'Large': (450, 900),
+        }
+        width, height = size_map.get(settings.get('map_size', 'Medium'), (300, 600))
         _, marker_x, marker_y = generate_minimap(
             x, y, view_width=width, view_height=height,
             output_path=minimap_path, return_coords=True
