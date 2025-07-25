@@ -32,7 +32,7 @@ def _load_real_pipeline():
             pipeline = importlib.import_module("transformers").pipeline
         else:
             pipeline = transformers.pipeline
-    except Exception:
+    except (ImportError, AttributeError):
         pipeline = None
 
 MODEL_NAME = "Qwen/Qwen2.5-0.5B-Instruct"
