@@ -392,7 +392,7 @@ def explore():
         minimap_path = os.path.join(temp_utils.MAP_DIR, 'minimap.png')
         size_map = {
             'Small': (300, 600),
-            'Medium': (1100,900),
+            'Medium': (1100,800),
             'Large': (1500, 1000),
         }
         width, height = size_map.get(settings.get('map_size', 'Medium'), (300, 600))
