@@ -22,7 +22,8 @@ class Enemy:
         self.attack = stats.get("attack", 0)
         self.defense = stats.get("defense", 0)
         self.speed = stats.get("speed", 0)
-        self.max_hp = 50 + (level * 10)
+        base_hp = stats.get("health", 50)
+        self.max_hp = base_hp
         self.hp = self.max_hp
 
     def take_damage(self, amt):

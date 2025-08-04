@@ -626,8 +626,9 @@ def artifact():
             b = boss.copy()
             lvl = b.get('level', 1)
             b['level'] = lvl
-            b['max_hp'] = 15 + (lvl - 1) * 5
-            b['current_hp'] = b['max_hp']
+            hp = b.get('stats', {}).get('health', 15 + (lvl - 1) * 5)
+            b['max_hp'] = hp
+            b['current_hp'] = hp
             session['encounter'] = b
             session['enemy'] = b['name']
         return redirect(url_for('fight'))

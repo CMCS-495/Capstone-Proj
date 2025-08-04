@@ -171,9 +171,10 @@ def move_player(session, tgt_room, spawn_chance=0.6):
 # TODO Rename this here and in `move_player`
 def enemy_audio_desc(e, session):
     lvl = e.get('level', 1)
-    e['level']       = lvl
-    e['max_hp']      = 15 + (lvl - 1) * 5
-    e['current_hp']  = e['max_hp']
+    base_hp = e.get('stats', {}).get('health', 15 + (lvl - 1) * 5)
+    e['level'] = lvl
+    e['max_hp'] = base_hp
+    e['current_hp'] = base_hp
 
     session['enemy']     = e['name']
     session['encounter'] = e
