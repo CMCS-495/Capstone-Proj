@@ -227,13 +227,22 @@
           });
         });
 
-        document.querySelectorAll('button, .button').forEach(btn => {
-          btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-3px) scale(1.02)'; });
-          btn.addEventListener('mouseleave', () => { btn.style.transform = 'translateY(0) scale(1)'; });
-        });
+          document.querySelectorAll('button, .button').forEach(btn => {
+            btn.addEventListener('mouseenter', () => { btn.style.transform = 'translateY(-3px) scale(1.02)'; });
+            btn.addEventListener('mouseleave', () => { btn.style.transform = 'translateY(0) scale(1)'; });
+          });
 
-        function createParticle(x, y, color = '#e67e22') {
-          const particle = document.createElement('div');
+          const potionToggle = document.getElementById('potion-toggle');
+          const potionPanel = document.getElementById('potion-panel');
+          if (potionToggle && potionPanel) {
+            potionToggle.addEventListener('click', () => {
+              potionToggle.style.display = 'none';
+              potionPanel.style.display = 'block';
+            });
+          }
+
+          function createParticle(x, y, color = '#e67e22') {
+            const particle = document.createElement('div');
           particle.style.cssText = `position:fixed;width:4px;height:4px;background:${color};border-radius:50%;pointer-events:none;z-index:9998;left:${x}px;top:${y}px;box-shadow:0 0 6px ${color};`;
           document.body.appendChild(particle);
           const deltaX = (Math.random() - 0.5) * 100;
