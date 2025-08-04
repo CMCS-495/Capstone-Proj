@@ -148,13 +148,29 @@
           </button>
           
           {% if potions > 0 %}
-            <button name="action" value="potion" class="battle-btn healing potion-btn">
-              <div class="btn-icon">🧪</div>
-              <div class="btn-content">
-                <div class="btn-title">USE POTION</div>
-                <div class="btn-desc">Restore Some HP</div>
+            <div class="potion-wrapper">
+              <button type="button" id="potion-toggle" class="battle-btn healing potion-btn">
+                <div class="btn-icon">🧪</div>
+                <div class="btn-content">
+                  <div class="btn-title">USE POTION</div>
+                  <div class="btn-desc">Restore Some HP</div>
+                </div>
+              </button>
+              <div id="potion-panel" style="display:none;" class="potion-panel">
+                <select name="potion_index" class="potion-select">
+                  {% for idx, item in potion_items %}
+                    <option value="{{ idx }}">{{ item.name }}</option>
+                  {% endfor %}
+                </select>
+                <button name="action" value="potion" class="battle-btn healing potion-btn confirm-btn">
+                  <div class="btn-icon">🧪</div>
+                  <div class="btn-content">
+                    <div class="btn-title">USE POTION</div>
+                    <div class="btn-desc">Restore Some HP</div>
+                  </div>
+                </button>
               </div>
-            </button>
+            </div>
           {% else %}
             <button disabled class="battle-btn healing potion-btn disabled">
               <div class="btn-icon">🧪</div>
@@ -231,6 +247,17 @@
   {% endif %}
 </div>
 
+<script>
+  const toggle = document.getElementById('potion-toggle');
+  const panel = document.getElementById('potion-panel');
+  if (toggle && panel) {
+    toggle.addEventListener('click', () => {
+      toggle.style.display = 'none';
+      panel.style.display = 'block';
+    });
+  }
+</script>
+
 <style>
 /* Enhanced battle-specific styles */
 .battle-container {
@@ -245,6 +272,18 @@
     inset 0 0 20px rgba(230, 126, 34, 0.1);
   position: relative;
   overflow: hidden;
+}
+
+.potion-panel {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.potion-select {
+  padding: 0.25rem;
 }
 
 .battle-container::before {

@@ -352,7 +352,7 @@ def explore():
     player.hp = session.get('hp', player.hp)
 
     # XP needed for next level
-    xp_next = max(0, int(xp_threshold(player.level + 1) - session.get('xp', 0)))
+    xp_next = max(0, math.ceil(xp_threshold(player.level + 1) - session.get('xp', 0)))
 
     # 4) Lazy-generate room description
     room_id = session['room_id']
@@ -441,7 +441,7 @@ def explore():
         marker_x         = marker_x_pct if show_minimap else 50,
         marker_y         = marker_y_pct if show_minimap else 50,
         map_version      = map_version,
-        cleared_rooms    = session.get('rooms_cleared', [])
+        cleared_rooms    = set(session.get('rooms_cleared', []))
     )
 
 # ----- FIGHT -----
@@ -473,7 +473,7 @@ def fight():
 
     # Count aid items in inventory as "potions"
     inv = session.setdefault('inventory', [])
-    aid_items = [i for i in inv if i.get('type') == 'aid']
+    aid_items = [(idx, i) for idx, i in enumerate(inv) if i.get('type') == 'aid']
     potions = len(aid_items)
 
     messages = []
@@ -482,16 +482,18 @@ def fight():
         action = request.form['action']
         difficulty = session.get('settings', {}).get('difficulty', 'Normal')
 
-        # Drink an aid item if available
+        # Drink a selected aid item if available
         if action == 'potion' and potions > 0:
-            for idx, itm in enumerate(inv):
-                if itm.get('type') == 'aid':
-                    item = inv.pop(idx)
-                    break
+            idx = request.form.get('potion_index', type=int)
+            item = None
+            if idx is not None and 0 <= idx < len(inv) and inv[idx].get('type') == 'aid':
+                item = inv.pop(idx)
             else:
-                item = None
+                for i, itm in enumerate(inv):
+                    if itm.get('type') == 'aid':
+                        item = inv.pop(i)
+                        break
 
-            potions -= 1
             heal_amount = item.get('health', 20) if item else 20
             max_hp = player_template.get('stats', {}).get('max_health', 100)
             player.hp = min(player.hp + heal_amount, max_hp)
@@ -516,7 +518,8 @@ def fight():
                                            player=player,
                                            enemy=e_data,
                                            messages=messages,
-                                           potions=potions)
+                                           potions=potions,
+                                           potion_items=aid_items)
             session.pop('encounter', None)
             session.pop('enemy', None)
             session['hp'] = player.hp
@@ -532,6 +535,10 @@ def fight():
         session['encounter']['current_hp'] = max(enemy.hp, 0)
         session['inventory']           = inv
 
+        # Recalculate potion data after any changes
+        aid_items = [(idx, i) for idx, i in enumerate(inv) if i.get('type') == 'aid']
+        potions = len(aid_items)
+
         # Check for defeat
         if player.hp <= 0:
             return render_template('fight.html',
@@ -539,7 +546,8 @@ def fight():
                                    player=player,
                                    enemy=e_data,
                                    messages=messages,
-                                   potions=potions)
+                                   potions=potions,
+                                   potion_items=aid_items)
 
         # Check for victory
         if not enemy.is_alive():
@@ -554,7 +562,8 @@ def fight():
                                player=player,
                                enemy=e_data,
                                messages=messages,
-                               potions=potions)
+                               potions=potions,
+                               potion_items=aid_items)
 
     # GET request: show fight screen
     return render_template('fight.html',
@@ -562,7 +571,8 @@ def fight():
                            player=player,
                            enemy=e_data,
                            messages=messages,
-                           potions=potions)
+                           potions=potions,
+                           potion_items=aid_items)
 
 
 # ----- ARTIFACT -----
@@ -679,12 +689,13 @@ def inventory_route():
         'level': session.get('level'),
         'xp':    session.get('xp'),
         'hp':    session.get('hp'),
+        'max_hp': player_template.get('stats', {}).get('max_health', session.get('hp', 0)),
         'attack':  base_stats.get('attack',1)  + bonus_atk,
         'defense': base_stats.get('defense',1) + bonus_def,
         'speed':   base_stats.get('speed',1)   + bonus_spd
     }
 
-    xp_next = max(0, int(xp_threshold(player['level'] + 1) - player['xp']))
+    xp_next = max(0, math.ceil(xp_threshold(player['level'] + 1) - player['xp']))
 
     return render_template(
         'inventory.html',
