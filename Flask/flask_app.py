@@ -7,7 +7,9 @@ import os, sys, io, time, zipfile, json, random, math
 # ensure Game_Modules package is importable
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from Game_Modules.import_assets import inventory, gear, game_map, enemies, player_template
+from Game_Modules.import_assets import (
+    inventory, gear, game_map, enemies, player_template, settings as default_settings
+)
 from Game_Modules import llm_client
 from Game_Modules.save_load   import save_game
 from Game_Modules import save_load
@@ -59,6 +61,8 @@ VOICE_CHOICES = available_voices()
 # ----- MAIN MENU -----
 @app.route('/')
 def menu():
+    if 'settings' not in session:
+        session['settings'] = default_settings.copy()
     current = session.get('settings', {}).get('difficulty', 'Normal')
     if not app.config.get('TESTING'):
         start_room = player_template.get('start_room', 'R1_1')
@@ -206,6 +210,7 @@ def save_as():
             z.writestr('inventory.json', json.dumps(player_inv,   indent=2))
             raw_map = list(game_map.values()) if isinstance(game_map, dict) else game_map
             z.writestr('map.json',       json.dumps(raw_map,     indent=2))
+            z.writestr('settings.json',  json.dumps(session.get('settings', {}), indent=2))
             if os.path.isdir(temp_utils.VOICE_DIR):
                 for fname in os.listdir(temp_utils.VOICE_DIR):
                     fp = os.path.join(temp_utils.VOICE_DIR, fname)

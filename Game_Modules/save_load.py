@@ -73,12 +73,17 @@ def load_game_from_zip(stream, session):
 def import_game_data(z, session):
     # 2) player.json → session
     player_data = json.loads(z.read('player.json').decode('utf-8'))
+    import_assets.player_template = player_data
+    stats = player_data.get('stats', {})
     session['player_name']      = player_data.get('name', '')
     session['room_id']          = player_data.get('current_map_location', '')
     session['level']            = player_data.get('level', 1)
     session['xp']               = player_data.get('xp', 0)
-    session['hp']               = player_data.get('hp', player_data.get('stats',{}).get('current_health',10))
+    session['hp']               = player_data.get('hp', stats.get('current_health',10))
     session['equipped']         = player_data.get('equipped', {})
+    session['attack']           = stats.get('attack', 0)
+    session['defense']          = stats.get('defense', 0)
+    session['speed']            = stats.get('speed', 0)
 
     # 3) inventory.json → session
     session['inventory']        = json.loads(z.read('inventory.json').decode('utf-8'))
@@ -93,6 +98,14 @@ def import_game_data(z, session):
 
     # 6) enemies.json → import_assets.enemies
     import_assets.enemies = json.loads(z.read('enemies.json').decode('utf-8'))
+
+    # 7) settings.json → session and import_assets
+    try:
+        settings_data = json.loads(z.read('settings.json').decode('utf-8'))
+    except KeyError:
+        settings_data = {}
+    session['settings'] = settings_data
+    import_assets.settings = settings_data
 
     for info in z.infolist():
         if info.filename.startswith('voice/'):

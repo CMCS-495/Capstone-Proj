@@ -26,6 +26,7 @@ def export_assets():
         'gear': import_assets.gear,
         'map': import_assets.game_map,
         'enemies': import_assets.enemies,
+        'settings': import_assets.settings,
     }
 
     # Write out the combined save file

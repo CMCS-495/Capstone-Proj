@@ -1,0 +1,11 @@
+{
+  "difficulty": "Normal",
+  "music": true,
+  "llm_return_length": 50,
+  "voice": true,
+  "voice_name": "default",
+  "map_size": "Medium",
+  "hide_minimap": false,
+  "display_theme": "Standard",
+  "llm_device": "cpu"
+}
