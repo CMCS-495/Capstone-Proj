@@ -178,5 +178,17 @@
     "llm_prompt": "A hulking construct bound by necrotic energy",
     "llm_description": "",
     "encounter_rate": 12
+  },
+    {
+    "name": "Undead Necro Warlord",
+    "stats": {
+      "attack": 25,
+      "defense": 15,
+      "speed": 12
+    },
+    "UUID": "562a4d5f-94ac-44bf-81b9-09c2816ddb64",
+    "llm_prompt": "The most powerful of the undead, a hulking construct bound by necrotic energy",
+    "llm_description": "",
+    "encounter_rate": 0
   }
 ]
