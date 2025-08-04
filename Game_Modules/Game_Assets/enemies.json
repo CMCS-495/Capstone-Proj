@@ -2,6 +2,7 @@
   {
     "name": "Goblin Grunt",
     "stats": {
+      "health": 10,
       "attack": 3,
       "defense": 2,
       "speed": 5
@@ -14,6 +15,7 @@
   {
     "name": "Dark Mage",
     "stats": {
+      "health": 12,
       "attack": 6,
       "defense": 1,
       "speed": 4
@@ -26,6 +28,7 @@
   {
     "name": "Zombie",
     "stats": {
+      "health": 8,
       "attack": 2,
       "defense": 5,
       "speed": 1
@@ -38,6 +41,7 @@
   {
     "name": "Skeleton Archer",
     "stats": {
+      "health": 10,
       "attack": 4,
       "defense": 2,
       "speed": 6
@@ -50,6 +54,7 @@
   {
     "name": "Orc Warrior",
     "stats": {
+      "health": 15,
       "attack": 7,
       "defense": 4,
       "speed": 2
@@ -62,6 +67,7 @@
   {
     "name": "Shadow Assassin",
     "stats": {
+      "health": 10,
       "attack": 5,
       "defense": 1,
       "speed": 7
@@ -74,6 +80,7 @@
   {
     "name": "Fire Imp",
     "stats": {
+      "health": 6,
       "attack": 4,
       "defense": 1,
       "speed": 5
@@ -86,6 +93,7 @@
   {
     "name": "Ice Golem",
     "stats": {
+      "health": 12,
       "attack": 3,
       "defense": 7,
       "speed": 1
@@ -98,6 +106,7 @@
   {
     "name": "Vampire",
     "stats": {
+      "health": 12,
       "attack": 6,
       "defense": 3,
       "speed": 4
@@ -110,6 +119,7 @@
   {
     "name": "Werewolf",
     "stats": {
+      "health": 12,
       "attack": 7,
       "defense": 5,
       "speed": 3
@@ -122,6 +132,7 @@
   {
     "name": "Troll Brute",
     "stats": {
+      "health": 18,
       "attack": 5,
       "defense": 6,
       "speed": 2
@@ -134,6 +145,7 @@
   {
     "name": "Banshee",
     "stats": {
+      "health": 8,
       "attack": 4,
       "defense": 1,
       "speed": 7
@@ -146,6 +158,7 @@
   {
     "name": "Dark Knight",
     "stats": {
+      "health": 12,
       "attack": 6,
       "defense": 6,
       "speed": 2
@@ -158,6 +171,7 @@
   {
     "name": "Poisonous Spider",
     "stats": {
+      "health": 10,
       "attack": 3,
       "defense": 2,
       "speed": 6
@@ -170,6 +184,7 @@
   {
     "name": "Bone Golem",
     "stats": {
+      "health": 15,
       "attack": 5,
       "defense": 7,
       "speed": 1
@@ -182,6 +197,7 @@
     {
     "name": "Undead Necro Warlord",
     "stats": {
+      "health": 80,
       "attack": 25,
       "defense": 15,
       "speed": 12
