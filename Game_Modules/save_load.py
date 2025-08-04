@@ -81,7 +81,7 @@ def import_game_data(z, session):
     session['level']            = player_data.get('level', 1)
     session['xp']               = player_data.get('xp', 0)
     session['hp']               = player_data.get('hp', stats.get('current_health',10))
-    session['equipped']         = player_data.get('equipped') or player_data.get('Equipped', {})
+    eq_raw                      = player_data.get('equipped') or player_data.get('Equipped', {})
     session['attack']           = stats.get('attack', 0)
     session['defense']          = stats.get('defense', 0)
     session['speed']            = stats.get('speed', 0)
@@ -101,6 +101,15 @@ def import_game_data(z, session):
     gear_data = json.loads(z.read('gear.json').decode('utf-8'))
     import_assets.gear.clear()
     import_assets.gear.update(gear_data)
+
+    # convert equipped item names into gear dictionaries if needed
+    equipped = {}
+    for slot, item in eq_raw.items():
+        if isinstance(item, dict):
+            equipped[slot] = item
+        else:
+            equipped[slot] = import_assets.gear.get(item)
+    session['equipped'] = equipped
 
     # 6) enemies.json → import_assets.enemies
     enemies_data = json.loads(z.read('enemies.json').decode('utf-8'))
