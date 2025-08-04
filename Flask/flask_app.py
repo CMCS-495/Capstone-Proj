@@ -127,6 +127,7 @@ def start_game():
         },
         'inventory':    [],
         'visited':      [],
+        'rooms_cleared': [],
     })
     dungeon_map.randomize_rooms(session['room_id'], pct=0)
     return redirect(url_for('explore'))
@@ -439,7 +440,8 @@ def explore():
         show_minimap     = show_minimap,
         marker_x         = marker_x_pct if show_minimap else 50,
         marker_y         = marker_y_pct if show_minimap else 50,
-        map_version      = map_version
+        map_version      = map_version,
+        cleared_rooms    = session.get('rooms_cleared', [])
     )
 
 # ----- FIGHT -----
@@ -541,6 +543,10 @@ def fight():
 
         # Check for victory
         if not enemy.is_alive():
+            if e_data.get('UUID') == '562a4d5f-94ac-44bf-81b9-09c2816ddb64':
+                session.pop('encounter', None)
+                session.pop('enemy', None)
+                return redirect(url_for('win'))
             return redirect(url_for('artifact'))
 
         return render_template('fight.html',
@@ -596,10 +602,28 @@ def artifact():
     if current_room:
         cleared.add(current_room)
     session['rooms_cleared'] = list(cleared)
+
     if len(cleared) >= len(game_map):
-        return render_template('complete.html')
+        boss = next((e for e in enemies
+                     if e.get('UUID') == '562a4d5f-94ac-44bf-81b9-09c2816ddb64'), None)
+        if boss:
+            b = boss.copy()
+            lvl = b.get('level', 1)
+            b['level'] = lvl
+            b['max_hp'] = 15 + (lvl - 1) * 5
+            b['current_hp'] = b['max_hp']
+            session['encounter'] = b
+            session['enemy'] = b['name']
+        return redirect(url_for('fight'))
 
     return redirect(url_for('explore'))
+
+# ----- WIN ROUTE -----
+@app.route('/win')
+def win():
+    if 'player_name' not in session:
+        return redirect(url_for('menu'))
+    return render_template('win.html')
 
 # ----- INVENTORY -----
 @app.route('/inventory', methods=['GET','POST'])

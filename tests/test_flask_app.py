@@ -68,3 +68,31 @@ def test_minimap_caching(client):
     assert resp.status_code == 200
     cache_control = resp.headers.get('Cache-Control', '')
     assert 'max-age=0' in cache_control
+
+
+def test_spawn_final_boss_after_all_rooms_cleared(monkeypatch, client):
+    monkeypatch.setattr(flask_app, 'game_map', {'A': {'name': 'RoomA', 'neighbors': []}})
+    boss = {
+        'name': 'Undead Necro Warlord',
+        'UUID': '562a4d5f-94ac-44bf-81b9-09c2816ddb64',
+        'level': 1,
+        'stats': {'attack': 1, 'defense': 1, 'speed': 1},
+    }
+    monkeypatch.setattr(flask_app, 'enemies', [boss])
+    monkeypatch.setattr(flask_app, 'apply_leveling', lambda s, t: False)
+    monkeypatch.setattr(flask_app, 'xp_threshold', lambda lvl: 0)
+
+    with client.session_transaction() as sess:
+        sess['encounter'] = {
+            'name': 'Goblin',
+            'max_hp': 5,
+            'stats': {'attack': 1, 'defense': 1, 'speed': 1}
+        }
+        sess['room_id'] = 'A'
+        sess['rooms_cleared'] = []
+
+    resp = client.get('/artifact')
+    assert resp.status_code == 302
+    assert resp.headers['Location'].endswith('/fight')
+    with client.session_transaction() as sess:
+        assert sess['encounter']['name'] == 'Undead Necro Warlord'
