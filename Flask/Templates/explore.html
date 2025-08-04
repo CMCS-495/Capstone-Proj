@@ -166,7 +166,7 @@
                 <div class="movement-grid">
                   {% for nbr in neighbors %}
                     <button name="command" value="go {{ nbr }}" class="action-btn movement-btn">
-                      <span class="btn-icon">🚶</span>
+                      <span class="btn-icon">{% if nbr in cleared_rooms %}💀{% else %}🚶{% endif %}</span>
                       <span class="btn-text">{{ ROOM_NAMES[nbr] }}</span>
                       <span class="btn-arrow">→</span>
                     </button>

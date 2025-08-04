@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Victory{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align:center;padding:2rem;">
+  <h1>Congratulations traveler, you have beaten the dungeon!</h1>
+  <p>You can Save your game and play more, or try on a harder difficulty.</p>
+  <div class="credits" style="margin:2rem auto;max-width:400px;border:1px solid #ccc;padding:1rem;">
+    <h2>Credits</h2>
+    <ul style="list-style:none;padding:0;">
+      <li>Abdelrahman Abdelsalam</li>
+      <li>Adam Orwig</li>
+      <li>Alex Foster</li>
+      <li>Angela Adofo</li>
+      <li>Ayele Ejgu</li>
+      <li>Brian Parham</li>
+      <li>Christopher Macala</li>
+      <li>Claire Lindstrom</li>
+      <li>Craig McLeish</li>
+    </ul>
+  </div>
+  <a href="{{ url_for('save_as') }}" class="button">Save Game</a>
+  <a href="{{ url_for('menu') }}" class="button">Main Menu</a>
+</div>
+{% endblock %}
