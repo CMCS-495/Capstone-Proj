@@ -197,7 +197,8 @@ def save_as():
                 "boots":  item_name('boots'),
                 "ring":   item_name('ring'),
                 "helmet": item_name('helmet')
-            }
+            },
+            "rooms_cleared": session.get('rooms_cleared', [])
         }
 
         # Create ZIP in memory
