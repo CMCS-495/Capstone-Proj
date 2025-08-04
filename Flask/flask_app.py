@@ -626,7 +626,13 @@ def artifact():
             b = boss.copy()
             lvl = b.get('level', 1)
             b['level'] = lvl
-            hp = b.get('stats', {}).get('health', 15 + (lvl - 1) * 5)
+            hp = b.get('stats', {}).get('health')
+            if hp is None:
+                ref = next((en for en in enemies if en.get('name') == b.get('name')), None)
+                if ref:
+                    hp = ref.get('stats', {}).get('health')
+            if hp is None:
+                hp = 15 + (lvl - 1) * 5
             b['max_hp'] = hp
             b['current_hp'] = hp
             session['encounter'] = b
