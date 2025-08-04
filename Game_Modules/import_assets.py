@@ -29,6 +29,7 @@ _raw_gear            = load_json_file('gear.json')
 _raw_game_map        = load_json_file('map.json')
 _raw_enemies         = load_json_file('enemies.json')
 _raw_player_template = load_json_file('player-template.json')
+_raw_settings        = load_json_file('settings.json')
 
 # Process assets
 inventory       = _raw_inventory
@@ -43,11 +44,13 @@ except (TypeError, KeyError):
 
 enemies         = _raw_enemies
 player_template = _raw_player_template
+settings        = _raw_settings
 
 __all__ = [
     'inventory',
     'gear',
     'game_map',
     'enemies',
-    'player_template'
+    'player_template',
+    'settings'
 ]

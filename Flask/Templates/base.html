@@ -186,6 +186,20 @@
 
       window.endLoading = () => { overlay.style.display = 'none'; };
 
+      window.resizeHealthText = () => {
+        document.querySelectorAll('.health-text').forEach(el => {
+          el.style.fontSize = '';
+          el.style.width = 'auto';
+          const parentWidth = el.parentElement.clientWidth;
+          let size = parseFloat(getComputedStyle(el).fontSize);
+          while (el.offsetWidth > parentWidth && size > 8) {
+            size -= 1;
+            el.style.fontSize = size + 'px';
+          }
+          el.style.width = '100%';
+        });
+      };
+
       window.initUI = () => {
         document.querySelectorAll('form').forEach(form => {
           if (form.getAttribute('action') !== saveAsURL) {
@@ -290,9 +304,13 @@
           });
         });
         observer.observe(overlay, { attributes: true });
+
+        resizeHealthText();
       };
 
       initUI();
+      window.addEventListener('resize', resizeHealthText);
+      resizeHealthText();
       console.log('🏰 Dungeon Crawler Enhanced UI Loaded Successfully! 🗡️');
     });
 
