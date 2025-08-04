@@ -73,31 +73,39 @@ def load_game_from_zip(stream, session):
 def import_game_data(z, session):
     # 2) player.json → session
     player_data = json.loads(z.read('player.json').decode('utf-8'))
-    import_assets.player_template = player_data
+    import_assets.player_template.clear()
+    import_assets.player_template.update(player_data)
     stats = player_data.get('stats', {})
     session['player_name']      = player_data.get('name', '')
     session['room_id']          = player_data.get('current_map_location', '')
     session['level']            = player_data.get('level', 1)
     session['xp']               = player_data.get('xp', 0)
     session['hp']               = player_data.get('hp', stats.get('current_health',10))
-    session['equipped']         = player_data.get('equipped', {})
+    session['equipped']         = player_data.get('equipped') or player_data.get('Equipped', {})
     session['attack']           = stats.get('attack', 0)
     session['defense']          = stats.get('defense', 0)
     session['speed']            = stats.get('speed', 0)
+    session['rooms_cleared']    = player_data.get('rooms_cleared', [])
 
     # 3) inventory.json → session
-    session['inventory']        = json.loads(z.read('inventory.json').decode('utf-8'))
+    inv = json.loads(z.read('inventory.json').decode('utf-8'))
+    session['inventory']        = inv
 
     # 4) map.json → import_assets.game_map
     map_list = json.loads(z.read('map.json').decode('utf-8'))
     # if your rooms use 'room_id' instead of 'id', adjust accordingly
-    import_assets.game_map = { r['room_id']: r for r in map_list }
+    import_assets.game_map.clear()
+    import_assets.game_map.update({ r['room_id']: r for r in map_list })
 
     # 5) gear.json → import_assets.gear
-    import_assets.gear    = json.loads(z.read('gear.json').decode('utf-8'))
+    gear_data = json.loads(z.read('gear.json').decode('utf-8'))
+    import_assets.gear.clear()
+    import_assets.gear.update(gear_data)
 
     # 6) enemies.json → import_assets.enemies
-    import_assets.enemies = json.loads(z.read('enemies.json').decode('utf-8'))
+    enemies_data = json.loads(z.read('enemies.json').decode('utf-8'))
+    import_assets.enemies.clear()
+    import_assets.enemies.extend(enemies_data)
 
     # 7) settings.json → session and import_assets
     try:
@@ -105,7 +113,8 @@ def import_game_data(z, session):
     except KeyError:
         settings_data = {}
     session['settings'] = settings_data
-    import_assets.settings = settings_data
+    import_assets.settings.clear()
+    import_assets.settings.update(settings_data)
 
     for info in z.infolist():
         if info.filename.startswith('voice/'):
