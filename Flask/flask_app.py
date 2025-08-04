@@ -340,9 +340,9 @@ def explore():
     base   = player_template['stats']
     eq     = session.get('equipped', {})
     bonus  = {
-        'attack':  sum(i.get('attack',0)  for i in eq.values() if i),
-        'defense': sum(i.get('defense',0) for i in eq.values() if i),
-        'speed':   sum(i.get('speed',0)   for i in eq.values() if i),
+        'attack':  sum(i.get('attack',0)  for i in eq.values() if isinstance(i, dict)),
+        'defense': sum(i.get('defense',0) for i in eq.values() if isinstance(i, dict)),
+        'speed':   sum(i.get('speed',0)   for i in eq.values() if isinstance(i, dict)),
     }
     from Game_Modules.entities import Player
     max_hp = player_template.get('stats', {}).get('max_health', 100)
