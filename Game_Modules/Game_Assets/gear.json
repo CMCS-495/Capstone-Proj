@@ -159,6 +159,38 @@
       "drop_rate": 25
     }
   ],
+  "shields": [
+    {
+      "name": "Wooden Shield",
+      "attack": 0,
+      "defense": 2,
+      "speed": 0,
+      "UUID": "90abcdef-1234-4f01-89ab-cdef01234567",
+      "llm_prompt": "A simple shield made from reinforced wood",
+      "llm_description": "",
+      "drop_rate": 80
+    },
+    {
+      "name": "Iron Buckler",
+      "attack": 0,
+      "defense": 3,
+      "speed": -1,
+      "UUID": "abcdef01-2345-4f12-90ab-cdef01234567",
+      "llm_prompt": "A small, round shield crafted from solid iron",
+      "llm_description": "",
+      "drop_rate": 50
+    },
+    {
+      "name": "Dragon Scale Shield",
+      "attack": 1,
+      "defense": 5,
+      "speed": -2,
+      "UUID": "bcdef012-3456-4f23-01ab-cdef01234567",
+      "llm_prompt": "A shield made from the scales of a dragon, nearly indestructible",
+      "llm_description": "",
+      "drop_rate": 10
+    }
+  ],
   "aid": [
     {
       "name": "Health Potion",
